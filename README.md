@@ -1,92 +1,41 @@
-# Leptos Axum Starter Template
+# fediverse-kr
 
-This is a created with the [Leptos](https://github.com/leptos-rs/leptos) web framework and the [cargo-leptos](https://github.com/akesson/cargo-leptos) tool using [Axum](https://github.com/tokio-rs/axum).
+https://fediverse.kr (dead link, not yet)
 
-## Creating your template repo
+여기저기 흩뿌려져있는 연합우주 정보를 한 곳에 모으고, 안내 역할을 담당할 수 있도록 구성하고 있습니다.
 
-If you don't have `cargo-leptos` installed you can install it with
+준비중
 
-```bash
-cargo install cargo-leptos --locked
-```
+## todo
 
-Then run
-```bash
-cargo leptos new --git https://github.com/leptos-rs/start-axum-workspace/
-```
+- [x] 기본 레이아웃
+- [ ] 기본 정보 채우기 (주요 정보 링크 포함)
+- [ ] Dockerfile 작성, CI 구축
+- [ ] 배포
+- [ ] 기여 가이드
+- [ ] 고도화
+    - [ ] 마크다운 파일에서 문서가 생성될 수 있게 추가
+    - [ ] DB 연계, 서비스단에서 정보를 추가할 수 있게 구성
 
-to generate a new project template.
+## dev
 
-```bash
-cd {projectname}
-```
+prepare env:
 
-to go to your newly created project.  
-Feel free to explore the project structure, but the best place to start with your application code is in `src/app.rs`.  
-Addtionally, Cargo.toml may need updating as new versions of the dependencies are released, especially if things are not working after a `cargo update`.
+- rust
+    - `cargo install cargo-leptos`
+    - `cargo install leptosfmt`
+- node.js
+    - `pnpm install`
 
-### Islands support
+dev:
 
-Note that for islands to work correctly, you need to have a `use app;` in your frontend `lib.rs` otherwise rustc / wasm_bindgen gets confused.
-To prevent clippy from complaining, at the top of the `frontend/lib.rs` file place:
-```rust
-#[allow(clippy::single_component_path_imports)]
-#[allow(unused_imports)]
-use app;
-```
+- `cargo leptos watch`
+    - unocss를 우회적으로 사용하고 있어서 CSS가 일부 반영되지 않는 경우가 있습니다. 침착하시고 새로고침을 눌러주세요. (`app/build.rs` 에서 빌드스크립트로 실행)
 
-## Running your project
+deploy
 
-```bash
-cargo leptos watch
-```
+- TODO
 
-## Installing Additional Tools
+## license
 
-By default, `cargo-leptos` uses `nightly` Rust, `cargo-generate`, and `sass`. If you run into any trouble, you may need to install one or more of these tools.
-
-1. `rustup toolchain install nightly --allow-downgrade` - make sure you have Rust nightly
-2. `rustup default nightly` - setup nightly as default, or you can use rust-toolchain file later on
-3. `rustup target add wasm32-unknown-unknown` - add the ability to compile Rust to WebAssembly
-4. `cargo install cargo-generate` - install `cargo-generate` binary (should be installed automatically in future)
-5. `npm install -g sass` - install `dart-sass` (should be optional in future
-
-## Compiling for Release
-```bash
-cargo leptos build --release
-```
-
-Will generate your server binary in target/server/release and your site package in target/site
-
-## Testing Your Project
-```bash
-cargo leptos end-to-end
-```
-
-```bash
-cargo leptos end-to-end --release
-```
-
-Cargo-leptos uses Playwright as the end-to-end test tool.  
-Tests are located in end2end/tests directory.
-
-## Executing a Server on a Remote Machine Without the Toolchain
-After running a `cargo leptos build --release` the minimum files needed are:
-
-1. The server binary located in `target/server/release`
-2. The `site` directory and all files within located in `target/site`
-
-Copy these files to your remote server. The directory structure should be:
-```text
-start-axum
-site/
-```
-Set the following enviornment variables (updating for your project as needed):
-```text
-LEPTOS_OUTPUT_NAME="start-axum"
-LEPTOS_SITE_ROOT="site"
-LEPTOS_SITE_PKG_DIR="pkg"
-LEPTOS_SITE_ADDR="127.0.0.1:3000"
-LEPTOS_RELOAD_PORT="3001"
-```
-Finally, run the server binary.
+MIT

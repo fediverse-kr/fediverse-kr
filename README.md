@@ -16,6 +16,7 @@ https://fediverse.kr (dead link, not yet)
 - [ ] 고도화
     - [ ] 마크다운 파일에서 문서가 생성될 수 있게 추가
     - [ ] DB 연계, 서비스단에서 정보를 추가할 수 있게 구성
+    - [ ] UI 테스팅?
 
 ## dev
 
@@ -24,6 +25,7 @@ prepare env:
 - rust
     - `cargo install cargo-leptos`
     - `cargo install leptosfmt`
+    - stable rust 입니다. nightly 안 씁니다.
 - node.js
     - `pnpm install`
 

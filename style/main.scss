@@ -1,4 +1,9 @@
-body {
-	font-family: sans-serif;
-	text-align: center;
+@use './fonts.scss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+html {
+	font-family: 'NoonnuBasicGothicRegular', 'SUIT-Regular' sans-serif;
 }

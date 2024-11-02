@@ -1,0 +1,4 @@
+# see: https://github.com/bram209/leptosfmt
+# You should install leptosfmt: `cargo install leptosfmt`
+[rustfmt] 
+overrideCommand = ["leptosfmt", "--stdin", "--rustfmt"]

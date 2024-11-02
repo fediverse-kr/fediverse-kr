@@ -35,7 +35,7 @@ wasm-bindgen = "=0.2.93"
 # that are used together frontend (lib) & server (bin)
 [[workspace.metadata.leptos]]
 # this name is used for the wasm, js and css file names
-name = "start-axum-workspace"
+name = "fediverse-kr"
 
 # the package in the workspace that contains the server binary (binary crate)
 bin-package = "server"
@@ -50,8 +50,23 @@ site-root = "target/site"
 # Defaults to pkg
 site-pkg-dir = "pkg"
 
-# [Optional] The source CSS file. If it ends with .sass or .scss then it will be compiled by dart-sass into CSS. The CSS is optimized by Lightning CSS before being written to <site-root>/<site-pkg>/app.css
+
+# The source style file. If it ends with _.sass_ or _.scss_ then it will be compiled by `dart-sass`
+# into CSS and processed by lightning css. When release is set, then it will also be minified.
+#
+# Optional. Env: LEPTOS_STYLE_FILE.
 style-file = "style/main.scss"
+
+# The tailwind input file.
+#
+# Optional, Activates the tailwind build
+tailwind-input-file = "style/main.scss"
+
+# The tailwind config file.
+#
+# Optional, defaults to "tailwind.config.js" which if is not present
+# is generated for you
+tailwind-config-file = "tailwind.config.js"
 
 # Assets source dir. All files found here will be copied and synchronized to site-root.
 # The assets-dir cannot have a sub directory with the same name/path as site-pkg-dir.

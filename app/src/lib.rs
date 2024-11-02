@@ -3,8 +3,13 @@ use crate::error_template::{AppError, ErrorTemplate};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
+use routes::AppRoutes;
+use thaw::*;
 
 pub mod error_template;
+mod layout;
+mod pages;
+mod routes;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -12,10 +17,11 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
-        <Stylesheet id="leptos" href="/pkg/start-axum-workspace.css"/>
+        <Stylesheet id="leptos" href="/pkg/fediverse-kr.css"/>
+        <Link rel="icon" href="/favicon.svg"/>
 
         // sets the document title
-        <Title text="Welcome to Leptos"/>
+        <Title text="한국 연합우주 정보 사이트"/>
 
         // content for this welcome page
         <Router fallback=|| {
@@ -23,24 +29,16 @@ pub fn App() -> impl IntoView {
             outside_errors.insert_with_default_key(AppError::NotFound);
             view! { <ErrorTemplate outside_errors/> }.into_view()
         }>
-            <main>
-                <Routes>
-                    <Route path="" view=HomePage/>
-                </Routes>
-            </main>
+            <Layout class="flex flex-col">
+                <LayoutHeader class="border-gray-200 border-b-2">
+                    <crate::layout::nav::Nav />
+                </LayoutHeader>
+                <Layout>
+                    <main>
+                        <AppRoutes />
+                    </main>
+                </Layout>
+            </Layout>
         </Router>
-    }
-}
-
-/// Renders the home page of your application.
-#[component]
-fn HomePage() -> impl IntoView {
-    // Creates a reactive value to update the button
-    let (count, set_count) = create_signal(0);
-    let on_click = move |_| set_count.update(|count| *count += 1);
-
-    view! {
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: " {count}</button>
     }
 }

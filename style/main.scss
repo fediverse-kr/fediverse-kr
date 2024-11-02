@@ -1,8 +1,10 @@
+@use '../node_modules/@unocss/reset/tailwind.css';
+
+
 @use './fonts.scss';
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@tailwind variants;
+@use './component.scss';
+@use './article.scss';
+
 
 html {
 	font-family: 'NoonnuBasicGothicRegular', 'SUIT-Regular' sans-serif;

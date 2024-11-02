@@ -50,23 +50,8 @@ site-root = "target/site"
 # Defaults to pkg
 site-pkg-dir = "pkg"
 
-
-# The source style file. If it ends with _.sass_ or _.scss_ then it will be compiled by `dart-sass`
-# into CSS and processed by lightning css. When release is set, then it will also be minified.
-#
-# Optional. Env: LEPTOS_STYLE_FILE.
-style-file = "style/main.scss"
-
-# The tailwind input file.
-#
-# Optional, Activates the tailwind build
-tailwind-input-file = "style/main.scss"
-
-# The tailwind config file.
-#
-# Optional, defaults to "tailwind.config.js" which if is not present
-# is generated for you
-tailwind-config-file = "tailwind.config.js"
+# style-file = false
+watch-additional-files = ["style", "style/**/*", "uno.config.ts"]
 
 # Assets source dir. All files found here will be copied and synchronized to site-root.
 # The assets-dir cannot have a sub directory with the same name/path as site-pkg-dir.

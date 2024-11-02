@@ -3,13 +3,13 @@ use crate::error_template::{AppError, ErrorTemplate};
 use leptos::*;
 use leptos_meta::*;
 use leptos_router::*;
-use routes::AppRoutes;
 use thaw::*;
+use pages::AppRoutes;
 
 pub mod error_template;
 mod layout;
 mod pages;
-mod routes;
+mod comp;
 
 #[component]
 pub fn App() -> impl IntoView {
@@ -17,11 +17,12 @@ pub fn App() -> impl IntoView {
     provide_meta_context();
 
     view! {
-        <Stylesheet id="leptos" href="/pkg/fediverse-kr.css"/>
+        <Stylesheet href="/style.css"/>
+        <Stylesheet href="/util.css"/>
         <Link rel="icon" href="/favicon.svg"/>
 
         // sets the document title
-        <Title text="한국 연합우주 정보 사이트"/>
+        <Title text="한국 연합우주 정보 모음"/>
 
         // content for this welcome page
         <Router fallback=|| {
@@ -31,9 +32,9 @@ pub fn App() -> impl IntoView {
         }>
             <Layout class="flex flex-col">
                 <LayoutHeader class="border-gray-200 border-b-2">
-                    <crate::layout::nav::Nav />
+                    <crate::layout::nav::FkNav />
                 </LayoutHeader>
-                <Layout>
+                <Layout class="grow-1">
                     <main>
                         <AppRoutes />
                     </main>

@@ -1,0 +1,211 @@
+.mastodon-demo-scroll {
+    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-width: thin;
+}
+
+.mastodon-demo-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mastodon-demo-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mastodon-demo-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border: 2px solid #ffffff;
+    border-radius: 999px;
+}
+
+.mastodon-scenario-compose {
+    max-height: 132px;
+    overflow: hidden;
+    opacity: 1;
+    animation: mastodon-compose-collapse 420ms ease-in 1.82s forwards;
+}
+
+.mastodon-compose-typing {
+    display: inline-block;
+    width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    border-right: 1px solid #7c3aed;
+    white-space: nowrap;
+    animation:
+        mastodon-compose-type 900ms steps(10, end) 120ms forwards,
+        mastodon-compose-caret 380ms step-end 120ms 3;
+}
+
+.mastodon-compose-send-label {
+    animation: mastodon-send-label 180ms ease 1.12s forwards;
+}
+
+.mastodon-compose-spinner {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgb(255 255 255 / 45%);
+    border-top-color: #ffffff;
+    border-radius: 999px;
+    opacity: 0;
+    animation:
+        mastodon-spinner-visible 680ms ease 1.16s both,
+        mastodon-spinner-turn 520ms linear 1.16s infinite;
+}
+
+.mastodon-scenario-stage {
+    --stage-height: 100px;
+    position: relative;
+    height: 0;
+    overflow: hidden;
+}
+
+.mastodon-scenario-stage--first {
+    animation: mastodon-stage-open 420ms cubic-bezier(0.22, 1, 0.36, 1) 1.82s forwards;
+}
+
+.mastodon-scenario-stage--same {
+    --stage-height: 116px;
+    animation: mastodon-stage-open 420ms cubic-bezier(0.22, 1, 0.36, 1) 4.02s forwards;
+}
+
+.mastodon-scenario-stage--remote {
+    animation: mastodon-stage-open 420ms cubic-bezier(0.22, 1, 0.36, 1) 6.55s forwards;
+}
+
+.mastodon-scenario-cue,
+.mastodon-scenario-post {
+    position: absolute;
+    inset: 0;
+}
+
+.mastodon-scenario-cue {
+    display: grid;
+    margin: 0;
+    place-items: center;
+    color: #64748b;
+    font-size: 1rem;
+    font-weight: 850;
+    letter-spacing: -0.025em;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.mastodon-scenario-cue--same {
+    animation: mastodon-same-server-cue 1.4s ease 4.02s both;
+}
+
+.mastodon-scenario-cue--remote {
+    animation: mastodon-remote-server-cue 1.35s cubic-bezier(0.16, 1, 0.3, 1) 6.55s both;
+}
+
+.mastodon-scenario-post {
+    opacity: 0;
+}
+
+.mastodon-scenario-post--first {
+    transform: translateY(-6px);
+    animation: mastodon-post-fade-in 480ms cubic-bezier(0.22, 1, 0.36, 1) 2.05s forwards;
+}
+
+.mastodon-scenario-post--fade {
+    transform: translateY(-6px);
+    animation: mastodon-post-fade-in 520ms cubic-bezier(0.22, 1, 0.36, 1) 5.12s forwards;
+}
+
+.mastodon-scenario-post--fly {
+    transform: translateX(72px);
+    animation: mastodon-post-fly-in 680ms cubic-bezier(0.16, 1, 0.3, 1) 7.67s forwards;
+}
+
+@keyframes mastodon-compose-type {
+    to {
+        width: 10.5em;
+    }
+}
+
+@keyframes mastodon-compose-caret {
+    50% {
+        border-right-color: transparent;
+    }
+}
+
+@keyframes mastodon-send-label {
+    to {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+@keyframes mastodon-spinner-visible {
+    0%, 100% {
+        opacity: 0;
+    }
+
+    15%, 80% {
+        opacity: 1;
+    }
+}
+
+@keyframes mastodon-spinner-turn {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes mastodon-compose-collapse {
+    to {
+        max-height: 0;
+        opacity: 0;
+    }
+}
+
+@keyframes mastodon-stage-open {
+    to {
+        height: var(--stage-height);
+    }
+}
+
+@keyframes mastodon-same-server-cue {
+    0%, 100% {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    18%, 64% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes mastodon-remote-server-cue {
+    0% {
+        opacity: 0;
+        transform: translateX(90px);
+    }
+
+    24%, 68% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-36px);
+    }
+}
+
+@keyframes mastodon-post-fade-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes mastodon-post-fly-in {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

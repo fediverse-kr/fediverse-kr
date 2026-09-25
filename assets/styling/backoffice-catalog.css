@@ -1,0 +1,115 @@
+/* Directory administration only; public editors retain their existing layout. */
+.directory-workflow {
+  min-width: 0;
+  font-size: 16px;
+  line-height: 1.7;
+}
+.directory-workflow > .membership-card,
+.directory-workflow > .membership-notice {
+  margin-block: 0 28px;
+}
+.directory-workflow .membership-card {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: none;
+  overflow-wrap: anywhere;
+}
+.directory-workflow .membership-card h2 {
+  font-size: 23px;
+  line-height: 1.4;
+  letter-spacing: -.025em;
+  overflow-wrap: anywhere;
+}
+.directory-workflow :is(p, label, input, textarea, select, button, .text-link, .membership-hint, .catalog-kinds legend) {
+  font-size: 16px;
+}
+.directory-workflow :is(p, a, dd, strong, label) {
+  overflow-wrap: anywhere;
+}
+.directory-workflow :is(input, textarea, select, fieldset) {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+.directory-workflow .membership-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-block: 20px;
+}
+.directory-workflow .membership-actions > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.directory-workflow :is(button, .primary-button, .secondary-button) {
+  min-height: 44px;
+  white-space: normal;
+  line-height: 1.5;
+  text-align: center;
+}
+.directory-workflow .moderation-list {
+  gap: 0;
+  margin-block: 12px 24px;
+  border-top: 1px solid var(--line);
+}
+.directory-workflow .moderation-list > .membership-card {
+  padding: 22px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+.directory-workflow .moderation-list h2 { margin: 0 0 8px; }
+.directory-workflow .moderation-list p { margin-block: 6px; }
+.directory-workflow .directory-results {
+  margin-block: 24px 12px;
+  color: var(--muted);
+}
+.directory-workflow .directory-status { font-weight: 650; }
+.directory-workflow .directory-kicker {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.directory-workflow .directory-current { background: var(--wash); }
+.directory-workflow .directory-danger {
+  border-color: #d4a7ae;
+  background: #fff6f7;
+}
+.directory-workflow .directory-danger .directory-kicker { color: #8d283b; }
+.directory-workflow .catalog-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+.catalog-subnav > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 4px;
+  border-bottom: 3px solid transparent;
+  text-decoration: none;
+}
+.catalog-subnav > a[aria-current="page"] {
+  border-bottom-color: var(--accent);
+  font-weight: 750;
+}
+.directory-workflow .moderation-confirm { margin-block: 24px; }
+.directory-workflow .admin-site-facts { grid-template-columns: minmax(100px, 1fr) minmax(0, 3fr); }
+.directory-workflow .moderation-pagination { flex-direction: row; }
+@media (max-width: 520px) {
+  .directory-workflow .membership-card { padding: 18px 16px; }
+  .directory-workflow .moderation-list > .membership-card { padding-inline: 0; }
+  .directory-workflow .membership-actions { align-items: stretch; flex-direction: column; }
+  .directory-workflow .membership-actions > * { width: 100%; box-sizing: border-box; }
+  .directory-workflow .membership-actions > span { text-align: center; }
+  .directory-workflow .moderation-pagination { flex-direction: row; }
+  .directory-workflow .moderation-pagination > * { width: auto; }
+  .directory-workflow .admin-site-facts { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .directory-workflow .admin-site-facts dd { margin-bottom: 12px; }
+}

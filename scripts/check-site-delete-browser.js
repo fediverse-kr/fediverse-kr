@@ -1,0 +1,65 @@
+// Run with member-browser-fixture.ps1 -IncludeSite -IncludeCommunity -IncludeModeration -IncludeHealth
+// and a fresh .local/browser-state.json. No server or browser is started here.
+async page => {
+  const base='http://127.0.0.1:12239',ctx=page.context(),req=ctx.request,checks=[],errors=[];
+  let deleteRequests=0;
+  page.on('request',r=>{if(r.url().endsWith('/api/member/moderation/site/delete')&&r.method()==='POST')deleteRequests++;});
+  page.on('pageerror',e=>errors.push(e.message));
+  const check=(name,ok)=>{if(!ok)throw Error(name);checks.push(name);};
+  const me=await(await req.get(base+'/api/member/session')).json();
+  if(me.member?.display_name!=='Browser test fixture')throw Error('Synthetic fixture required');
+  const domain='browser-'+me.member.id+'.example.org';
+  const list=await(await req.get(base+'/api/member/moderation/sites?query='+domain+'&status=all&sort=domain&page=0')).json();
+  const site=list.sites?.find(s=>s.domain===domain);if(!site)throw Error('Synthetic site missing');
+  const id=site.id,detail=base+'/account/moderation/sites/'+id;
+  const reports=await(await req.get(base+'/api/member/moderation/reports?status=all&page=0')).json();
+  const report=reports.reports?.find(r=>r.domain===domain&&r.reporter_name==='Browser test fixture');
+  if(!report)throw Error('Synthetic report missing');
+  const reportBefore=await(await req.get(base+'/api/member/moderation/report?id='+report.id)).json();
+  check('report fixture has evidence',reportBefore.summary.id===report.id&&reportBefore.comment?.id&&reportBefore.evidence?.body==='Community fixture question');
+  const impact=await(await req.get(base+'/api/member/moderation/site/delete-impact?id='+id)).json();
+  check('delete impact has isolated site',impact.site.domain===domain&&impact.comments>0&&impact.reports===1&&impact.health_checks>0);
+  const anon=await ctx.browser().newContext();
+  const anonImpact=await anon.request.get(base+'/api/member/moderation/site/delete-impact?id='+id);
+  check('anonymous impact denied',anonImpact.status()===401&&anonImpact.headers()['cache-control'].includes('no-store'));
+  const deletePayload={request:{id,revision:site.revision,domain,note:'승인 전 검증',confirmed:false}};
+  check('anonymous delete denied',(await anon.request.post(base+'/api/member/moderation/site/delete',{headers:{origin:base},data:deletePayload})).status()===401);
+  check('delete origin denied',(await req.post(base+'/api/member/moderation/site/delete',{headers:{origin:'https://evil.example'},data:deletePayload})).status()===403);
+  check('delete body bounded',(await req.post(base+'/api/member/moderation/site/delete',{headers:{origin:base},data:{padding:'x'.repeat(8193)}})).status()===413);
+  check('unchecked delete rejected',(await req.post(base+'/api/member/moderation/site/delete',{headers:{origin:base},data:deletePayload})).status()===400);
+  await anon.close();
+  await page.goto(detail);await page.waitForFunction(()=>document.querySelector('.portal-root')?.dataset.ready==='true');
+  const firstAria=await page.locator('main').ariaSnapshot();check('site detail aria snapshot',firstAria.includes('서버 상태와 조치'));
+  await page.getByRole('button',{name:'서버 삭제',exact:true}).click();
+  await page.getByText('삭제 대상: '+domain,{exact:true}).waitFor();
+  const deleteAria=await page.locator('main').ariaSnapshot();check('delete form aria snapshot',deleteAria.includes('삭제 사유')&&deleteAria.includes('확인하고 서버 삭제'));
+  check('confirmation renders the actual domain',await page.getByText('계속하려면 도메인 '+domain+'을(를) 입력하세요.',{exact:true}).count()===1&&!deleteAria.includes('{value.site.domain}'));
+  check('delete explanation preserves reports',await page.getByText(/신고와 증거 자료는 보존됩니다/).count()===1);
+  check('checkbox compact',await page.getByLabel('삭제 대상과 복구할 수 없음을 확인했습니다.',{exact:true}).evaluate(el=>Math.abs(el.getBoundingClientRect().width-20)<=1));
+  await page.getByLabel('도메인 확인',{exact:true}).fill(domain);await page.getByLabel('삭제 사유',{exact:true}).fill('브라우저 삭제 검증');
+  await page.getByLabel('삭제 대상과 복구할 수 없음을 확인했습니다.',{exact:true}).check();
+  await page.getByLabel('삭제 사유',{exact:true}).fill('');await page.getByRole('button',{name:'확인하고 서버 삭제',exact:true}).click();
+  check('empty reason is blocked by native required field',await page.getByLabel('삭제 사유',{exact:true}).evaluate(el=>el.validity.valueMissing));
+  check('empty reason made no delete request',deleteRequests===0);
+  check('site remains after blocked delete',(await req.get(base+'/api/member/moderation/site?id='+id)).status()===200);
+  await page.getByLabel('삭제 사유',{exact:true}).fill('브라우저 삭제 검증');
+  await page.getByRole('button',{name:'취소',exact:true}).click();
+  check('cancel hides destructive form',await page.getByLabel('도메인 확인',{exact:true}).count()===0);
+  await page.getByRole('button',{name:'서버 삭제',exact:true}).click();await page.getByText('삭제 대상: '+domain,{exact:true}).waitFor();
+  check('cancel clears confirmation',!(await page.getByLabel('삭제 대상과 복구할 수 없음을 확인했습니다.',{exact:true}).isChecked()));
+  await page.getByLabel('도메인 확인',{exact:true}).fill(domain);await page.getByLabel('삭제 사유',{exact:true}).fill('브라우저 삭제 검증');
+  await page.getByRole('button',{name:'확인하고 서버 삭제',exact:true}).click();
+  await page.getByRole('alert').filter({hasText:'삭제 내용을 확인했다는 체크가 필요합니다.'}).waitFor();
+  check('unchecked UI made no delete request',deleteRequests===0);
+  for(const width of [1440,390,320]){await page.setViewportSize({width,height:width===1440?1000:844});check('open form fits '+width,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await page.screenshot({path:`output/playwright/site-delete-${width}.png`,fullPage:true});}
+  await page.getByLabel('도메인 확인',{exact:true}).fill(domain);await page.getByLabel('삭제 사유',{exact:true}).fill('브라우저 삭제 검증');
+  await page.getByLabel('삭제 대상과 복구할 수 없음을 확인했습니다.',{exact:true}).check();
+  const response=page.waitForResponse(r=>r.url().endsWith('/api/member/moderation/site/delete')&&r.request().method()==='POST');
+  await page.getByRole('button',{name:'확인하고 서버 삭제',exact:true}).click();check('delete request succeeds',(await response).status()===200);
+  await page.getByRole('heading',{name:'서버가 삭제되었습니다',exact:true}).waitFor();
+  check('deleted site detail is gone',(await req.get(base+'/api/member/moderation/site?id='+id)).status()===404);
+  const reportAfter=await(await req.get(base+'/api/member/moderation/report?id='+report.id)).json();
+  check('report UUID and evidence survive site deletion',reportAfter.summary.id===report.id&&reportAfter.comment===null&&reportAfter.evidence?.body==='Community fixture question');
+  check('runtime exceptions absent',errors.length===0);
+  return {passed:checks.length,runtimeErrors:errors.length,checks};
+}

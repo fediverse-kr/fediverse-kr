@@ -1,0 +1,6 @@
+/* Keep the first release light-only. Dark mode can opt in later with data-theme="dark". */
+:root {
+  color-scheme: light;
+  --dark: ;
+  --light: initial;
+}

@@ -1,0 +1,118 @@
+.worker-monitor,
+.profile-maintenance {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+.worker-snapshot-note {
+  margin: 0;
+}
+
+.operations-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.operations-subnav > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 4px;
+  border-bottom: 3px solid transparent;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.operations-subnav > a[aria-current="page"] {
+  border-bottom-color: var(--accent);
+  font-weight: 750;
+}
+
+.worker-summary dl.backoffice-operation-facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+}
+
+.worker-summary .backoffice-operation-facts dt { font-size: 16px; }
+.worker-summary .worker-time-fact dd { font-size: 16px; overflow-wrap: anywhere; }
+
+@media (max-width: 520px) {
+  .worker-summary dl.backoffice-operation-facts { grid-template-columns: minmax(0, 1fr); }
+  .worker-summary .worker-time-fact { display: block; }
+}
+
+.worker-refresh {
+  justify-self: start;
+}
+
+.worker-summary,
+.worker-issues,
+.profile-maintenance {
+  min-width: 0;
+}
+
+.worker-summary > h2,
+.worker-issues > h2,
+.profile-maintenance > h2 {
+  margin-top: 0;
+}
+
+.worker-issue-count {
+  margin: 0;
+  color: var(--ink-light, #5d5664);
+  font-size: 0.9375rem;
+}
+
+.worker-issue-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.worker-issue-list > li {
+  min-width: 0;
+  padding: 16px;
+  border-left: 3px solid var(--purple, #7050aa);
+  background: var(--cream-dark, #f6f0e8);
+}
+
+.worker-domain {
+  overflow-wrap: anywhere;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.worker-issue-meta {
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-maintenance-scope {
+  margin: 0;
+  font-weight: 650;
+}
+
+.profile-maintenance progress {
+  width: min(100%, 38rem);
+  min-height: 1rem;
+}
+
+@media (max-width: 640px) {
+  .worker-issue-list > li {
+    padding: 14px;
+  }
+
+  .worker-refresh {
+    width: 100%;
+  }
+
+  .profile-maintenance .owner-checkbox {
+    align-items: flex-start;
+  }
+}

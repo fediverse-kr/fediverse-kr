@@ -1,0 +1,25 @@
+# Runtime-only context: provide the already-built Linux `server` executable and
+# matching `public/` directory as the build context. No source build occurs here.
+# The verified Linux nonroot image is pinned by digest.  The release context
+# validates that the server ELF and notice profile have the same Linux target.
+FROM gcr.io/distroless/cc-debian13:nonroot@sha256:54df941ed0d06a1bd95ef5e0ce391fd8d9f94b64782dc9a60062727849ee3f97
+
+WORKDIR /app
+
+# The release binary requires `public/index.html` beside it at startup.
+COPY --chown=65532:65532 server /app/server
+COPY --chown=65532:65532 public /app/public
+
+USER 65532:65532
+
+# Dioxus reads these runtime defaults. Empty configured-service values make the
+# existing configuration validation fail closed until the runtime overrides both.
+ENV IP=0.0.0.0
+ENV PORT=8080
+ENV FEDKR_DATABASE_URL=""
+ENV FEDKR_PUBLIC_ORIGIN=""
+
+EXPOSE 8080
+
+# Exec form makes the application PID 1, so its existing SIGTERM drain runs.
+ENTRYPOINT ["/app/server"]

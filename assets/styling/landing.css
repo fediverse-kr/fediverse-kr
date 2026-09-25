@@ -1,0 +1,97 @@
+/* The headline and the independently browsable social scenes share no state. */
+.landing-hero { display: grid; grid-template-columns: minmax(300px, .9fr) minmax(0, 2fr); align-items: center; gap: 46px; padding-block: 72px 64px; }
+.landing-copy { min-width: 0; padding-bottom: 40px; }
+.headline-rotation { position: relative; }
+.landing-headline { display: grid; font-size: clamp(36px, 3.45vw, 52px); font-weight: 760; line-height: 1.5; letter-spacing: -.055em; text-wrap: nowrap; }
+.headline-frame { display: block; grid-area: 1 / 1; min-width: 0; }
+.headline-line { display: block; }
+.headline-outgoing { pointer-events: none; animation: headline-leave var(--headline-fade-duration) ease-in-out both; }
+.headline-current[data-entering=true] { animation: headline-enter var(--headline-fade-duration) ease-in-out both; }
+@keyframes headline-leave { 0% { opacity: 1; } 45%, 100% { opacity: 0; } }
+@keyframes headline-enter { 0%, 35% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: none; } }
+.landing-headline .headline-accent { color: #6253c6; }
+.landing-copy > p { margin-top: 28px; color: var(--muted); font-size: 15px; line-height: 1.85; word-break: keep-all; }
+.landing-copy > p > span { display: inline-block; }
+.landing-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px; margin-top: 20px; }
+.landing-learn-link { margin-top: 0; }
+.landing-join-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-size: 14px; font-weight: 650; text-decoration: underline; text-decoration-color: #b9b0e4; text-underline-offset: 5px; }
+.landing-join-link:hover { color: #40368c; text-decoration-color: currentColor; }
+.landing-stats { padding: 42px 0 24px; border-top: 1px solid var(--line); }
+.landing-definition { max-width: 1120px; margin: 0 auto 38px; text-align: center; }
+.landing-definition-title { margin: 0; font-size: clamp(28px, 2.85vw, 40px); font-weight: 720; line-height: 1.38; letter-spacing: -.045em; text-wrap: balance; word-break: keep-all; overflow-wrap: anywhere; }
+.landing-definition p { margin: 14px 0 0; color: var(--muted); font-size: 16px; line-height: 1.7; word-break: keep-all; }
+.landing-stat-values { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 640px; margin: 0 auto; text-align: center; }
+.landing-stat-values > div { min-width: 0; }
+.landing-stat-values > div + div { border-left: 1px solid var(--line); }
+.landing-stat-values dt { color: var(--muted); font-size: 13px; line-height: 1.5; }
+.landing-stat-values dd { margin: 6px 0 0; font-size: clamp(30px, 3vw, 40px); font-weight: 650; line-height: 1.2; letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+.landing-stat-values dd span { margin-left: 5px; color: var(--muted); font-size: 14px; font-weight: 450; letter-spacing: 0; }
+.landing-stat-source { margin-top: 12px; color: var(--muted); text-align: center; font-size: 11px; line-height: 1.5; }
+.landing-stat-source a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.landing-demo { min-width: 0; }
+.landing-windows { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.landing-windows { opacity: 1; transition: opacity var(--scene-fade-in) ease; }
+.landing-demo[data-scene-transition=out] .landing-windows { opacity: 0; transition-duration: var(--scene-fade-out); pointer-events: none; }
+.landing-demo[data-scene-transition=in] .landing-windows { pointer-events: none; }
+/* Both copies hold their border through the receipt beat, without implying travel direction. */
+.landing-demo-controls { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 16px; }
+.landing-scene-name { display: flex; align-items: center; gap: 12px; font-size: 12px; color: #747180; }
+.scene-count { color: #96929e; font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 11px; }
+.landing-playback { display: flex; align-items: center; gap: 4px; }
+.landing-playback button { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; }
+.landing-playback button:hover { background: #f0edf9; color: #6253c6; }
+.landing-site-switch { display: none; }
+.landing-demo[data-paused=true] * { animation-play-state: paused !important; }
+.landing-demo[data-scene-transition=in] .landing-windows * { animation-play-state: paused !important; }
+.landing-step { display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 54px; padding-block: 12px 8px; }
+.landing-step-count { color: #96929e; font-size: 10px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.landing-step p { margin: 0; color: #575261; font-size: 14px; line-height: 1.6; word-break: keep-all; animation: caption-appear .3s ease-out both; }
+.landing-timeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.timeline-segment { display: flex; align-items: center; min-width: 0; min-height: 32px; padding: 0; border-radius: 5px; }
+.timeline-track { display: block; width: 100%; height: 4px; background: #eae7ef; border-radius: 3px; overflow: hidden; }
+.timeline-segment:not(:disabled):hover .timeline-track { background: #d8d1e7; }
+.timeline-track > span { display: block; height: 100%; background: #7965c9; transition: width 100ms linear; }
+.landing-demo[data-tick="0"] .timeline-track > span { transition: none; }
+/* Sogon is a fictional card-based client, not a recolored copy of Moa's list UI. */
+/* Bitdam: a photo-first client. Yeobaek: a publication, not another timeline skin. */
+/* Click cues stay anchored to controls; federation receipts use borders only. */
+/* Each client has its own primary writing entry and navigation footprint. */
+@media (max-width: 1150px) {
+  .landing-hero { grid-template-columns: minmax(260px, .85fr) minmax(0, 2fr); gap: 26px; }
+  .landing-headline { font-size: 36px; }
+}
+@media (max-width: 1000px) {
+  .landing-hero { grid-template-columns: 1fr; gap: 32px; padding-block: 42px 38px; }
+  .landing-copy { padding-bottom: 0; }
+  .landing-headline { font-size: 46px; line-height: 1.42; }
+  .landing-copy > p { margin-top: 18px; }
+}
+@media (max-width: 600px) {
+  .landing-stats { padding: 30px 0 20px; }
+  .landing-definition { margin-bottom: 30px; }
+  .landing-definition-title { font-size: clamp(25px, 7vw, 32px); line-height: 1.42; }
+  .landing-definition p { margin-top: 12px; font-size: 14px; }
+  .timeline-segment { min-height: 44px; }
+  .landing-hero { padding-block: 32px; gap: 28px; }
+  .landing-headline { font-size: clamp(29px, 8.2vw, 44px); line-height: 1.48; }
+  .landing-copy > p { font-size: 13px; margin-top: 18px; }
+  .landing-actions { align-items: flex-start; flex-direction: column; gap: 0; }
+  .landing-join-link { font-size: 14px; }
+  .landing-windows { grid-template-columns: minmax(0, 1fr); }
+  /* Both clients keep their layout and animation clocks. Only their visibility
+     changes, so the outgoing window can fade without collapsing the stage. */
+  .landing-site-switch { display: flex; gap: 17px; margin-bottom: 12px; }
+  .landing-site-switch button { min-height: 36px; padding: 0 0 3px; color: #96909f; font-size: 13px; border-bottom: 2px solid transparent; }
+  .landing-site-switch button[aria-pressed=true] { color: #56505f; border-bottom-color: #8d80c7; font-weight: 650; }
+  .landing-scene-name { gap: 7px; font-size: 11px; }
+  .landing-playback { gap: 0; }
+  .landing-playback button { width: 32px; }
+  .landing-demo-controls { gap: 4px; padding-top: 11px; }
+  .landing-step { justify-content: flex-start; min-height: 64px; }
+  .landing-step p { font-size: 13px; }
+}
+@media (max-width: 600px) {
+  .landing-windows > .social-window { grid-area: 1 / 1; height: 600px; opacity: 1; visibility: visible; transition: opacity 450ms ease 150ms, visibility 0s; }
+  .landing-windows > .social-window[data-visible=false] { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 250ms ease, visibility 0s linear 250ms; }
+  .landing-windows > .social-window[data-visible=true] { z-index: 1; }
+}

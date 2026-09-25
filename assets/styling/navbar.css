@@ -1,0 +1,17 @@
+.nav-link {
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.nav-link:hover {
+  color: #6d28d9;
+}
+
+.nav-link:focus-visible {
+  border-radius: 0.25rem;
+  outline: 2px solid #8b5cf6;
+  outline-offset: 4px;
+}

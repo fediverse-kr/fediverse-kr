@@ -1,0 +1,7 @@
+# Upstream notice checksums describe exact bytes, including line endings.
+docs/licenses/upstream/*.txt -text
+docs/licenses/assets/*.txt -text
+docs/licenses/tools/*.txt -text
+docs/licenses/tools/*.rst -text
+docs/icon-pack-notices.md -text
+assets/fonts/OFL.txt -text

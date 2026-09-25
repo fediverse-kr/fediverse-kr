@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="title desc">
+  <title id="title">fediverse.kr shared orbit</title>
+  <desc id="desc">Two upright violet stars overlap within one continuous tilted lilac orbit.</desc>
+  <ellipse cx="60" cy="60" rx="54" ry="19" fill="none" stroke="#AA94E8" stroke-linecap="round" stroke-width="8" transform="rotate(-26 60 60)"/>
+  <path d="M68 14C72 31 78 38 99 44C79 49 72 57 68 79C64 57 57 50 36 44C57 38 64 31 68 14Z" fill="#A685FF"/>
+  <path d="M51 31C55 48 62 55 83 61C62 67 55 75 51 97C47 75 40 68 18 61C40 55 47 48 51 31Z" fill="#5145A6"/>
+</svg>

@@ -1,0 +1,924 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "name": "async-stream-impl",
+      "version": "0.3.6",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/async-stream-LICENSE.txt",
+          "sha256": "157d381f6304eba77459fc10dfb5b1b22fc0d04e384a32865f32d8e67a34c0eb",
+          "source": "https://raw.githubusercontent.com/tokio-rs/async-stream/b0b2f22df8e87b7fed7b2fa234509797adbff7db/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "async-stream",
+      "version": "0.3.6",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/async-stream-LICENSE.txt",
+          "sha256": "157d381f6304eba77459fc10dfb5b1b22fc0d04e384a32865f32d8e67a34c0eb",
+          "source": "https://raw.githubusercontent.com/tokio-rs/async-stream/b0b2f22df8e87b7fed7b2fa234509797adbff7db/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "comrak",
+      "version": "0.54.0",
+      "license": "BSD-2-Clause",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/comrak-0.54.0-COPYING.txt",
+          "sha256": "27293e2353ce5d83e07331ffc423051908b062787d148193b8927d50d9873bd5",
+          "source": "https://raw.githubusercontent.com/kivikakk/comrak/172c2ee7d2c5c262a28be3e407aadf705daea2b7/COPYING"
+        }
+      ]
+    },
+    {
+      "name": "const-serialize-macro",
+      "version": "0.7.2",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/ca585c35ee187f89444a7293e5eac7fd7115464b/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "const-serialize-macro",
+      "version": "0.8.0-alpha.1",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/5fb7e6e1ca748a0901bd536388c7eb567e560b74/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "const-serialize",
+      "version": "0.7.2",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/ca585c35ee187f89444a7293e5eac7fd7115464b/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "const-serialize",
+      "version": "0.8.0-alpha.0",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/58eea846b9bae32b20cc77a17192e28e7b07fa29/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "content_disposition",
+      "version": "0.4.0",
+      "license": "MIT",
+      "evidence": "license-declaration",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/content_disposition-0.4.0-Cargo.toml.txt",
+          "sha256": "0fd4c75e498aed921bba0fb9a7de718d03a9d732e63afd2e37b4be4de4d55ead",
+          "source": "https://docs.rs/crate/content_disposition/0.4.0/source/Cargo.toml"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-asset-resolver",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-attributes",
+      "version": "0.1.0",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/components/bf007c15d0cf4d04d3181cc46cf12325aa773955/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-cli-config",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-config-macro",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-config-macros",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-core-macro",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-core-types",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-core",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-devtools-types",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-devtools",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-document",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-free-icons",
+      "version": "0.10.0",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-free-icons-LICENSE.txt",
+          "sha256": "e1f16d5e2882566b8df38957f853cd2e170a6993c7aa19688b6d8232a465ccbf",
+          "source": "https://raw.githubusercontent.com/dioxus-community/dioxus-free-icons/65821a8605654e5212449863c9f78bd56dbab824/packages/lib/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-fullstack-core",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-fullstack-macro",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-fullstack",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-history",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-hooks",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-html-internal-macro",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-html",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-icons",
+      "version": "0.1.0",
+      "license": "ISC",
+      "files": [
+        {
+          "path": "docs/licenses/assets/lucide-icons.ISC-MIT.txt",
+          "sha256": "b495047bd93a9b06913511076f504daba17d5bbeb3e0650f3bb53a4220329c57",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus-icons/103fe30e2dd763da8a82d493f2d38f4096c63a02/crates/dioxus-icons/LICENSE-LUCIDE"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-interpreter-js",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-logger",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-primitives",
+      "version": "0.0.1",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/components/bf007c15d0cf4d04d3181cc46cf12325aa773955/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-router-macro",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-router",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-rsx",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-sdk-time",
+      "version": "0.7.0",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/sdk/694399608b0bc53e3f3e2c58e75669d97a63cc76/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-server",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-signals",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-ssr",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-stores-macro",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-stores",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus-web",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "dioxus",
+      "version": "0.7.9",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/bfcc111817b03c5f737374037eabef8eb6795e46/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "finl_unicode",
+      "version": "1.4.0",
+      "license": "Unicode-DFS-2016",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/finl_unicode-1.4.0-LICENSE-UNICODE.txt",
+          "sha256": "361d7912957842f2ce61c774b14afba41ae91df84882982e6f7e749e01c07c91",
+          "source": "https://raw.githubusercontent.com/dahosek/finl_unicode/55df3ae881916774bc375a7a07cff206e73430a6/LICENSE-UNICODE"
+        }
+      ]
+    },
+    {
+      "name": "generational-box",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "gloo-net",
+      "version": "0.6.0",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/gloo-LICENSE-MIT.txt",
+          "sha256": "5a6f5443ea473f130adbdcf84254761d1292bc79759b5253915d4b5e7afbef66",
+          "source": "https://raw.githubusercontent.com/rustwasm/gloo/40c6daa612a90a138ba3e3d70804fcbc5ad4911e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "gloo-timers",
+      "version": "0.3.0",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/gloo-LICENSE-MIT.txt",
+          "sha256": "5a6f5443ea473f130adbdcf84254761d1292bc79759b5253915d4b5e7afbef66",
+          "source": "https://raw.githubusercontent.com/rustwasm/gloo/f3bb1d1a1c33dbcccaf26446aca7d0cea8e9d574/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "gloo-utils",
+      "version": "0.2.0",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/gloo-LICENSE-MIT.txt",
+          "sha256": "5a6f5443ea473f130adbdcf84254761d1292bc79759b5253915d4b5e7afbef66",
+          "source": "https://raw.githubusercontent.com/rustwasm/gloo/f3bb1d1a1c33dbcccaf26446aca7d0cea8e9d574/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "lazy-js-bundle",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "libm",
+      "version": "0.2.16",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/libm-LICENSE.txt",
+          "sha256": "3823dda7cf046602f4b4e77ec8e227863dc4736037cc85bb33d9f19febe16bb7",
+          "source": "https://raw.githubusercontent.com/rust-lang/compiler-builtins/dfd2203a4d6110820ad7bb65cafe1bf331a03a3d/libm/LICENSE.txt"
+        }
+      ]
+    },
+    {
+      "name": "lucide-dioxus",
+      "version": "3.26.0",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/lucide-LICENSE.md.txt",
+          "sha256": "ce8b360c385a8b1a5bca63dccfffb14776b67131eddbf9f4a49cd702ffee2354",
+          "source": "https://raw.githubusercontent.com/RustForWeb/lucide/faaf58845b37f06af77bde4e12790a5afb032a7c/LICENSE.md"
+        }
+      ]
+    },
+    {
+      "name": "mac",
+      "version": "0.1.1",
+      "license": "MIT",
+      "evidence": "license-declaration",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/mac-0.1.1-Cargo.toml.txt",
+          "sha256": "6d465c5e5a4b3e197049e9fb7393b2f996c1c654e6ded700afce046fac2f7969",
+          "source": "https://docs.rs/crate/mac/0.1.1/source/Cargo.toml"
+        }
+      ]
+    },
+    {
+      "name": "manganis-core",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "manganis-macro",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "manganis",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "match_token",
+      "version": "0.35.0",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/match-token-LICENSE-MIT.txt",
+          "sha256": "86dd7f026f916daf7511e39951ad8ea8cf55a8db67ae64060dacf829761c18f3",
+          "source": "https://raw.githubusercontent.com/servo/html5ever/6db7bbf1c4dfaecd28731950d427e40c8b911bef/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "moka",
+      "version": "0.12.16",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/moka-0.12.16-NOTICE.txt",
+          "sha256": "f6d3f84b39d597c19748c6b50a04abe1634edb3c0b15392daa217ec44119f652",
+          "source": "https://raw.githubusercontent.com/moka-rs/moka/a616ec19e8d4ed938caf8b2c88090331d778d5da/NOTICE"
+        }
+      ]
+    },
+    {
+      "name": "opendal-core",
+      "version": "0.59.1",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/opendal-0.59.1-NOTICE.txt",
+          "sha256": "1b0d18c41da0353bcdc75564e11a26a2fbe86c4c7a426ce17e331b66f1066816",
+          "source": "https://raw.githubusercontent.com/apache/opendal/dcdd66091828a6a2a6f0981a0a84024d11ff2413/NOTICE"
+        }
+      ]
+    },
+    {
+      "name": "opendal-service-fs",
+      "version": "0.59.1",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/opendal-0.59.1-NOTICE.txt",
+          "sha256": "1b0d18c41da0353bcdc75564e11a26a2fbe86c4c7a426ce17e331b66f1066816",
+          "source": "https://raw.githubusercontent.com/apache/opendal/dcdd66091828a6a2a6f0981a0a84024d11ff2413/NOTICE"
+        }
+      ]
+    },
+    {
+      "name": "opendal",
+      "version": "0.59.1",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/opendal-0.59.1-NOTICE.txt",
+          "sha256": "1b0d18c41da0353bcdc75564e11a26a2fbe86c4c7a426ce17e331b66f1066816",
+          "source": "https://raw.githubusercontent.com/apache/opendal/dcdd66091828a6a2a6f0981a0a84024d11ff2413/NOTICE"
+        }
+      ]
+    },
+    {
+      "name": "palette_math",
+      "version": "0.7.7",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/palette-math-LICENSE_MIT.txt",
+          "sha256": "be1313a4b07ab509c80083966cdd209a7d81d75cd57fcea24441fc9041ccf184",
+          "source": "https://raw.githubusercontent.com/Ogeon/palette/0a516fed5e94c9ef4b12469410c1981fa6ba7d06/palette_math/LICENSE_MIT"
+        }
+      ]
+    },
+    {
+      "name": "ryu",
+      "version": "1.0.23",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/ryu-1.0.23-LICENSE-APACHE.txt",
+          "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a",
+          "source": "https://raw.githubusercontent.com/dtolnay/ryu/f0b52bb194befe6fd242154f2182fafd43a819b8/LICENSE-APACHE"
+        }
+      ]
+    },
+    {
+      "name": "siphasher",
+      "version": "1.0.3",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/siphasher-COPYING.txt",
+          "sha256": "c962ee4d1d05ddc138b202b2540219ebc57893fcf97b364852094a9a94ce1365",
+          "source": "https://raw.githubusercontent.com/jedisct1/rust-siphash/451f67d73a772cba325728109bbfa247750ed076/COPYING"
+        }
+      ]
+    },
+    {
+      "name": "sledgehammer_bindgen_macro",
+      "version": "0.6.5",
+      "license": "MIT",
+      "evidence": "license-declaration",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/sledgehammer_bindgen_macro-0.6.5-Cargo.toml.txt",
+          "sha256": "01e116d5dc57215b3a86ad24811cca0370f044bd700ca7791029d2aa1944bcf3",
+          "source": "https://docs.rs/crate/sledgehammer_bindgen_macro/0.6.5/source/Cargo.toml"
+        }
+      ]
+    },
+    {
+      "name": "sledgehammer_bindgen",
+      "version": "0.6.0",
+      "license": "MIT",
+      "evidence": "license-declaration",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/sledgehammer_bindgen-0.6.0-Cargo.toml.txt",
+          "sha256": "d12498ae20ac1f4f1a830e2ebd3598e1402c94a338b9850ab2c3652a7b6dc68e",
+          "source": "https://docs.rs/crate/sledgehammer_bindgen/0.6.0/source/Cargo.toml"
+        }
+      ]
+    },
+    {
+      "name": "sledgehammer_utils",
+      "version": "0.3.1",
+      "license": "MIT",
+      "evidence": "license-declaration",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/sledgehammer_utils-0.3.1-Cargo.toml.txt",
+          "sha256": "aaeef94765c32b80bdb2175417cc65bdfdbe9cb84c6dc50eac5895473ef8ae0b",
+          "source": "https://docs.rs/crate/sledgehammer_utils/0.3.1/source/Cargo.toml"
+        }
+      ]
+    },
+    {
+      "name": "subsecond-types",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "subsecond",
+      "version": "0.7.10",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/dioxus-LICENSE-MIT.txt",
+          "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+          "source": "https://raw.githubusercontent.com/DioxusLabs/dioxus/57d6794ad60b949e5bd8aa282f6f8c3dc97a365e/LICENSE-MIT"
+        }
+      ]
+    },
+    {
+      "name": "sync_wrapper",
+      "version": "1.0.2",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/sync_wrapper-1.0.2-LICENSE.txt",
+          "sha256": "0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594",
+          "source": "https://raw.githubusercontent.com/Actyx/sync_wrapper/55413956c36aeab47feb8c04d1b7a044d6df336a/LICENSE"
+        }
+      ]
+    },
+    {
+      "name": "warnings-macro",
+      "version": "0.2.0",
+      "license": "MIT",
+      "evidence": "license-declaration",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/warnings-macro-0.2.0-Cargo.toml.txt",
+          "sha256": "bf9a1afe0de476cbc8dee5dc191d31b7d59b6c03427f0ca23a0d3a7f0b46febf",
+          "source": "https://docs.rs/crate/warnings-macro/0.2.0/source/Cargo.toml"
+        }
+      ]
+    },
+    {
+      "name": "warnings",
+      "version": "0.2.1",
+      "license": "MIT",
+      "evidence": "license-declaration",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/warnings-0.2.1-Cargo.toml.txt",
+          "sha256": "2f6f841721bdb0e7297b98c3fb483340518880aa17efe4a8fa52ad87c5bb977a",
+          "source": "https://docs.rs/crate/warnings/0.2.1/source/Cargo.toml"
+        }
+      ]
+    },
+    {
+      "name": "whoami",
+      "version": "2.1.3",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/whoami-LICENSE_MIT.txt",
+          "sha256": "508a77d2e7b51d98adeed32648ad124b7b30241a8e70b2e72c99f92d8e5874d1",
+          "source": "https://raw.githubusercontent.com/ardaku/whoami/849ca13942dde703509c169952f83baa58d0fee8/LICENSE_MIT"
+        }
+      ]
+    },
+    {
+      "name": "windows-link",
+      "version": "0.2.1",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/windows-rs-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "source": "https://raw.githubusercontent.com/microsoft/windows-rs/d468916ac27a36fb8a12bafc1bf5c0ec2fe92238/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-registry",
+      "version": "0.6.1",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/windows-rs-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "source": "https://raw.githubusercontent.com/microsoft/windows-rs/32c3144490c016fe496a0aed769bce60987a2e9d/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-result",
+      "version": "0.4.1",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/windows-rs-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "source": "https://raw.githubusercontent.com/microsoft/windows-rs/32c3144490c016fe496a0aed769bce60987a2e9d/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-strings",
+      "version": "0.5.1",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/windows-rs-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "source": "https://raw.githubusercontent.com/microsoft/windows-rs/32c3144490c016fe496a0aed769bce60987a2e9d/license-mit"
+        }
+      ]
+    },
+    {
+      "name": "windows-sys",
+      "version": "0.61.2",
+      "license": "MIT",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/windows-rs-license-mit.txt",
+          "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+          "source": "https://raw.githubusercontent.com/microsoft/windows-rs/32c3144490c016fe496a0aed769bce60987a2e9d/license-mit"
+        }
+      ]
+    }
+  ]
+}

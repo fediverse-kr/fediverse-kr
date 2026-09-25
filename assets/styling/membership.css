@@ -1,0 +1,321 @@
+/* Membership layout only. Colors, typography and action buttons come from portal.css. */
+.membership-page {
+  max-width: 960px;
+  padding-block: 56px 80px;
+}
+.owner-sections { display: grid; gap: 24px; }
+.owner-editor { padding-block: 18px; border-bottom: 1px solid var(--line); }
+.owner-editor > summary { display: flex; flex-wrap: wrap; gap: 8px 18px; cursor: pointer; overflow-wrap: anywhere; }
+.owner-editor > summary span { font-size: 13px; color: var(--muted); }
+.owner-editor > form { margin-top: 24px; }
+.owner-resign { margin-top: 24px; }
+.owner-resign button { margin-top: 12px; }
+.owner-checkbox { display: flex !important; gap: 12px; align-items: center; }
+.membership-page .owner-checkbox input[type="checkbox"] { width: 20px; height: 20px; min-height: 20px; padding: 0; flex: 0 0 20px; }
+.membership-page select { width: 100%; min-width: 0; max-width: 100%; border: 1px solid #bec1ce; border-radius: 8px; padding: 12px; font: inherit; background: var(--paper); color: var(--ink); }
+.owner-editor textarea { resize: vertical; }
+.membership-login {
+  max-width: 640px;
+}
+.membership-heading {
+  margin-bottom: 30px;
+}
+.membership-heading h1 {
+  font-size: clamp(27px, 3vw, 38px);
+  letter-spacing: -.035em;
+}
+.membership-heading p {
+  margin-top: 12px;
+  color: var(--muted);
+  word-break: keep-all;
+}
+.membership-card {
+  min-width: 0;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--paper);
+}
+.membership-login > .membership-card + .membership-card {
+  margin-top: 18px;
+}
+.membership-card h2 {
+  margin-bottom: 18px;
+  font-size: 20px;
+  letter-spacing: -.02em;
+}
+.membership-card > .membership-hint,
+.membership-credential-group > .membership-hint {
+  margin-top: -6px;
+  margin-bottom: 18px;
+}
+.membership-form {
+  display: grid;
+  gap: 18px;
+}
+.membership-form h2 {
+  margin-bottom: 0;
+}
+.membership-form > button {
+  justify-self: start;
+}
+.membership-field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.membership-page label, .community-section label {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+}
+.membership-page input:not([type="hidden"]),
+.membership-page textarea, .community-section textarea, .community-section select {
+  min-width: 0;
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid #bec1ce;
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.6;
+}
+.membership-page input:disabled {
+  background: var(--wash);
+}
+.membership-page input::placeholder {
+  color: var(--muted);
+}
+.membership-hint,
+.membership-expiry,
+.membership-footnote {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  word-break: keep-all;
+}
+.membership-hint strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.membership-disclosure summary,
+.membership-add-account summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.7;
+}
+.membership-disclosure[open] > summary,
+.membership-add-account[open] > summary {
+  margin-bottom: 20px;
+}
+.membership-disclosure > .membership-hint {
+  margin-bottom: 20px;
+}
+.membership-notice,
+.membership-message {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--wash);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.membership-notice {
+  margin-bottom: 20px;
+}
+.membership-error {
+  color: #8d283b;
+  border-color: #ead3d8;
+  background: #fff6f7;
+}
+.membership-success {
+  color: #285f4b;
+  border-color: #cfe2d9;
+  background: #f3faf6;
+}
+.membership-verification {
+  display: grid;
+  gap: 14px;
+}
+.membership-verification h2 {
+  margin-bottom: 0;
+}
+.membership-page .membership-proof {
+  resize: vertical;
+  min-height: 104px;
+  background: var(--wash);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.membership-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.membership-account-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+.membership-account-bar p {
+  overflow-wrap: anywhere;
+}
+.membership-account-bar button {
+  flex-shrink: 0;
+}
+.membership-account-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 22px;
+}
+.membership-page > .membership-message {
+  margin-bottom: 20px;
+}
+.membership-accounts {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.membership-accounts li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 15px;
+  border-bottom: 1px solid var(--line);
+}
+.membership-accounts li:first-child {
+  padding-top: 0;
+}
+.membership-accounts li > div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.membership-accounts strong {
+  font-size: 15px;
+}
+.membership-accounts a,
+.membership-account-handle {
+  color: var(--muted);
+  font-size: 13px;
+}
+.membership-accounts a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.membership-visibility {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 11px;
+  background: var(--wash);
+  border-radius: 5px;
+  padding: 3px 7px;
+}
+.membership-add-account {
+  margin-block: 20px;
+}
+.membership-accounts + .membership-message {
+  margin-top: 18px;
+}
+.membership-footnote {
+  margin-top: 24px;
+}
+.membership-name-form { display: grid; gap: 14px; margin-bottom: 22px; }
+.membership-name-form > button { justify-self: start; }
+.membership-accounts .membership-linked-row { display: grid; gap: 14px; }
+.membership-linked-heading .membership-visibility { justify-self: start; }
+.membership-consent-help .membership-hint { font-size: 16px; }
+.membership-confirmation { display: grid; gap: 14px; padding: 14px; background: var(--wash); border-radius: 8px; font-size: 14px; line-height: 1.7; }
+.membership-management-section { margin-top: 22px; }
+.membership-reauth-choices { display: grid; gap: 10px; margin-block: 18px; }
+.membership-reauth-choices button { white-space: normal; overflow-wrap: anywhere; text-align: left; }
+.membership-danger { color: #8d283b; border-color: #d6aeb7; }
+@media (max-width: 760px) {
+  .membership-page {
+    padding-block: 35px 55px;
+  }
+  .membership-account-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .membership-card {
+    padding: 22px;
+  }
+}
+@media (max-width: 420px) {
+  .membership-card {
+    padding: 18px;
+  }
+  .membership-actions {
+    flex-direction: column;
+  }
+  .membership-form > button {
+    width: 100%;
+  }
+  .membership-account-bar {
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+.owner-refresh { padding: 20px 0; border-bottom: 1px solid var(--line); }
+.profile-maintenance progress { display: block; width: 100%; height: 8px; margin-block: 16px; accent-color: var(--accent, #5750bd); }
+.profile-maintenance > .membership-hint:last-child { margin-top: 18px; margin-bottom: 0; }
+.owner-refresh h3 { margin: 0 0 8px; font-size: 1rem; }
+.registration-preview { margin-top: 24px; }
+.registration-description { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 12rem; overflow-y: auto; margin-block: 12px; }
+.registration-facts { display: grid; grid-template-columns: auto minmax(0,1fr); gap: .6rem 1rem; margin-block: 1.25rem; }
+.registration-facts dt { color: var(--muted, #64748b); }
+.registration-facts dd { margin: 0; overflow-wrap: anywhere; }
+.registration-preview p { overflow-wrap: anywhere; }
+.moderation-page > section, .moderation-page > .membership-account-grid, .moderation-page > nav { margin-bottom: 24px; }
+.moderation-page .membership-card { min-width: 0; overflow-wrap: anywhere; }
+.moderation-page .membership-actions { margin-block: 16px; align-items: center; }
+.moderation-list { list-style: none; padding: 0; display: grid; gap: 20px; margin-block: 24px; }
+.moderation-list h2 { margin-block: 12px; }
+.moderation-meta { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; font-size: 13px; color: var(--muted); }
+.moderation-body { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 24rem; overflow: auto; margin-block: 14px; line-height: 1.8; }
+.moderation-excerpt { white-space: pre-wrap; overflow-wrap: anywhere; margin-bottom: 18px; }
+.moderation-confirm { margin-block: 20px; padding: 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--wash); }
+.moderation-confirm textarea { resize: vertical; }
+.moderation-events { padding-left: 20px; }
+.admin-site-facts { display: grid; grid-template-columns: max-content minmax(0,1fr); gap: 14px 24px; margin-block: 24px; }
+.admin-site-facts dt { color: var(--muted); }
+.admin-site-facts dd { margin: 0; overflow-wrap: anywhere; }
+.membership-actions.moderation-nav { flex-direction: row; gap: 12px 20px; }
+.membership-actions.moderation-pagination { flex-direction: row; justify-content: space-between; align-items: center; }
+.moderation-events li { padding-block: 16px; border-bottom: 1px solid var(--line); }
+@media (max-width: 420px) {
+  .moderation-page .membership-actions { align-items: stretch; }
+  .moderation-page .membership-actions > span { text-align: center; }
+}
+.worker-monitor { min-width: 0; }
+.worker-monitor .worker-snapshot-note { margin-block: 0 24px; }
+.worker-monitor .worker-summary dl { display: grid; grid-template-columns: minmax(0, max-content) minmax(0, 1fr); gap: 12px 24px; margin: 0; }
+.worker-monitor .worker-summary dt { color: var(--muted); }
+.worker-monitor .worker-summary dd { margin: 0; overflow-wrap: anywhere; }
+.worker-monitor .worker-issues { min-width: 0; }
+.worker-monitor .worker-issues h2 { margin-bottom: 8px; }
+.worker-monitor .worker-issue-count { color: var(--muted); font-size: 13px; margin-block: 14px; }
+.worker-monitor .worker-issue-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; }
+.worker-monitor .worker-issue-list li { min-width: 0; padding-block: 16px; border-top: 1px solid var(--line); }
+.worker-monitor .worker-issue-list li:first-child { border-top: 0; padding-top: 0; }
+.worker-monitor .worker-issue-list h3, .worker-monitor .worker-issue-list p { overflow-wrap: anywhere; word-break: break-word; }
+.worker-monitor .worker-issue-list h3 { margin: 0 0 6px; font-size: 1rem; }
+.worker-monitor .worker-issue-meta { color: var(--muted); font-size: 13px; line-height: 1.7; margin: 0 0 8px; }
+.worker-monitor .worker-issue-meta strong { color: var(--ink); }
+@media (max-width: 420px) {
+  .worker-monitor .worker-summary dl { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .worker-monitor .worker-summary dd { margin-bottom: 10px; }
+  .worker-monitor .worker-issue-list li { padding-block: 14px; }
+}

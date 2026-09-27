@@ -1,4 +1,20 @@
 /* Membership layout only. Colors, typography and action buttons come from portal.css. */
+.registration-guidance { padding-bottom: 28px; }
+.registration-guidance h2 { margin: 28px 0 14px; font-size: 20px; letter-spacing: -.02em; }
+.registration-guidance h2:first-child { margin-top: 0; }
+.registration-guidance :is(p, li, summary), .registration-error-help { font-size: 16px; line-height: 1.8; word-break: keep-all; overflow-wrap: anywhere; }
+.registration-guidance p { margin: 12px 0; color: var(--muted); }
+.registration-guidance ul { padding-left: 24px; list-style: disc; }
+.registration-guidance li + li { margin-top: 6px; }
+.registration-nodeinfo { margin: 16px 0; border-block: 1px solid var(--line); padding-block: 14px; }
+.registration-nodeinfo summary { cursor: pointer; font-weight: 650; }
+.registration-nodeinfo[open] ul { margin-top: 14px; }
+.registration-nodeinfo code { font-size: 1em; }
+.registration-help-links { display: flex; flex-wrap: wrap; gap: 12px 24px; }
+.registration-page .membership-hint { font-size: 16px; }
+.contact-content .contact-section:first-child h2 { margin-top: 0; }
+.contact-content :is(p, a) { font-size: 16px; overflow-wrap: anywhere; }
+.contact-content .contact-handle { max-width: 100%; }
 .membership-page {
   max-width: 960px;
   padding-block: 56px 80px;

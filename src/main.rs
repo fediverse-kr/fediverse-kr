@@ -35,7 +35,7 @@ use directory::management::pages::ManagedSites;
 use directory::pages::{Platforms, ServerDetail, Servers, SoftwareDetail, SoftwareServers};
 use directory::registration::pages::RegisterSite;
 use explainer::Explain;
-use information::{About, Apps, Develop, Migration, Operate, People, SelfHosting};
+use information::{About, Apps, Contact, Develop, Migration, Operate, People, SelfHosting};
 use portal::*;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
@@ -67,6 +67,8 @@ enum Route {
     Develop {},
     #[route("/about")]
     About {},
+    #[route("/contact")]
+    Contact {},
     #[route("/apps")]
     Apps {},
     #[route("/guides/self-hosting")]

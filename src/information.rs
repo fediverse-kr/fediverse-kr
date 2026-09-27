@@ -3,6 +3,9 @@ use crate::Route;
 use dioxus::prelude::*;
 use lucide_dioxus::ArrowRight;
 
+pub const REGISTRATION_REQUEST_URL: &str =
+    "https://github.com/fediverse-kr/fediverse-kr/issues/new";
+
 #[component]
 fn InfoPage(title: String, intro: String, children: Element) -> Element {
     rsx! {
@@ -103,11 +106,37 @@ pub fn Migration() -> Element {
 }
 
 #[component]
+pub fn Contact() -> Element {
+    rsx! { InfoPage { title:"문의하기", intro:"서버 등록 제안, 정보 수정, 목록 노출에 관한 요청을 보내 주세요.",
+        div { class:"information-prose contact-content",
+            section { class:"contact-section",
+                h2 { "공개해도 되는 제안과 오류 제보" }
+                p { "목록에 없는 서버를 알려주시거나 잘못된 정보를 제보할 때는 GitHub를 이용해 주세요. 서버 주소와 간단한 설명, 문제가 생긴 경우에는 오류 내용을 함께 적어 주세요." }
+                a { class:"text-link", href:REGISTRATION_REQUEST_URL, target:"_blank", rel:"noopener noreferrer", "GitHub에 등록 요청·제보하기" ArrowRight { size:16 } }
+                p { "GitHub에 작성한 내용은 누구나 볼 수 있는 공개 이슈로 남습니다." }
+            }
+            section { class:"contact-section",
+                h2 { "운영자에게 직접 문의하기" }
+                p { "GitHub를 쓰지 않거나 공개 이슈로 남기기 어려운 내용은 아래 연합 계정으로 문의해 주세요. 내가 사용하는 서버에서 계정 주소를 검색해 메시지를 보낼 수 있어요." }
+                a { class:"text-link contact-handle", href:"https://lake.naru.cafe/@narucafe", target:"_blank", rel:"noopener noreferrer", "narucafe@lake.naru.cafe" ArrowRight { size:16 } }
+                p { "메시지를 보내기 전에 수신자와 공개 범위를 확인해 주세요. 비밀번호나 인증 코드 등 비밀정보는 보내지 마세요." }
+            }
+            section { class:"contact-section",
+                h2 { "목록에 노출되기를 원하지 않으시나요?" }
+                p { "서버 주소와 요청 내용을 운영자에게 알려 주세요. 관리자가 확인한 뒤 목록에서 내립니다." }
+                p { "NodeInfo 미지원 등으로 직접 등록하기 어려운 서버도 문의할 수 있어요. 등재 조건을 확인한 뒤 수동 등록 가능 여부를 검토합니다." }
+            }
+        }
+    } }
+}
+
+#[component]
 pub fn About() -> Element {
     rsx! { InfoPage { title:"연합우주를 만나보는 곳.", intro:"fediverse.kr은 서로 연결된 공간을 이해하고, 머물 곳을 찾도록 돕습니다.",
         div { class:"information-prose", h2 { "이 사이트가 연합우주 전체는 아니에요." } p { "여기에 가입하지 않아도 다른 서버를 이용할 수 있어요. 서버 목록도 연합우주 전체 목록이 아니라, 이곳에 등록된 한국어권 공간을 다룹니다." }
             h2 { "정보는 함께 고치고, 기록은 남기기." } p { "회원이 소프트웨어 소개를 직접 등록·수정하고, 서버 오너는 자신의 서버 정보를 관리해요. 소프트웨어 변경 이력을 비교하고 이전 내용으로 되돌릴 수 있습니다." } p { class:"review-note", "운영 자료의 공동 편집과 관리자의 분쟁 개입 화면은 준비 중입니다." }
-            h2 { "오류나 의견이 있다면" } p { "사이트 의견은 GitHub Issues로 모을 예정입니다. 공개 저장소 이전 전이라 아직 연결할 주소는 없습니다." }
+            h2 { "오류나 의견이 있다면" } p { "서버 등록 제안, 정보 수정, 목록 노출에 관한 요청은 문의 페이지의 GitHub 또는 운영 문의 계정으로 보내 주세요." }
+            Link { class:"text-link", to:Route::Contact{}, "문의하기" ArrowRight { size:16 } }
             h2 { "지금 검토 중인 버전" } p { "소개 페이지와 메뉴는 검토용 초안입니다. DB 미연결 화면에는 가상 예시가 표시되고, 운영 데이터로 전환되면 수집된 공개 정보를 사용합니다." }
             Link { class:"text-link", to:Route::Start{}, "연합우주, 화면으로 이해하기" ArrowRight { size:16 } }
         }

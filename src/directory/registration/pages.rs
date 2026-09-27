@@ -7,22 +7,54 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn RegisterSite() -> Element {
-    let account = use_server_future(member_api::session)?;
     rsx! {
         document::Title{"서버 등록 — fediverse.kr"}
-        main{id:"content",class:"membership-page wrap",
+        main{id:"content",class:"membership-page registration-page wrap",
             Link{class:"back-link",to:Route::Servers{filters:Default::default()},"서버 찾기"}
             header{class:"membership-heading",h1{"서버를 목록에 더해 주세요."}p{"직접 운영하는 곳이 아니어도 알려줄 수 있어요."}}
-            match account() {
-                Some(Ok(state)) if state.member.is_some()=>rsx!{RegistrationForm{}},
-                Some(Ok(state))=>rsx!{section{class:"membership-card",
-                    h2{"로그인 후 등록할 수 있어요."}
-                    Link{class:"primary-button",to:Route::Login{},"로그인"}
-                    if !state.federation_available {p{class:"membership-hint","지금은 DB가 연결되지 않은 검토용 화면입니다."}}
-                }},
-                Some(Err(e))=>rsx!{p{role:"alert",{error_message(e)}}},
-                None=>rsx!{p{role:"status","로그인 확인 중…"}},
+            section{class:"registration-guidance",aria_label:"서버 등재 안내",
+                h2{"이런 커뮤니티를 등록해 주세요"}
+                ul{
+                    li{"한국어를 주로 사용하는 커뮤니티"}
+                    li{"완전한 비공개 커뮤니티가 아닌 곳"}
+                    li{"fediverse.kr에 공개되기를 원하는 경우에만 등록해 주세요."}
+                }
+                p{"가입 마감·승인제·초대제라는 이유만으로 비공개 커뮤니티로 보지는 않아요."}
+                p{"목록 노출을 원하지 않는 경우 " Link{class:"text-link",to:Route::Contact{},"운영자에게 알려 주세요"} ". 관리자가 확인한 뒤 목록에서 내립니다."}
+                h2{"자동 등록에는 NodeInfo 지원이 필요해요"}
+                p{"NodeInfo는 서버의 소프트웨어와 통계 등을 알려주는 표준입니다. 서버가 이를 구현하고, fediverse.kr에서 공개된 정보를 읽을 수 있어야 자동으로 등록할 수 있어요."}
+                details{class:"registration-nodeinfo",
+                    summary{"운영자용 NodeInfo 기술 안내"}
+                    ul{
+                        li{code{"/.well-known/nodeinfo"} "에서 NodeInfo 문서 주소를 안내해야 합니다. 현재 NodeInfo 2.0과 2.1을 지원합니다."}
+                        li{"연결된 JSON 문서에서 소프트웨어 정보를 확인할 수 있어야 하며, 로그인 없이 서버 응답과 NodeInfo를 읽을 수 있어야 합니다."}
+                        li{"접근 차단이나 일시적인 장애가 있으면 지원하는 서버도 확인에 실패할 수 있습니다."}
+                    }
+                }
+                p{"NodeInfo를 지원하지 않거나 직접 등록하기 어려운 경우에도 문의할 수 있어요. 등재 조건을 확인한 뒤 수동 등록 가능 여부를 검토합니다."}
+                div{class:"registration-help-links",
+                    a{class:"text-link",href:crate::information::REGISTRATION_REQUEST_URL,target:"_blank",rel:"noopener noreferrer","GitHub에 등록 요청 (공개 이슈)"}
+                    Link{class:"text-link",to:Route::Contact{},"운영자에게 문의"}
+                }
             }
+            SuspenseBoundary{fallback:|_|rsx!{p{role:"status","로그인 확인 중…"}},RegistrationAccess{}}
+        }
+    }
+}
+
+#[component]
+fn RegistrationAccess() -> Element {
+    let account = use_server_future(member_api::session)?;
+    rsx! {
+        match account() {
+            Some(Ok(state)) if state.member.is_some()=>rsx!{RegistrationForm{}},
+            Some(Ok(state))=>rsx!{section{class:"membership-card",
+                h2{"로그인 후 등록할 수 있어요."}
+                Link{class:"primary-button",to:Route::Login{},"로그인"}
+                if !state.federation_available {p{class:"membership-hint","지금은 DB가 연결되지 않은 검토용 화면입니다."}}
+            }},
+            Some(Err(e))=>rsx!{p{role:"alert",{error_message(e)}}},
+            None=>rsx!{p{role:"status","로그인 확인 중…"}},
         }
     }
 }
@@ -72,7 +104,10 @@ fn RegistrationForm() -> Element {
                     p{class:"membership-hint","글이나 프로필 주소가 아닌 사이트 주소를 입력해 주세요."}
                 }
                 button{r#type:"submit",class:"secondary-button",disabled:pending() || !can_submit,if pending(){"서버 확인 중…"}else{"서버 정보 확인"}}
-                if !message().is_empty(){p{role:"alert",class:"membership-message","{message}"}}
+                if !message().is_empty(){
+                    p{role:"alert",class:"membership-message","{message}"}
+                    p{class:"registration-error-help","계속 등록하기 어렵다면 " Link{class:"text-link",to:Route::Contact{},"운영자에게 문의"} "해 주세요."}
+                }
             }
             if let Some(data)=preview() {
                 section{class:"membership-card registration-preview",aria_label:"확인한 서버 정보",

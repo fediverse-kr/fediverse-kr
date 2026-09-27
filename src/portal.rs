@@ -112,6 +112,7 @@ pub fn Shell() -> Element {
             Link { to:Route::About{}, "fediverse.kr 소개" }
             p { "하나의 앱이 아닌, 서로 연결된 우리의 공간." }
             Link { to:Route::Apps{}, "앱으로 이용하기" }
+            Link { to:Route::Contact{}, "문의하기" }
             a { href: "https://github.com/fediverse-kr/fediverse-kr", "GitHub · 의견과 기여" }
         }
     }
@@ -298,12 +299,44 @@ mod tests {
     }
 
     #[test]
+    fn contact_page_offers_public_channels_without_an_app_inbox() {
+        let html = render_path("/contact");
+        assert!(html.contains("<h1>문의하기</h1>"), "{html}");
+        assert!(html.contains("https://github.com/fediverse-kr/fediverse-kr/issues/new"));
+        assert!(html.contains("https://lake.naru.cafe/@narucafe"));
+        assert!(html.contains("narucafe@lake.naru.cafe"));
+        assert!(html.contains("공개 이슈") && html.contains("공개 범위"));
+        assert!(!html.contains("<form") && !html.contains("<textarea"));
+        for path in ["/", "/about"] {
+            assert!(render_path(path).contains("href=\"/contact\""));
+        }
+        assert!(!render_path("/about").contains("아직 연결할 주소는 없습니다"));
+    }
+
+    #[test]
     fn footer_links_to_github_contributions() {
         let html = render_path("/");
         let footer = html.split("<footer").nth(1).expect("site footer");
         let footer = footer.split("</footer>").next().unwrap();
         assert!(footer.contains("href=\"https://github.com/fediverse-kr/fediverse-kr\""));
         assert!(footer.contains(">GitHub · 의견과 기여</a>"));
+    }
+
+    #[cfg(feature = "server")]
+    #[tokio::test]
+    async fn registration_guidance_is_public_before_account_resolution() {
+        let html = render_path("/account/sites/new");
+        assert!(
+            html.contains("한국어를 주로 사용하는 커뮤니티"),
+            "public guidance missing"
+        );
+        assert!(html.contains("완전한 비공개 커뮤니티가 아닌 곳"));
+        assert!(html.contains("fediverse.kr에 공개되기를 원하는 경우"));
+        assert!(html.contains("자동 등록에는 NodeInfo 지원이 필요해요"));
+        assert!(html.contains("/.well-known/nodeinfo"));
+        assert!(html.contains("href=\"/contact\""));
+        assert!(!html.contains("동의를 받") && !html.contains("공개 의사를 먼저 확인"));
+        assert!(!html.contains("type=\"checkbox\""));
     }
 
     #[test]

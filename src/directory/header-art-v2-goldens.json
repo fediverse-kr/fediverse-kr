@@ -1,0 +1,70 @@
+[
+  {
+    "domain": "art-0.example",
+    "sha256": "fe20119e80db09e6b79d5f27d2fdfa49f3bfb02bb5f0115326004fdc8ccb97d9"
+  },
+  {
+    "domain": "art-1.example",
+    "sha256": "7f79de2d3797378463441e32602cae6a5922aa36f53d3a9de4f84e1f268f0f41"
+  },
+  {
+    "domain": "art-2.example",
+    "sha256": "9522c9c084eeba2634505cecc9119390bccddf83b3cb9047611175520fe1d8e2"
+  },
+  {
+    "domain": "art-3.example",
+    "sha256": "8e352a371a0d4d5509fb0b52b28a0f7be80c030a2d235b86c22b3e1fc451f6ae"
+  },
+  {
+    "domain": "art-4.example",
+    "sha256": "f169c6d58c8d3120eb957a5d3dad327ceab0a85f91d2cd2ad4994ef330e28c52"
+  },
+  {
+    "domain": "art-5.example",
+    "sha256": "a089abd0c7460b004b4f8886ae5ca99604868c74d9d5d7880b80e4b0dc836aec"
+  },
+  {
+    "domain": "art-6.example",
+    "sha256": "182df5ae5aa26d6c0af95588bd1083b68eecd4a1845a5a78368174611bd497b3"
+  },
+  {
+    "domain": "art-7.example",
+    "sha256": "476bc2a2b4fe83aa1f7887d823083988b083436515ebe8f0612b3f26c530631a"
+  },
+  {
+    "domain": "art-8.example",
+    "sha256": "cfe9c5b7c1344d87808e901389de572aa83899648230af60553cf006a66aa45a"
+  },
+  {
+    "domain": "art-9.example",
+    "sha256": "9fab217456a09761bc0e1766cc39760623734ff407f5b881f4d4e4081b9e7fe2"
+  },
+  {
+    "domain": "art-10.example",
+    "sha256": "58e36a638f8983e58a92f282c2545470935eefb638d16faae85a204f75ad158c"
+  },
+  {
+    "domain": "art-11.example",
+    "sha256": "2f5a7ff20ab2f7dd66ac8713dca76a8c987cee40222c09fba07b0c87093a591f"
+  },
+  {
+    "domain": "art-12.example",
+    "sha256": "dca6aaae9aad9b7e11de4e48e05df187a815adb33214851a3d13f34de0584c32"
+  },
+  {
+    "domain": "art-13.example",
+    "sha256": "c73cfae3a8fc7e829c8ffc700c15f56462c37f25d33f24a05f652ec372588b4d"
+  },
+  {
+    "domain": "art-14.example",
+    "sha256": "46c59d1c41e7523dc1537fa5283a4da70673141017d451d830bb41795c2ec90d"
+  },
+  {
+    "domain": "art-15.example",
+    "sha256": "cf8809ed3488c663695390ff7b23f14d4fed36216f0af5f5ad76c7d9f0be7fe6"
+  },
+  {
+    "domain": "art-17.example",
+    "sha256": "97a8a158b849ce966055abe3d14073aaee6c68a90ea4e59e7e1f443ff914f7ed"
+  }
+]

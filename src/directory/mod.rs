@@ -3,6 +3,7 @@ pub mod api;
 pub mod catalog;
 pub mod catalog_editing;
 pub mod health;
+pub(crate) mod header_art;
 pub mod management;
 pub mod pages;
 mod preview;

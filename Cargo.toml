@@ -59,10 +59,10 @@ dioxus-history = "=0.7.10"
 [features]
 default = ["web"]
 # The feature that are only required for the web = ["dioxus/web"] build target should be optional and only enabled in the web = ["dioxus/web"] feature
-web = ["dioxus/web", "dep:url", "dep:base64"]
+web = ["dioxus/web", "dep:url", "dep:base64", "dep:sha2"]
 # The feature that are only required for the desktop = ["dioxus/desktop"] build target should be optional and only enabled in the desktop = ["dioxus/desktop"] feature
-desktop = ["dioxus/desktop", "dep:url", "dep:base64"]
+desktop = ["dioxus/desktop", "dep:url", "dep:base64", "dep:sha2"]
 # The feature that are only required for the mobile = ["dioxus/mobile"] build target should be optional and only enabled in the mobile = ["dioxus/mobile"] feature
-mobile = ["dioxus/mobile", "dep:url", "dep:base64"]
+mobile = ["dioxus/mobile", "dep:url", "dep:base64", "dep:sha2"]
 # The feature that are only required for the server = ["dioxus/server"] build target should be optional and only enabled in the server = ["dioxus/server"] feature
 server = ["dioxus/server", "dep:diesel", "dep:diesel-async", "dep:diesel_migrations", "dep:dioxus-cli-config", "dep:tokio-postgres", "dep:tokio-postgres-rustls", "dep:rustls", "dep:webpki-roots", "dep:argon2", "dep:rand", "dep:sha2", "dep:uuid", "dep:chrono", "dep:tokio", "dep:url", "dep:reqwest", "dep:rsa", "dep:base64", "dep:html5ever", "dep:hickory-resolver", "dep:opendal", "dep:image", "dep:subtle", "dep:cookie", "dep:percent-encoding", "dep:quick-xml", "dep:sanitize_html", "dep:comrak", "dep:html2text"]

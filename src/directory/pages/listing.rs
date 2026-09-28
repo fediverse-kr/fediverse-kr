@@ -104,9 +104,9 @@ pub fn ServerListing(criteria: ServerQuery) -> Element {
                                 }
                                 div{class:"server-card-top",span{{site.software.as_deref().unwrap_or("소프트웨어 확인 전")}}}
                                 p{"{site.description}"}
-                                if !site.guidance.tags.is_empty(){div{class:"server-card-tags",for tag in site.guidance.tags.iter().take(4){span{"#{tag}"}}}}
+                                div{class:"server-card-tags",aria_hidden:site.guidance.tags.is_empty(),for tag in site.guidance.tags.iter().take(4){span{"#{tag}"}}}
                                 div{class:"server-card-bottom",span{"{site.status()}"}span{"{site.registration()}"}}
-                                if let Some(users)=site.users {small{class:"server-card-metric","가입 계정 {number(users)}개"}}
+                                small{class:"server-card-metric",aria_hidden:site.users.is_none(),if let Some(users)=site.users {"가입 계정 {number(users)}개"}}
                                 if criteria.sort=="response_time" {small{class:"server-card-metric",{site.average_response_ms.map(|n|format!("7일 평균 {n} ms")).unwrap_or_else(||"평균 응답 자료 부족".into())}}}
                             }
                         }}

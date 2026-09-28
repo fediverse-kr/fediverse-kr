@@ -1,5 +1,6 @@
 use super::*;
 use crate::directory::search::ServerQuery;
+mod filters;
 
 #[component]
 pub fn ServerListing(criteria: ServerQuery) -> Element {
@@ -29,6 +30,14 @@ pub fn ServerListing(criteria: ServerQuery) -> Element {
         page: 0,
         ..criteria.clone()
     };
+    let filter_options = options().and_then(|value| value.ok());
+    let active = filters::active_filters(&criteria, filter_options.as_ref());
+    let active_count = active.len();
+    let has_pending = {
+        let mut pending = draft();
+        pending.page = criteria.page;
+        pending != criteria
+    };
     rsx! {
         document::Title {"서버 찾기 — fediverse.kr"}
         main {id:"content",class:"directory-page wrap",
@@ -49,8 +58,8 @@ pub fn ServerListing(criteria: ServerQuery) -> Element {
                     if let Some(Ok(data))=options() {
                         details {class:"directory-filter-panel",
                             summary {
-                                span {class:"directory-filter-summary-copy",strong{"필터와 정렬"}span{"필요할 때만 세부 조건을 고르세요."}}
-                                span {class:"directory-filter-summary-action","조건 열기"}
+                                span {class:"directory-filter-summary-copy",strong{"필터 · 정렬" if active_count>0 {span{class:"directory-filter-count","{active_count}"}}}span{"소프트웨어 · 가입 방식 · 응답 상태"}}
+                                span {class:"directory-filter-summary-action",span{class:"filter-open-label","열기"}span{class:"filter-close-label","닫기"}}
                             }
                             div {class:"directory-filter-panel-body",
                                 div {class:"directory-filter-grid",
@@ -65,10 +74,19 @@ pub fn ServerListing(criteria: ServerQuery) -> Element {
                                     FilterSelect{id:"directory-size",label:"한 페이지에",all:false,value:draft().page_size.to_string(),options:choices(&[("24","24개"),("25","25개"),("50","50개"),("100","100개"),("200","200개")]),on_change:move|value:String|{if let Ok(size)=value.parse(){draft.write().page_size=size;}}}
                                 }
                                 if data.truncated {p {class:"review-note","선택 항목 일부만 표시됩니다. 주소의 직접 필터와 검색은 전체 데이터를 조회해요."}}
+                                if has_pending {p {class:"filter-pending",role:"status","변경한 조건을 적용해 주세요."}}
                                 div {class:"directory-filter-actions",button{r#type:"submit",class:"primary-button",disabled:!ready,"조건 적용"}Link{class:"text-link",to:Route::Servers{filters:ServerQuery::default()},"초기화"}}
                             }
                         }
                     } else if matches!(options(),Some(Err(_))) {p{role:"alert",class:"data-notice","선택 항목을 불러오지 못했어요. 검색은 계속 사용할 수 있습니다."}}
+                }
+                if !active.is_empty() {
+                    nav {class:"active-filter-chips",aria_label:"적용 중인 조건",
+                        for (label, query) in active {
+                            Link {to:Route::Servers{filters:query},aria_label:"{label} 해제", "{label}" span {aria_hidden:"true","×"}}
+                        }
+                        Link {class:"filter-reset",to:Route::Servers{filters:ServerQuery::default()},"모두 해제"}
+                    }
                 }
                 match result() {
                     Some(Ok(data))=>rsx! {
@@ -79,8 +97,13 @@ pub fn ServerListing(criteria: ServerQuery) -> Element {
                         }
                         div{class:"server-grid",for site in data.listing.sites.clone(){
                             Link{class:"server-card",to:Route::ServerDetail{slug:site.domain.clone()},
-                                div{class:"server-card-top",super::icon::SiteIcon{site:site.clone()}span{{site.software.as_deref().unwrap_or("소프트웨어 확인 전")}}}
-                                h2{"{site.name}"}small{class:"server-domain","{site.domain}"}p{"{site.description}"}
+                                super::icon::SiteHeader{site:site.clone()}
+                                div{class:"server-identity",
+                                    super::icon::SiteIcon{site:site.clone()}
+                                    div{h2{"{site.name}"}small{class:"server-domain","{site.domain}"}}
+                                }
+                                div{class:"server-card-top",span{{site.software.as_deref().unwrap_or("소프트웨어 확인 전")}}}
+                                p{"{site.description}"}
                                 if !site.guidance.tags.is_empty(){div{class:"server-card-tags",for tag in site.guidance.tags.iter().take(4){span{"#{tag}"}}}}
                                 div{class:"server-card-bottom",span{"{site.status()}"}span{"{site.registration()}"}}
                                 if let Some(users)=site.users {small{class:"server-card-metric","가입 계정 {number(users)}개"}}

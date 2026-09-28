@@ -107,6 +107,7 @@ async fn owner_refresh_uses_durable_queue_limits_concurrency_and_keeps_closed_ed
             mime: "image/png",
             bytes: png(64, 64),
         }),
+        header: None,
         icon_collection_complete: true,
     };
     assert!(!restarted.finish_site(&first, &observation).await.unwrap());

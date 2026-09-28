@@ -116,22 +116,27 @@ fn step_playback_tick(step: usize) -> u16 {
 
 #[component]
 pub fn RandomHeadline() -> Element {
-    // Keep the first SSR/client render identical; this clock never reads demo state.
+    // Serialize the server's choice with the SSR payload. Hydration consumes
+    // that same value, rather than showing index zero then rerolling in JS.
+    let initial = use_server_cached(|| {
+        #[cfg(feature = "server")]
+        {
+            use rand::Rng;
+            rand::thread_rng().gen_range(0..HEADLINES.len())
+        }
+        // A client-only navigation has no SSR payload to replace. Keep a valid
+        // initial phrase and the ordinary slow rotation, without a flash.
+        #[cfg(not(feature = "server"))]
+        {
+            0usize
+        }
+    });
     #[allow(unused_mut)]
-    let mut selected = use_signal(|| 0usize);
+    let mut selected = use_signal(|| initial);
     #[allow(unused_mut)]
     let mut previous = use_signal(|| None::<usize>);
     #[cfg(target_arch = "wasm32")]
     use_future(move || async move {
-        if let Ok(index) = document::eval(&format!(
-            "return Math.floor(Math.random() * {});",
-            HEADLINES.len()
-        ))
-        .join::<usize>()
-        .await
-        {
-            selected.set(index.min(HEADLINES.len() - 1));
-        }
         let mut held_seconds = 0;
         loop {
             // Count only visible time. Returning to a tab gives the current
@@ -436,13 +441,37 @@ fn DemoComposer(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn initial_ssr_headlines_are_selected_per_request_not_fixed() {
+        let mut headlines = std::collections::HashSet::new();
+        for _ in 0..32 {
+            let mut dom = VirtualDom::new(RandomHeadline);
+            dom.rebuild_in_place();
+            let html = dioxus::ssr::render(&dom);
+            let prefix = "data-headline=";
+            let start = html.find(prefix).expect("SSR headline") + prefix.len();
+            let index = html[start..]
+                .split_whitespace()
+                .next()
+                .unwrap()
+                .trim_matches('"')
+                .parse::<usize>()
+                .unwrap();
+            assert!(index < HEADLINES.len());
+            assert!(html.contains(&HEADLINES[index].join(" ")));
+            headlines.insert(index);
+        }
+        assert!(
+            headlines.len() > 1,
+            "Every server render used the same headline: {headlines:?}"
+        );
+    }
     #[test]
     fn headlines_are_three_nonempty_lines() {
-        assert!(
-            HEADLINES
-                .iter()
-                .all(|lines| lines.iter().all(|line| !line.is_empty()))
-        );
+        assert!(HEADLINES
+            .iter()
+            .all(|lines| lines.iter().all(|line| !line.is_empty())));
         assert_eq!(HEADLINES[0], ["다른 서버의", "내 친구를", "구독해요."]);
     }
     #[test]

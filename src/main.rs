@@ -23,6 +23,7 @@ mod directory;
 mod experience;
 mod explainer;
 mod explore;
+mod hosting;
 mod information;
 mod landing;
 mod portal;
@@ -35,6 +36,7 @@ use directory::management::pages::ManagedSites;
 use directory::pages::{Platforms, ServerDetail, Servers, SoftwareDetail, SoftwareServers};
 use directory::registration::pages::RegisterSite;
 use explainer::Explain;
+use hosting::pages::{HostingDetail, HostingEdit, HostingHistory, HostingList, HostingNew};
 use information::{About, Apps, Contact, Develop, Migration, Operate, People, SelfHosting};
 use portal::*;
 
@@ -73,6 +75,12 @@ enum Route {
     Apps {},
     #[route("/guides/self-hosting")]
     SelfHosting {},
+    #[route("/hosting")]
+    HostingList {},
+    #[route("/hosting/:slug")]
+    HostingDetail { slug: String },
+    #[route("/hosting/:slug/history")]
+    HostingHistory { slug: String },
     #[route("/guides/migration")]
     Migration {},
     #[route("/servers?:..filters")]
@@ -119,6 +127,10 @@ enum Route {
     RegisterSite {},
     #[route("/account/software/new")]
     SoftwareNew {},
+    #[route("/account/hosting/new")]
+    HostingNew {},
+    #[route("/account/hosting/:slug/edit")]
+    HostingEdit { slug: String },
     #[route("/account/software/:name/edit")]
     SoftwareEditor { name: String },
     #[route("/account/software/:name/restore/:revision")]

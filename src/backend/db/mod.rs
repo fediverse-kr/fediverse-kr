@@ -5,6 +5,7 @@ mod community;
 mod directory;
 #[cfg(test)]
 pub(crate) mod fixtures;
+mod hosting;
 mod legacy;
 mod media;
 mod media_cleanup;

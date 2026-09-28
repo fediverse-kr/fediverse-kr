@@ -10,6 +10,7 @@ pub mod db;
 pub mod directory;
 pub mod federation;
 pub mod flow;
+pub mod hosting;
 pub mod http;
 pub mod identity;
 pub mod legacy;

@@ -49,6 +49,8 @@ struct SoftwareRow {
 struct SiteRow {
     #[diesel(sql_type=Bool)]
     icon_available: bool,
+    #[diesel(sql_type=Bool)]
+    header_available: bool,
     #[diesel(sql_type=Text)]
     guidance: String,
     #[diesel(sql_type=Text)]
@@ -86,6 +88,7 @@ impl TryFrom<SiteRow> for PublicSite {
         let description = render_description(&s.description);
         Ok(Self {
             icon_available: s.icon_available,
+            header_available: s.header_available,
             guidance: serde_json::from_str(&s.guidance).map_err(|_| StoreError)?,
             domain: s.domain,
             name: s.name,
@@ -107,6 +110,7 @@ impl TryFrom<SiteRow> for PublicSite {
 
 const SITE_SELECT: &str = "SELECT s.domain,
     (EXISTS(SELECT 1 FROM directory_icons i WHERE i.site_id=s.id) OR EXISTS(SELECT 1 FROM legacy_sites l JOIN stored_files f ON f.object_key=l.favicon_key WHERE l.id=s.id AND l.favicon_key LIKE 'favicons/%')) AS icon_available,
+    EXISTS(SELECT 1 FROM directory_headers h WHERE h.site_id=s.id AND NOT EXISTS(SELECT 1 FROM directory_icons i WHERE i.site_id=s.id AND i.bytes=h.bytes)) AS header_available,
     jsonb_build_object('rules',left(coalesce(d.rules,''),8000),'language',left(coalesce(d.language,''),128),'tags',ARRAY(SELECT left(v,128) FROM unnest(d.tags) v WHERE v IS NOT NULL LIMIT 32),'owner_comment',left(coalesce(d.owner_comment,''),2000),'invite_only',d.invite_only,'approval_required',d.approval_required)::text AS guidance,
     left(coalesce(nullif(s.name,''),nullif(o.observed_name,''),s.domain),200) AS name,
     left(coalesce(nullif(s.description,''),o.observed_description,''),4000) AS description,

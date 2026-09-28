@@ -50,6 +50,7 @@ pub fn Operate() -> Element {
     rsx! { InfoPage { title:"내 공간을 운영한다면.", intro:"처음 열 때의 선택과, 매일 돌보는 일을 나눠 생각해요.",
         div { class:"information-grid",
             Link { class:"software-card", to:Route::SelfHosting{}, span { class:"catalog-kind", "처음 시작" } h2 { "직접 운영할까, 맡길까?" } p { "서버를 열기 전에 맡게 될 일부터 살펴보세요." } span { class:"text-link", "운영 방식 살펴보기" ArrowRight { size:16 } } }
+            Link { class:"software-card", to:Route::HostingList{}, span { class:"catalog-kind", "관리형 서비스" } h2 { "맡길 수 있는 서비스 찾기" } p { "제공 범위와 출처를 확인하세요." } span { class:"text-link", "목록 보기" ArrowRight { size:16 } } }
             Link { class:"software-card", to:Route::Explain { topic:"boundaries".into() }, span { class:"catalog-kind", "우리 공간의 규칙" } h2 { "어디와 연결할까요?" } p { "운영자의 연결 정책은 이웃에게도 영향을 줘요." } span { class:"text-link", "차단의 범위 보기" ArrowRight { size:16 } } }
             Link { class:"software-card", to:Route::Servers { filters: Default::default() }, span { class:"catalog-kind", "이미 운영 중" } h2 { "우리 서버의 정보" } p { "수집된 상태와 소개가 어떻게 표시되는지 확인하세요." } span { class:"text-link", "서버 찾기" ArrowRight { size:16 } } }
             Link { class:"software-card", to:Route::ManagedSites{}, span { class:"catalog-kind", "정보 수정" } h2 { "내 서버 정보 관리" } p { "DNS TXT로 운영 권한을 확인하고, 서버 소개와 운영 정보를 직접 고치세요." } span { class:"text-link", "인증하고 수정하기" ArrowRight { size:16 } } }
@@ -70,8 +71,8 @@ pub fn SelfHosting() -> Element {
         }
         section { class:"information-prose", h2 { "열기 전에 정해둘 네 가지" }
             ol { class:"operator-checks", li { strong { "누구의 공간인가요?" } p { "개인용인지, 초대제인지, 누구나 가입하는 공간인지." } } li { strong { "누가 돌보나요?" } p { "문제가 생겼을 때 연락받고 대응할 사람." } } li { strong { "무엇을 남길 수 있나요?" } p { "백업을 받을 수 있는지, 복구와 이동은 어떻게 하는지." } } li { strong { "끝낼 때는요?" } p { "종료 안내와 이용자가 이사할 시간을 어떻게 마련할지." } } }
-            h2 { "서비스 소개에는 근거와 날짜를." } p { "가격이나 ‘운영을 다 해준다’는 표현만으로 비교하지 않으려 합니다. 제공 범위·이용 조건·원문 링크·확인 날짜를 따로 기록하고, 제공자도 직접 바로잡을 수 있게 할 예정이에요." }
-            p { class:"review-note", "사업자 목록과 편집 기능은 준비 중입니다. 확인하지 않은 서비스 내용이나 가격은 싣지 않았어요." }
+            Link { class:"text-link", to:Route::HostingList{}, "관리형 서비스와 맡는 범위 보기" ArrowRight { size:16 } }
+            p { class:"review-note", "출처 없는 내용은 미확인으로 남겨둡니다. 회원이 직접 바로잡을 수 있어요." }
         }
         Link { class:"text-link", to:Route::Platforms { filters: Default::default() }, "어떤 소프트웨어로 만들지 살펴보기" ArrowRight { size:16 } }
     } }

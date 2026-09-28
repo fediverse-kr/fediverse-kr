@@ -1,6 +1,46 @@
 use super::*;
 use crate::backend::directory::Icon;
 impl Database {
+    pub async fn public_site_header(&self, domain: &str) -> Result<Option<Icon>, StoreError> {
+        use crate::backend::db::schema::{
+            directory_headers as headers, directory_icons as icons, directory_sites as sites,
+        };
+        let mut conn = self.pool.get().await.map_err(|_| StoreError)?;
+        let row = headers::table
+            .inner_join(sites::table)
+            .filter(sites::domain.eq(domain))
+            .filter(sites::is_hidden.eq(false))
+            .filter(sites::is_force_hidden.eq(false))
+            .filter(diesel::dsl::not(diesel::dsl::exists(
+                icons::table
+                    .filter(icons::site_id.eq(headers::site_id))
+                    .filter(icons::bytes.eq(headers::bytes)),
+            )))
+            .select((headers::mime, headers::bytes))
+            .first::<(String, Vec<u8>)>(&mut conn)
+            .await
+            .optional()?;
+        let Some((mime, bytes)) = row else {
+            return Ok(None);
+        };
+        if bytes.len() > crate::backend::crawler::ICON_LIMIT {
+            return Ok(None);
+        }
+        let detected = crate::backend::media::image_mime(&bytes);
+        let shape = crate::backend::media::validation::decoded_raster_dimensions(&bytes);
+        Ok(match (detected, shape) {
+            (Some(actual), Some((w, h)))
+                if actual == mime
+                    && crate::backend::crawler::site_image_dimensions_suitable(w, h) =>
+            {
+                Some(Icon {
+                    mime: actual,
+                    bytes,
+                })
+            }
+            _ => None,
+        })
+    }
     pub async fn public_site_icon(&self, domain: &str) -> Result<Option<Icon>, StoreError> {
         #[derive(QueryableByName)]
         struct Row {

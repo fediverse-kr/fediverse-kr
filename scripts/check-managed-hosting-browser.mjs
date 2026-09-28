@@ -1,0 +1,68 @@
+async (page) => {
+  const base=new URL(page.url()).origin;
+  if(new URL(base).hostname!=='127.0.0.1')throw new Error('Synthetic member writes are loopback-only');
+  const checks=[],check=(ok,text)=>{if(!ok)throw new Error(text);checks.push(text);};
+  const slug='browser-managed-'+Date.now();
+  await page.goto(base+'/guides/self-hosting');
+  await page.waitForFunction(()=>document.querySelector('.portal-root')?.dataset.ready==='true');
+  await page.locator('main a[href="/hosting"]').first().click();
+  await page.waitForURL('**/hosting');
+  await page.getByRole('heading', { name: '관리형 서비스', exact: true }).waitFor();
+  check(await page.getByRole('link',{name:'서비스 등록',exact:true}).isVisible(),'The guide leads to a usable managed-hosting list');
+  await page.getByRole('link',{name:'서비스 등록',exact:true}).click();
+  await page.locator('#hosting-slug').fill(slug);
+  await page.locator('#hosting-name').fill('예시 대리운영 서비스');
+  await page.locator('#hosting-website_url').fill('https://'+slug+'.example/');
+  await page.locator('#hosting-scope').fill('서버 설치와 업데이트를 맡기는 예시입니다.');
+  await page.locator('#hosting-software').fill('Mastodon · 예시');
+  await page.locator('#hosting-provider_responsibilities').fill('설치와 업데이트 · 테스트용 범위');
+  await page.locator('#hosting-customer_responsibilities').fill('가입 승인과 운영 규칙 · 테스트용 범위');
+  await page.locator('#hosting-source_url').fill('https://'+slug+'.example/about');
+  await page.locator('#hosting-checked_on').fill('2026-09-28');
+  await page.locator('#hosting-summary').fill('브라우저 합성 자료 등록');
+  await page.getByRole('button',{name:'저장하기',exact:true}).click();
+  await page.waitForURL(base+'/hosting/'+slug);
+  await page.getByRole('heading',{name:'예시 대리운영 서비스',exact:true}).waitFor();
+  check(await page.getByRole('heading',{name:'예시 대리운영 서비스',exact:true}).isVisible(),'Member creates a service and immediately sees its saved detail');
+  for(const width of [1920,390]){
+    await page.setViewportSize({width,height:1080});
+    check(await page.evaluate(()=>document.documentElement.scrollWidth===innerWidth),'Managed detail has no overflow at '+width);
+    check(await page.getByText('제공자가 맡는 일',{exact:true}).isVisible(),'Provider/customer responsibilities are visible at '+width);
+    await page.screenshot({path:'managed-detail-'+width+'.png',fullPage:true});
+  }
+  await page.getByRole('link',{name:'정보 수정',exact:true}).click();
+  await page.locator('#hosting-name').fill('수정한 예시 대리운영');
+  await page.locator('#hosting-summary').fill('이름 수정');
+  await page.getByRole('button',{name:'저장하기',exact:true}).click();
+  await page.waitForURL(base+'/hosting/'+slug);
+  await page.reload();
+  check(await page.getByRole('heading',{name:'수정한 예시 대리운영',exact:true}).isVisible(),'Edited data survives a full reload');
+  const live=await (await page.request.get(base+'/api/public/hosting/detail?slug='+slug)).json();
+  check(live.revision===2,'Canonical revision advances after the saved edit');
+  const conflict=await page.evaluate(async ({slug,edit})=>{
+    const r=await fetch('/api/member/hosting/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug,revision:1,edit:{...edit,name:'stale overwrite'},summary:'stale edit'})});return r.status;
+  },{slug,edit:live.edit});
+  check(conflict===409,'A stale editor cannot overwrite a newer service revision');
+  await page.getByRole('link',{name:'변경 이력',exact:true}).click();
+  const initial=page.locator('ol.hosting-history li').filter({hasText:'버전 1'});
+  await initial.getByRole('button',{name:'내용 보기',exact:true}).click();
+  await page.locator('#hosting-restore-summary').fill('첫 소개 복원');
+  const confirmation=page.getByRole('checkbox',{name:'현재 버전과 비교했습니다.'});
+  await confirmation.focus();
+  await confirmation.press('Space');
+  check(await confirmation.isChecked(),'Restore confirmation works through native keyboard interaction');
+  await page.getByRole('button',{name:/되돌리|복원/}).click();
+  await page.waitForURL(base+'/hosting/'+slug);
+  await page.getByRole('heading',{name:'예시 대리운영 서비스',exact:true}).waitFor();
+  check(await page.getByRole('heading',{name:'예시 대리운영 서비스',exact:true}).isVisible(),'Confirmed history restore returns the first saved contents');
+  const restored=await (await page.request.get(base+'/api/public/hosting/detail?slug='+slug)).json();
+  check(restored.revision===3,'Restore creates a new canonical revision rather than erasing history');
+  const anonymous=await page.context().browser().newContext();
+  const anon=await anonymous.newPage();await anon.goto(base+'/account/hosting/'+slug+'/edit');
+  await anon.waitForFunction(()=>document.querySelector('.portal-root')?.dataset.ready==='true');
+  check(await anon.getByRole('button',{name:'저장하기',exact:true}).isDisabled(),'Anonymous visitor cannot save through the editor');
+  const denied=await anon.evaluate(async({slug,edit})=>{const r=await fetch('/api/member/hosting/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug,revision:3,edit,summary:'anonymous write'})});return r.status;},{slug,edit:restored.edit});
+  check(denied===401,'Direct anonymous API write is rejected');
+  await anonymous.close();
+  return {checks,slug,finalRevision:restored.revision};
+}

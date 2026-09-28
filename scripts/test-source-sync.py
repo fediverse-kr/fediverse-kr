@@ -85,7 +85,7 @@ class SourceSyncTests(unittest.TestCase):
     def test_snapshot_does_not_publish_private_author_email(self):
         self.assertEqual(self.sync().returncode, 0)
         self.assertEqual(git(self.public, 'log', '-1', '--format=%an <%ae>', 'main'),
-                         'fediverse.kr source sync <source-sync@users.noreply.github.com>')
+                         'fediverse.kr source sync <source-sync@fediverse.invalid>')
         self.assertEqual(git(self.source, 'log', '-1', '--format=%ae'),
                          'contributor@example.invalid')
 

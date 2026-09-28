@@ -220,6 +220,7 @@ async fn site_delete_removes_only_target_runtime_rows_retains_reports_and_fences
         nodeinfo: None,
         nodeinfo_error: None,
         icon: None,
+        header: None,
         icon_collection_complete: false,
     };
     assert!(!f.db.finish_site(&old, &result).await.unwrap());

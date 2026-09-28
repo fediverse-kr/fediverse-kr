@@ -25,6 +25,7 @@ pub fn Platforms(filters: super::catalog::CatalogQuery) -> Element {
     rsx! { catalog::CatalogListing { key:"{filters}", criteria:filters } }
 }
 mod catalog;
+mod software;
 
 #[component]
 pub fn SoftwareDetail(name: String) -> Element {
@@ -33,8 +34,8 @@ pub fn SoftwareDetail(name: String) -> Element {
 #[component]
 fn SoftwareDetails(name: String) -> Element {
     let catalog = use_server_future(use_reactive((&name,), |(name,)| api::software(name)))?;
-    rsx! { main { id:"content", class:"detail-page wrap",
-        Link { class:"back-link", to:Route::Platforms { filters: Default::default() }, ArrowLeft { size:16 } "소프트웨어 종류" }
+    rsx! { main { id:"content", class:"detail-page software-detail-page wrap",
+        Link { class:"back-link", to:Route::Platforms { filters: Default::default() }, ArrowLeft { size:16 } "소프트웨어 목록" }
         match catalog() {
             Some(Ok(data))=> {
                 let item=data.software.as_ref();
@@ -42,22 +43,7 @@ fn SoftwareDetails(name: String) -> Element {
                     Some(item)=>rsx! {
                         document::Title { "{item.display_name} — 소프트웨어 — fediverse.kr" }
                         PreviewNote { preview:data.preview }
-                        header { class:"page-heading", h1 { class:"software-title", if item.logo_available{crate::media_ui::ImageMark{source:crate::media_ui::software_source(&item.name),fallback:item.display_name.chars().next().unwrap_or('·').to_string(),class:"software-mark",size:56}} span { "{item.display_name}" } } if !item.description_html.is_empty() { div { class:"rich-description", dangerous_inner_html:"{item.description_html}" } } }
-                        div { class:"detail-layout",
-                            section { class:"information-prose",
-                                h2 { "이런 종류의 공간이에요" }
-                                div { class:"tag-list", for category in &item.categories { span { "{data.categories.iter().find(|c|&c.name==category).map(|c|c.label.as_str()).unwrap_or(category)}" } } }
-                                if !item.features.is_empty() { h2 { "주요 기능" } ul { for feature in &item.features { li { "{feature}" } } } }
-                                if let Some(tech)=&item.tech_stack { details { summary { "어떤 기술로 만들어졌나요?" } p { "{tech}" } } }
-                                h2 { "같은 도구여도, 분위기는 달라요." } p { "규칙과 가입 방식은 서버 운영자가 정해요. 마음에 드는 곳의 안내를 읽어보세요." }
-                            }
-                            aside { class:"join-panel", h2 { "직접 써보고 싶다면" }
-                                Link { class:"primary-button", to:Route::SoftwareServers { name:item.name.clone() }, "이 소프트웨어의 서버 찾기" }
-                                if let Some(url)=item.website_url.as_deref().and_then(web_link) { a { class:"text-link", href:url, target:"_blank", rel:"noopener noreferrer ugc", "프로젝트 웹사이트" ArrowRight { size:16 } } }
-                                p { "서버 수집 결과에 기록된 소프트웨어 이름을 기준으로 찾아요." }
-                            }
-                        }
-                        div {class:"membership-actions catalog-contribute",Link {class:"secondary-button",to:Route::SoftwareEditor{name:item.name.clone()},"정보 수정"}Link {class:"text-link",to:Route::SoftwareHistory{name:item.name.clone()},"변경 이력"}}
+                        software::Overview { item:item.clone(), categories:data.categories.clone() }
                     },
                     None=>rsx! { MissingRecord { title:"아직 등록되지 않은 소프트웨어예요." } Link { class:"text-link", to:Route::Platforms { filters: Default::default() }, "전체 목록 보기" } },
                 }
@@ -99,7 +85,11 @@ fn SiteDetails(domain: String) -> Element {
                 PreviewNote { preview:data.preview }
                 if let Some(site)=data.site {
                     document::Title { "{site.name} — 서버 정보 — fediverse.kr" }
-                    header { class:"page-heading", icon::SiteIcon{site:site.clone()} h1 { "{site.name}" } p { "{site.domain}" } }
+                    header { class:"page-heading",
+                        icon::SiteHeader{site:site.clone()}
+                        div {class:"server-detail-identity",icon::SiteIcon{site:site.clone()} h1 { "{site.name}" }}
+                        p { "{site.domain}" }
+                    }
                     div { class:"detail-layout",
                         section { class:"information-prose",
                             h2 { "이곳의 소개" }

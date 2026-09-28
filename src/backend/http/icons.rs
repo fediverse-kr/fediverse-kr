@@ -1,7 +1,12 @@
 use super::*;
 const PREFIX: &str = "/api/public/server-icon/";
 pub(super) async fn response(method: Method, path: String) -> Option<Response> {
-    let domain = path.strip_prefix(PREFIX)?;
+    let (domain, is_header) = if let Some(domain) = path.strip_prefix("/api/public/server-header/")
+    {
+        (domain, true)
+    } else {
+        (path.strip_prefix(PREFIX)?, false)
+    };
     let mut response = if method != Method::GET && method != Method::HEAD {
         let mut r = StatusCode::METHOD_NOT_ALLOWED.into_response();
         r.headers_mut()
@@ -13,7 +18,11 @@ pub(super) async fn response(method: Method, path: String) -> Option<Response> {
         StatusCode::NOT_FOUND.into_response()
     } else {
         match super::super::config::state().await {
-            Ok(state) => match state.db.public_site_icon(domain).await {
+            Ok(state) => match if is_header {
+                state.db.public_site_header(domain).await
+            } else {
+                state.db.public_site_icon(domain).await
+            } {
                 Ok(Some(icon)) => {
                     let length = icon.bytes.len();
                     let mut r = if method == Method::HEAD {
@@ -28,6 +37,7 @@ pub(super) async fn response(method: Method, path: String) -> Option<Response> {
                     }
                     r
                 }
+                Ok(None) if is_header => StatusCode::NOT_FOUND.into_response(),
                 Ok(None) => super::media::render(
                     &method,
                     crate::backend::media::read(

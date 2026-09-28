@@ -17,7 +17,7 @@ fn limits() -> Limits {
     limits
 }
 
-fn raster_area(mut decoder: impl ImageDecoder) -> Option<u64> {
+fn raster_dimensions(mut decoder: impl ImageDecoder) -> Option<(u32, u32)> {
     decoder.set_limits(limits()).ok()?;
     let (width, height) = decoder.dimensions();
     if width > MAX_IMAGE_SIDE || height > MAX_IMAGE_SIDE || decoder.total_bytes() > MAX_IMAGE_BYTES
@@ -27,10 +27,10 @@ fn raster_area(mut decoder: impl ImageDecoder) -> Option<u64> {
     // Decode under the shared allocation limits: dimensions alone do not prove
     // a compressed remote raster is valid or safe for an image consumer.
     image::DynamicImage::from_decoder(decoder).ok()?;
-    u64::from(width).checked_mul(u64::from(height))
+    Some((width, height))
 }
 
-fn area_for_mime(mime: &str, bytes: &[u8], animations: bool) -> Option<u64> {
+fn dimensions_for_mime(mime: &str, bytes: &[u8], animations: bool) -> Option<(u32, u32)> {
     let cursor = Cursor::new(bytes);
     match mime {
         "image/png" => {
@@ -38,19 +38,31 @@ fn area_for_mime(mime: &str, bytes: &[u8], animations: bool) -> Option<u64> {
             if !animations && decoder.is_apng().ok()? {
                 return None;
             }
-            raster_area(decoder)
+            raster_dimensions(decoder)
         }
-        "image/jpeg" => raster_area(JpegDecoder::new(cursor).ok()?),
+        "image/jpeg" => raster_dimensions(JpegDecoder::new(cursor).ok()?),
         "image/webp" => {
             let decoder = WebPDecoder::new(cursor).ok()?;
             if !animations && decoder.has_animation() {
                 return None;
             }
-            raster_area(decoder)
+            raster_dimensions(decoder)
         }
-        "image/gif" if animations => raster_area(GifDecoder::new(cursor).ok()?),
+        "image/gif" if animations => raster_dimensions(GifDecoder::new(cursor).ok()?),
         _ => None,
     }
+}
+
+fn area_for_mime(mime: &str, bytes: &[u8], animations: bool) -> Option<u64> {
+    let (width, height) = dimensions_for_mime(mime, bytes, animations)?;
+    u64::from(width).checked_mul(u64::from(height))
+}
+
+/// Decode a crawler candidate with the shared 4096px/64MiB guard and return
+/// its true raster dimensions. Metadata declarations are not trusted.
+pub(crate) fn decoded_raster_dimensions(bytes: &[u8]) -> Option<(u32, u32)> {
+    let mime = super::image_mime(bytes)?;
+    dimensions_for_mime(mime, bytes, true)
 }
 
 /// Decode a crawler candidate with the shared 4096px/64MiB guard and return

@@ -36,6 +36,7 @@ pub struct Observation {
     pub nodeinfo: Option<NodeInfo>,
     pub nodeinfo_error: Option<String>,
     pub icon: Option<Icon>,
+    pub header: Option<Icon>,
     /// True only when the bounded icon collection phase completed.
     pub icon_collection_complete: bool,
 }
@@ -50,6 +51,7 @@ impl Observation {
             nodeinfo: None,
             nodeinfo_error: None,
             icon: None,
+            header: None,
             icon_collection_complete: false,
         }
     }

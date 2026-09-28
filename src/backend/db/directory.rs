@@ -1,7 +1,7 @@
 use super::{
     schema::{
-        directory_health_checks as health, directory_icons as icons, directory_jobs as jobs,
-        directory_observations as observations, directory_sites as sites,
+        directory_headers as headers, directory_health_checks as health, directory_icons as icons,
+        directory_jobs as jobs, directory_observations as observations, directory_sites as sites,
     },
     Database, StoreError,
 };
@@ -14,6 +14,10 @@ use diesel::{
 use diesel_async::{AsyncConnection, AsyncPgConnection, RunQueryDsl};
 use uuid::Uuid;
 
+#[cfg(test)]
+#[path = "directory/image_tests.rs"]
+mod image_tests;
+
 #[derive(QueryableByName)]
 struct Claimed {
     #[diesel(sql_type=SqlUuid)]
@@ -24,6 +28,17 @@ struct Claimed {
     domain: String,
     #[diesel(sql_type=Bool)]
     needs_icon: bool,
+}
+
+fn header_quality(mime: &str, bytes: &[u8]) -> Option<u64> {
+    if bytes.len() > crate::backend::crawler::ICON_LIMIT
+        || crate::backend::media::image_mime(bytes)? != mime
+    {
+        return None;
+    }
+    let (width, height) = crate::backend::media::validation::decoded_raster_dimensions(bytes)?;
+    crate::backend::crawler::site_image_dimensions_suitable(width, height)
+        .then_some(u64::from(width) * u64::from(height))
 }
 
 fn icon_quality(mime: &str, bytes: &[u8]) -> Option<(u8, u64)> {
@@ -136,9 +151,43 @@ pub(super) async fn store_observation(
             }
         }
     }
+    if let Some(header) = &result.header {
+        if let Some(quality) = header_quality(header.mime, &header.bytes) {
+            let existing = headers::table
+                .find(site)
+                .select((headers::mime, headers::bytes))
+                .first::<(String, Vec<u8>)>(conn)
+                .await
+                .optional()?;
+            let replace = existing.as_ref().is_none_or(|(mime, bytes)| {
+                replace_icon && header_quality(mime, bytes).is_some_and(|old| quality > old)
+            });
+            if replace {
+                diesel::insert_into(headers::table)
+                    .values((
+                        headers::site_id.eq(site),
+                        headers::mime.eq(header.mime),
+                        headers::bytes.eq(&header.bytes),
+                    ))
+                    .on_conflict(headers::site_id)
+                    .do_update()
+                    .set((
+                        headers::mime.eq(header.mime),
+                        headers::bytes.eq(&header.bytes),
+                        headers::fetched_at.eq(now),
+                    ))
+                    .execute(conn)
+                    .await?;
+            }
+        }
+    }
     if mark_icon_collection {
-        diesel::sql_query("UPDATE directory_icons SET collection_version=1 WHERE site_id=$1")
-            .bind::<SqlUuid, _>(site)
+        diesel::update(sites::table.find(site))
+            .set(sites::icon_collection_version.eq(2i16))
+            .execute(conn)
+            .await?;
+        diesel::update(icons::table.find(site))
+            .set(icons::collection_version.eq(2i16))
             .execute(conn)
             .await?;
     }
@@ -255,6 +304,7 @@ mod tests {
                 mime: "image/png",
                 bytes: valid_png(),
             }),
+            header: None,
             icon_collection_complete: true,
         };
         assert!(!db.finish_site(&first, &result).await.unwrap());
@@ -396,7 +446,7 @@ mod tests {
 
     #[tokio::test]
     #[ignore = "requires isolated FEDKR_TEST_DATABASE_URL"]
-    async fn imported_favicon_file_suppresses_only_automatic_recrawls() {
+    async fn imported_favicon_is_refreshed_by_new_image_policy() {
         async fn queue(
             db: &Database,
             site: Uuid,
@@ -462,7 +512,7 @@ mod tests {
         let automatic = queue(&db, valid, false, 0).await;
         let job = db.claim_site().await.unwrap().unwrap();
         assert_eq!(job.site_id, valid);
-        assert!(!job.needs_icon);
+        assert!(job.needs_icon);
         complete(&db, automatic).await;
         let owner = queue(&db, valid, true, 1).await;
         let job = db.claim_site().await.unwrap().unwrap();
@@ -588,7 +638,7 @@ impl Database {
             // failure is completed normally and sampled again in the next period.
             diesel::sql_query("UPDATE directory_jobs SET state=CASE WHEN attempts>=3 THEN 'dead' ELSE 'pending' END,lease_token=NULL,lease_until=NULL,last_error='worker_lease_expired' WHERE state='running' AND lease_until<=now()")
                 .execute(conn).await?;
-            let row=diesel::sql_query("WITH candidate AS (SELECT j.id,s.domain,(j.owner_requested OR (NOT EXISTS(SELECT 1 FROM directory_icons i WHERE i.site_id=s.id) AND NOT EXISTS(SELECT 1 FROM legacy_sites l JOIN stored_files f ON f.object_key=l.favicon_key WHERE l.id=s.id AND l.favicon_key LIKE 'favicons/%')) OR EXISTS(SELECT 1 FROM directory_icons i WHERE i.site_id=s.id AND i.collection_version<1)) AS needs_icon FROM directory_jobs j JOIN directory_sites s ON s.id=j.site_id WHERE j.state='pending' AND j.attempts<3 AND j.scheduled_at<=now() AND (NOT s.is_closed OR j.owner_requested) AND NOT EXISTS (SELECT 1 FROM directory_jobs running WHERE running.site_id=s.id AND running.state='running') ORDER BY j.scheduled_at,j.id LIMIT 1 FOR UPDATE OF j SKIP LOCKED) UPDATE directory_jobs j SET state='running',attempts=j.attempts+1,lease_token=$1,lease_until=now()+interval '120 seconds' FROM candidate c WHERE j.id=c.id RETURNING j.id,j.site_id,c.domain,c.needs_icon")
+            let row=diesel::sql_query("WITH candidate AS (SELECT j.id,s.domain,(j.owner_requested OR s.icon_collection_version<2) AS needs_icon FROM directory_jobs j JOIN directory_sites s ON s.id=j.site_id WHERE j.state='pending' AND j.attempts<3 AND j.scheduled_at<=now() AND (NOT s.is_closed OR j.owner_requested) AND NOT EXISTS (SELECT 1 FROM directory_jobs running WHERE running.site_id=s.id AND running.state='running') ORDER BY j.scheduled_at,j.id LIMIT 1 FOR UPDATE OF j SKIP LOCKED) UPDATE directory_jobs j SET state='running',attempts=j.attempts+1,lease_token=$1,lease_until=now()+interval '120 seconds' FROM candidate c WHERE j.id=c.id RETURNING j.id,j.site_id,c.domain,c.needs_icon")
                 .bind::<SqlUuid,_>(token).get_result::<Claimed>(conn).await.optional()?;
             Ok(row.map(|r|CrawlJob {id:r.id,site_id:r.site_id,domain:r.domain,lease_token:token,needs_icon:r.needs_icon}))
         }).await

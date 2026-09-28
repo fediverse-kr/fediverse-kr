@@ -1,5 +1,19 @@
 //! Persistence schema only. Domain and HTTP modules do not import this module.
 diesel::table! {
+    hosting_services (slug) {
+        slug -> Text, name -> Text, website_url -> Text, scope -> Text, software -> Text,
+        provider_responsibilities -> Text, customer_responsibilities -> Text,
+        source_url -> Text, checked_on -> Nullable<Date>, revision -> Int8,
+        updated_at -> Timestamptz,
+    }
+}
+diesel::table! {
+    hosting_service_edits (slug, revision) {
+        slug -> Text, revision -> Int8, actor_id -> Nullable<Uuid>, action -> Text,
+        summary -> Text, snapshot -> Jsonb, created_at -> Timestamptz,
+    }
+}
+diesel::table! {
     member_legacy_claims (member_id) {
         member_id -> Uuid,
         handle -> Text,
@@ -86,7 +100,8 @@ diesel::table! {
 diesel::joinable!(member_sessions -> member_users (member_id));
 diesel::table! {
     directory_sites (id) {
-        id -> Uuid, domain -> Text, name -> Nullable<Text>, description -> Nullable<Text>,
+        id -> Uuid,
+        icon_collection_version -> SmallInt, domain -> Text, name -> Nullable<Text>, description -> Nullable<Text>,
         is_hidden -> Bool, is_force_hidden -> Bool, is_closed -> Bool,
         created_at -> Timestamptz, updated_at -> Timestamptz,
     }
@@ -123,6 +138,12 @@ diesel::table! {
 }
 diesel::joinable!(directory_icons -> directory_sites (site_id));
 diesel::table! {
+    directory_headers (site_id) {
+        site_id -> Uuid, mime -> Text, bytes -> Bytea, fetched_at -> Timestamptz,
+    }
+}
+diesel::joinable!(directory_headers -> directory_sites (site_id));
+diesel::table! {
     directory_site_registrations (site_id) {
         site_id -> Uuid, member_id -> Nullable<Uuid>, created_at -> Timestamptz,
     }
@@ -132,7 +153,8 @@ diesel::allow_tables_to_appear_in_same_query!(
     directory_observations,
     directory_jobs,
     directory_health_checks,
-    directory_icons
+    directory_icons,
+    directory_headers
 );
 diesel::allow_tables_to_appear_in_same_query!(
     member_users,

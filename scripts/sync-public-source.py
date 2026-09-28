@@ -89,7 +89,7 @@ def sync(source, revision, remote):
             # contribution attribution in the canonical history and notices;
             # never export a private source-tip name/email by accident.
             env['GIT_AUTHOR_NAME'] = env['GIT_COMMITTER_NAME'] = 'fediverse.kr source sync'
-            env['GIT_AUTHOR_EMAIL'] = env['GIT_COMMITTER_EMAIL'] = 'source-sync@users.noreply.github.com'
+            env['GIT_AUTHOR_EMAIL'] = env['GIT_COMMITTER_EMAIL'] = 'source-sync@fediverse.invalid'
             env['GIT_AUTHOR_DATE'] = git(source, 'log', '-1', '--format=%aI', revision).stdout.strip()
             message = f'Publish source snapshot {revision[:12]}\n\nSource-commit: {revision}\n'
             commit = git(public, 'commit-tree', tree, *parents, input=message, env=env).stdout.strip()

@@ -50,6 +50,8 @@ pub struct SoftwareInfo {
 pub struct PublicSite {
     pub icon_available: bool,
     #[serde(default)]
+    pub header_available: bool,
+    #[serde(default)]
     pub guidance: SiteGuidance,
     pub domain: String,
     pub name: String,

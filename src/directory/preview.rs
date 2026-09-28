@@ -175,6 +175,7 @@ pub fn all_sites() -> Vec<PublicSite> {
     .into_iter()
     .map(|(domain, name, software, description)| PublicSite {
         icon_available: false,
+        header_available: false,
         guidance: SiteGuidance {
             tags: vec![if software == "pixelfed" {
                 "사진"

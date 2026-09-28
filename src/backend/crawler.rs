@@ -7,6 +7,7 @@ use chrono::Utc;
 use serde_json::Value;
 use std::{
     cell::RefCell,
+    collections::HashSet,
     future::Future,
     pin::Pin,
     time::{Duration, Instant},
@@ -149,18 +150,27 @@ async fn nodeinfo<T: SiteTransport>(transport: &T, base: &Url) -> Result<NodeInf
 }
 const MANIFEST_LIMIT: usize = 64 * 1024;
 const ICON_CANDIDATE_LIMIT: usize = 8;
+const SITE_IMAGE_CANDIDATE_LIMIT: usize = 4;
 const ICON_FETCH_TIMEOUT: Duration = Duration::from_secs(2);
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum CandidateKind {
+    Icon,
+    SiteImage,
+}
 
 #[derive(Clone, Debug)]
 struct IconCandidate {
     url: Url,
     declared_area: u64,
     source_priority: u8,
+    kind: CandidateKind,
 }
 
 #[derive(Default)]
 struct IconLinks {
     icons: Vec<IconCandidate>,
+    site_images: Vec<IconCandidate>,
     manifests: Vec<Url>,
 }
 
@@ -193,6 +203,22 @@ fn push_icon_candidate(links: &mut IconLinks, url: Url, declared_area: u64, sour
             url,
             declared_area,
             source_priority,
+            kind: CandidateKind::Icon,
+        });
+    }
+}
+
+fn push_site_image_candidate(links: &mut IconLinks, url: Url, source_priority: u8) {
+    if !links
+        .site_images
+        .iter()
+        .any(|candidate| candidate.url == url)
+    {
+        links.site_images.push(IconCandidate {
+            url,
+            declared_area: 0,
+            source_priority,
+            kind: CandidateKind::SiteImage,
         });
     }
 }
@@ -212,7 +238,7 @@ fn icon_links(html: &[u8], base: &Url) -> IconLinks {
             let Token::TagToken(tag) = token else {
                 return TokenSinkResult::Continue;
             };
-            if tag.kind != TagKind::StartTag || tag.name.as_ref() != "link" {
+            if tag.kind != TagKind::StartTag {
                 return TokenSinkResult::Continue;
             }
             let attr = |name: &str| {
@@ -221,6 +247,36 @@ fn icon_links(html: &[u8], base: &Url) -> IconLinks {
                     .find(|attribute| attribute.name.local.as_ref() == name)
                     .map(|attribute| attribute.value.to_string())
             };
+            if tag.name.as_ref() == "meta" {
+                let key = attr("property").or_else(|| attr("name"));
+                let Some(key) = key.map(|key| key.to_ascii_lowercase()) else {
+                    return TokenSinkResult::Continue;
+                };
+                if !matches!(
+                    key.as_str(),
+                    "og:image"
+                        | "og:image:url"
+                        | "og:image:secure_url"
+                        | "twitter:image"
+                        | "twitter:image:src"
+                ) {
+                    return TokenSinkResult::Continue;
+                }
+                let Some(content) = attr("content") else {
+                    return TokenSinkResult::Continue;
+                };
+                if let Some(url) = safe_link(&self.base, &content) {
+                    push_site_image_candidate(
+                        &mut self.links.borrow_mut(),
+                        url,
+                        u8::from(key.starts_with("og:")) + 1,
+                    );
+                }
+                return TokenSinkResult::Continue;
+            }
+            if tag.name.as_ref() != "link" {
+                return TokenSinkResult::Continue;
+            }
             let Some(rel) = attr("rel") else {
                 return TokenSinkResult::Continue;
             };
@@ -284,6 +340,7 @@ fn manifest_icon_candidates(bytes: &[u8], base: &Url) -> Vec<IconCandidate> {
                 url,
                 declared_area: declared_icon_area(icon.get("sizes").and_then(Value::as_str)),
                 source_priority: 0,
+                kind: CandidateKind::Icon,
             })
         })
         .collect()
@@ -299,8 +356,9 @@ async fn icon_reply<T: SiteTransport>(transport: &T, url: &Url, limit: usize) ->
 async fn best_icon<T: SiteTransport>(
     transport: &T,
     mut candidates: Vec<IconCandidate>,
+    mut site_images: Vec<IconCandidate>,
     fallback: Url,
-) -> Option<Icon> {
+) -> (Option<Icon>, Option<Icon>) {
     // The conventional fallback must remain reachable even if a malicious or
     // noisy page advertises more ranked candidates than the request budget.
     candidates.retain(|candidate| candidate.url != fallback);
@@ -310,17 +368,42 @@ async fn best_icon<T: SiteTransport>(
             .cmp(&left.declared_area)
             .then_with(|| right.source_priority.cmp(&left.source_priority))
     });
-    let mut best: Option<((u8, u64), Icon)> = None;
+    site_images.sort_by(|left, right| {
+        right
+            .source_priority
+            .cmp(&left.source_priority)
+            .then_with(|| right.declared_area.cmp(&left.declared_area))
+    });
+    candidates.retain(|candidate| candidate.url != fallback);
+    site_images.retain(|candidate| candidate.url != fallback);
+    let mut selected = Vec::new();
+    let mut seen = HashSet::new();
+    for candidate in site_images.iter().take(SITE_IMAGE_CANDIDATE_LIMIT).chain(
+        candidates
+            .iter()
+            .take(ICON_CANDIDATE_LIMIT - SITE_IMAGE_CANDIDATE_LIMIT),
+    ) {
+        if seen.insert(candidate.url.clone()) {
+            selected.push(candidate.clone());
+        }
+    }
+    for candidate in site_images.iter().chain(candidates.iter()) {
+        if selected.len() >= ICON_CANDIDATE_LIMIT {
+            break;
+        }
+        if seen.insert(candidate.url.clone()) {
+            selected.push(candidate.clone());
+        }
+    }
+    let mut best_icon: Option<((u8, u64), Icon)> = None;
+    let mut best_header: Option<(u64, Icon)> = None;
     let fallback = IconCandidate {
         url: fallback,
         declared_area: 0,
         source_priority: 0,
+        kind: CandidateKind::Icon,
     };
-    for candidate in candidates
-        .into_iter()
-        .take(ICON_CANDIDATE_LIMIT)
-        .chain(std::iter::once(fallback))
-    {
+    for candidate in selected.into_iter().chain(std::iter::once(fallback)) {
         let Some(Reply {
             status: 200,
             body: Ok(bytes),
@@ -335,22 +418,63 @@ async fn best_icon<T: SiteTransport>(
         let Some(mime) = crate::backend::media::image_mime(&bytes) else {
             continue;
         };
-        let score = if mime == "image/svg+xml" {
-            (2, u64::MAX)
-        } else {
-            let Some(area) = crate::backend::media::validation::decoded_raster_area(&bytes) else {
-                continue;
+        // One URL can be advertised for both roles. Fetch once, preserve the
+        // declarations, and select each role independently.
+        let is_icon = candidate.kind == CandidateKind::Icon
+            || candidates.iter().any(|item| item.url == candidate.url);
+        let is_header = candidate.kind == CandidateKind::SiteImage
+            || site_images.iter().any(|item| item.url == candidate.url);
+        if is_header && mime != "image/svg+xml" {
+            if let Some((width, height)) =
+                crate::backend::media::validation::decoded_raster_dimensions(&bytes)
+            {
+                let area = u64::from(width) * u64::from(height);
+                if site_image_dimensions_suitable(width, height)
+                    && best_header.as_ref().is_none_or(|(old, _)| area > *old)
+                {
+                    best_header = Some((
+                        area,
+                        Icon {
+                            mime,
+                            bytes: bytes.clone(),
+                        },
+                    ));
+                }
+            }
+        }
+        if is_icon {
+            let score = if mime == "image/svg+xml" {
+                (2, u64::MAX)
+            } else {
+                let Some(area) = crate::backend::media::validation::decoded_raster_area(&bytes)
+                else {
+                    continue;
+                };
+                (1, area)
             };
-            (1, area)
-        };
-        if best
-            .as_ref()
-            .is_none_or(|(best_score, _)| score > *best_score)
-        {
-            best = Some((score, Icon { mime, bytes }));
+            if best_icon.as_ref().is_none_or(|(old, _)| score > *old) {
+                best_icon = Some((score, Icon { mime, bytes }));
+            }
         }
     }
-    best.map(|(_, icon)| icon)
+    let icon = best_icon.map(|(_, icon)| icon);
+    let header = best_header
+        .map(|(_, image)| image)
+        .filter(|image| icon.as_ref().is_none_or(|icon| icon.bytes != image.bytes));
+    (icon, header)
+}
+
+pub(crate) fn site_image_dimensions_suitable(width: u32, height: u32) -> bool {
+    const MIN_EDGE: u32 = 160;
+    const MIN_AREA: u64 = 40_000;
+    if width < MIN_EDGE || height < MIN_EDGE {
+        return false;
+    }
+    let (width, height) = (u64::from(width), u64::from(height));
+    let Some(area) = width.checked_mul(height) else {
+        return false;
+    };
+    area >= MIN_AREA && width * 5 >= height * 4 && width * 5 <= height * 12
 }
 pub(crate) fn image_mime(bytes: &[u8]) -> Option<&'static str> {
     use image::ImageFormat;
@@ -390,6 +514,7 @@ pub async fn collect<T: SiteTransport>(transport: &T, job: &CrawlJob) -> Observa
         nodeinfo: None,
         nodeinfo_error: None,
         icon: None,
+        header: None,
         icon_collection_complete: false,
     };
     if !result.alive {
@@ -424,7 +549,8 @@ pub async fn collect<T: SiteTransport>(transport: &T, job: &CrawlJob) -> Observa
                 }
             }
         }
-        result.icon = best_icon(transport, links.icons, fallback).await;
+        (result.icon, result.header) =
+            best_icon(transport, links.icons, links.site_images, fallback).await;
         result.icon_collection_complete = true;
     }
     result
@@ -820,6 +946,12 @@ mod tests {
         )
         .icons
         .is_empty());
+        assert!(icon_links(
+            br#"<meta property='og:image' content='http://127.0.0.1/private'><meta name='twitter:image' content='javascript:alert(1)'><meta property='og:image' content='data:image/png;base64,AA=='>"#,
+            &base
+        )
+        .site_images
+        .is_empty());
         assert_eq!(image_mime(b"<svg onload='alert(1)'/>"), None);
         assert_eq!(image_mime(b"<html>not an icon"), None);
     }
@@ -852,6 +984,266 @@ mod tests {
             b"qoif",
         ] {
             assert_eq!(image_mime(unsupported), None);
+        }
+    }
+
+    #[tokio::test]
+    async fn open_graph_header_does_not_replace_the_identity_icon() {
+        use std::io::Cursor;
+        fn png(width: u32, height: u32) -> Vec<u8> {
+            let mut bytes = Vec::new();
+            image::DynamicImage::new_rgba8(width, height)
+                .write_to(&mut Cursor::new(&mut bytes), image::ImageFormat::Png)
+                .unwrap();
+            bytes
+        }
+
+        let root = Url::parse("https://site-image.example.com/").unwrap();
+        let card_url = root.join("/preview.png").unwrap();
+        let favicon_url = root.join("/favicon.svg").unwrap();
+        let card = png(1200, 630);
+        let html = b"<meta property='og:image' content='/preview.png'><link rel='icon' href='/favicon.svg'>";
+        assert_eq!(
+            icon_links(html, &root).site_images[0].url,
+            root.join("/preview.png").unwrap()
+        );
+        assert_eq!(
+            crate::backend::media::validation::decoded_raster_dimensions(&card),
+            Some((1200, 630))
+        );
+        assert!(site_image_dimensions_suitable(1200, 630));
+        let mut icon_job = job();
+        icon_job.domain = "site-image.example.com".into();
+        icon_job.needs_icon = true;
+        let result = collect(
+            &Fake(HashMap::from([
+                (
+                    root.to_string(),
+                    Reply {
+                        url: root,
+                        status: 200,
+                        body: Ok(b"<meta property='og:image' content='/preview.png'><link rel='icon' href='/favicon.svg'>".to_vec()),
+                    },
+                ),
+                (
+                    card_url.to_string(),
+                    Reply {
+                        url: card_url,
+                        status: 200,
+                        body: Ok(card.clone()),
+                    },
+                ),
+                (
+                    favicon_url.to_string(),
+                    Reply {
+                        url: favicon_url,
+                        status: 200,
+                        body: Ok(b"<svg><circle cx='8' cy='8' r='8'/></svg>".to_vec()),
+                    },
+                ),
+            ])),
+            &icon_job,
+        )
+        .await;
+
+        assert_eq!(
+            result
+                .icon
+                .as_ref()
+                .map(|icon| (icon.mime, icon.bytes.len())),
+            Some((
+                "image/svg+xml",
+                b"<svg><circle cx='8' cy='8' r='8'/></svg>".len()
+            ))
+        );
+        assert_eq!(result.header.unwrap().bytes, card);
+    }
+
+    #[test]
+    fn site_images_require_large_usable_aspect_ratio_but_allow_square_and_wide() {
+        assert!(site_image_dimensions_suitable(1200, 630));
+        assert!(site_image_dimensions_suitable(512, 512));
+        assert!(site_image_dimensions_suitable(320, 160));
+        assert!(site_image_dimensions_suitable(200, 200));
+        assert!(!site_image_dimensions_suitable(159, 512));
+        assert!(!site_image_dimensions_suitable(160, 159));
+        assert!(!site_image_dimensions_suitable(400, 700));
+        assert!(!site_image_dimensions_suitable(1200, 300));
+        assert!(!site_image_dimensions_suitable(199, 199));
+    }
+
+    #[tokio::test]
+    async fn unsuitable_or_malformed_metadata_images_fall_back_to_real_icons() {
+        use std::io::Cursor;
+        fn png(width: u32, height: u32) -> Vec<u8> {
+            let mut bytes = Vec::new();
+            image::DynamicImage::new_rgba8(width, height)
+                .write_to(&mut Cursor::new(&mut bytes), image::ImageFormat::Png)
+                .unwrap();
+            bytes
+        }
+
+        let root = Url::parse("https://fallback-shapes.example.com/").unwrap();
+        let mut entries = Vec::new();
+        let mut html = String::new();
+        for (path, bytes) in [
+            ("/portrait.png", png(400, 700)),
+            ("/banner.png", png(1200, 300)),
+            ("/small.png", png(159, 512)),
+            ("/malformed.png", b"not an image".to_vec()),
+        ] {
+            let url = root.join(path).unwrap();
+            html.push_str(&format!("<meta property='og:image' content='{path}'>"));
+            entries.push((
+                url.to_string(),
+                Reply {
+                    url,
+                    status: 200,
+                    body: Ok(bytes),
+                },
+            ));
+        }
+        let icon_url = root.join("/touch.png").unwrap();
+        let icon = png(64, 64);
+        html.push_str("<link rel='apple-touch-icon' href='/touch.png'>");
+        entries.push((
+            icon_url.to_string(),
+            Reply {
+                url: icon_url,
+                status: 200,
+                body: Ok(icon.clone()),
+            },
+        ));
+        entries.push((
+            root.to_string(),
+            Reply {
+                url: root.clone(),
+                status: 200,
+                body: Ok(html.into_bytes()),
+            },
+        ));
+        let fallback = root.join("/favicon.ico").unwrap();
+        entries.push((
+            fallback.to_string(),
+            Reply {
+                url: fallback,
+                status: 404,
+                body: Ok(Vec::new()),
+            },
+        ));
+        let mut icon_job = job();
+        icon_job.domain = "fallback-shapes.example.com".into();
+        icon_job.needs_icon = true;
+
+        let result = collect(&Fake(HashMap::from_iter(entries)), &icon_job).await;
+        assert_eq!(
+            result.icon.as_ref().map(|icon| icon.bytes.as_slice()),
+            Some(icon.as_slice())
+        );
+    }
+
+    #[tokio::test]
+    async fn metadata_candidate_overflow_keeps_candidate_budget_and_favicon_fallback() {
+        let root = Url::parse("https://meta-budget.example.com/").unwrap();
+        let mut html = String::new();
+        let mut entries = Vec::new();
+        for index in 0..9 {
+            let path = format!("/share-{index}.png");
+            html.push_str(&format!("<meta property='og:image' content='{path}'>"));
+            let url = root.join(&path).unwrap();
+            entries.push((
+                url.to_string(),
+                Reply {
+                    url,
+                    status: 404,
+                    body: Ok(Vec::new()),
+                },
+            ));
+        }
+        let icon = root.join("/favicon-32.png").unwrap();
+        html.push_str("<link rel='icon' sizes='32x32' href='/favicon-32.png'>");
+        entries.push((
+            icon.to_string(),
+            Reply {
+                url: icon,
+                status: 404,
+                body: Ok(Vec::new()),
+            },
+        ));
+        entries.push((
+            root.to_string(),
+            Reply {
+                url: root.clone(),
+                status: 200,
+                body: Ok(html.into_bytes()),
+            },
+        ));
+        let fallback = root.join("/favicon.ico").unwrap();
+        let fallback_bytes = valid_png();
+        entries.push((
+            fallback.to_string(),
+            Reply {
+                url: fallback,
+                status: 200,
+                body: Ok(fallback_bytes.clone()),
+            },
+        ));
+        let mut icon_job = job();
+        icon_job.domain = "meta-budget.example.com".into();
+        icon_job.needs_icon = true;
+
+        let result = collect(&Fake(HashMap::from_iter(entries)), &icon_job).await;
+        assert_eq!(result.icon.map(|icon| icon.bytes), Some(fallback_bytes));
+    }
+
+    #[tokio::test]
+    async fn image_roles_support_header_only_icon_only_absent_and_duplicate_urls() {
+        let root = Url::parse("https://roles.example.com/").unwrap();
+        let mut bytes = Vec::new();
+        image::DynamicImage::new_rgba8(800, 420)
+            .write_to(
+                &mut std::io::Cursor::new(&mut bytes),
+                image::ImageFormat::Png,
+            )
+            .unwrap();
+        for (html, icon, header) in [
+            (
+                "<meta property='og:image' content='/same.png'>",
+                false,
+                true,
+            ),
+            ("<link rel='icon' href='/same.png'>", true, false),
+            (
+                "<meta property='og:image' content='/same.png'><link rel='icon' href='/same.png'>",
+                true,
+                false,
+            ),
+            ("", false, false),
+        ] {
+            let fake = Fake(HashMap::from([
+                (
+                    root.to_string(),
+                    Reply {
+                        url: root.clone(),
+                        status: 200,
+                        body: Ok(html.as_bytes().to_vec()),
+                    },
+                ),
+                (
+                    root.join("/same.png").unwrap().to_string(),
+                    Reply {
+                        url: root.join("/same.png").unwrap(),
+                        status: 200,
+                        body: Ok(bytes.clone()),
+                    },
+                ),
+            ]));
+            let mut j = job();
+            j.domain = "roles.example.com".into();
+            j.needs_icon = true;
+            let result = collect(&fake, &j).await;
+            assert_eq!(result.icon.is_some(), icon, "icon role for {html}");
+            assert_eq!(result.header.is_some(), header, "header role for {html}");
         }
     }
 }

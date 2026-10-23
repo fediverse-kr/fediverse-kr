@@ -51,7 +51,7 @@ pub async fn current(name: String) -> Result<EditableSoftware, ServerFnError> {
             locked: false,
             edit: SoftwareEdit {
                 display_name: s.display_name,
-                family: String::new(),
+                family: s.family.unwrap_or_default(),
                 description: s.description,
                 categories: s.categories,
                 features: s.features,

@@ -2,8 +2,8 @@
 pub mod api;
 pub mod catalog;
 pub mod catalog_editing;
-pub mod health;
 pub(crate) mod header_art;
+pub mod health;
 pub mod management;
 pub mod pages;
 mod preview;
@@ -27,6 +27,8 @@ pub struct Software {
     pub logo_available: bool,
     pub name: String,
     pub display_name: String,
+    #[serde(default)]
+    pub family: Option<String>,
     pub description: String,
     pub description_html: String,
     pub categories: Vec<String>,

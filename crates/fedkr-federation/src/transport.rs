@@ -41,9 +41,8 @@ impl HttpTransport {
         body: Option<&Value>,
     ) -> Result<Value, FederationError> {
         let url = safe_url(input.as_str())?;
-        let client = pinned_client(&url).await?;
-        let mut request = client
-            .request(method, url.clone())
+        let mut request = pinned_request(method, &url)
+            .await?
             .header("user-agent", "fediverse.kr/2 account-verification")
             .header(
                 "accept",
@@ -85,8 +84,38 @@ impl HttpTransport {
     }
 }
 
-/// Shared outbound safety boundary. Each connection pins vetted DNS results.
-pub(crate) async fn pinned_client(input: &Url) -> Result<reqwest::Client, FederationError> {
+/// Prepare a request to exactly one validated HTTPS URL with vetted DNS pinned.
+/// The client is not exposed: it must never be reused for an unchecked host.
+/// Redirects and ambient proxies are disabled. Callers still own response-size
+/// limits and an overall timeout covering this preparation plus the response.
+pub async fn pinned_request(
+    method: reqwest::Method,
+    input: &Url,
+) -> Result<PinnedRequest, FederationError> {
+    let url = safe_url(input.as_str())?;
+    let client = pinned_client(&url).await?;
+    Ok(PinnedRequest(client.request(method, url)))
+}
+
+/// URL-bound request. Only headers/body may change; neither the client nor a
+/// mutable URL escapes the wrapper. Callers must bound response body reads.
+pub struct PinnedRequest(reqwest::RequestBuilder);
+impl PinnedRequest {
+    pub fn header(self, name: impl AsRef<str>, value: impl AsRef<str>) -> Self {
+        Self(self.0.header(name.as_ref(), value.as_ref()))
+    }
+    pub fn json(self, body: &Value) -> Self {
+        Self(self.0.json(body))
+    }
+    pub fn body(self, body: Vec<u8>) -> Self {
+        Self(self.0.body(body))
+    }
+    pub async fn send(self) -> Result<reqwest::Response, reqwest::Error> {
+        self.0.send().await
+    }
+}
+
+async fn pinned_client(input: &Url) -> Result<reqwest::Client, FederationError> {
     let url = safe_url(input.as_str())?;
     let host = url.domain().ok_or(FederationError::UnsafeUrl)?;
     let owned_host = host.to_owned();
@@ -260,6 +289,32 @@ fn is_public_address(ip: IpAddr) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn pinned_request_rejects_unsafe_targets_before_dns() {
+        for target in [
+            "https://127.0.0.1/",
+            "http://remote.example.org/",
+            "https://printer.local/",
+        ] {
+            assert!(matches!(
+                pinned_request(reqwest::Method::GET, &Url::parse(target).unwrap()).await,
+                Err(FederationError::UnsafeUrl)
+            ));
+        }
+    }
+
+    #[test]
+    fn pinned_request_can_change_body_but_not_its_target() {
+        // A synthetic builder exercises configuration without DNS/network.
+        let request =
+            PinnedRequest(reqwest::Client::new().post("https://remote.example.org/inbox"))
+                .header("content-type", "application/activity+json")
+                .body(b"{}".to_vec());
+        let built = request.0.build().unwrap();
+        assert_eq!(built.url().as_str(), "https://remote.example.org/inbox");
+        assert_eq!(built.body().unwrap().as_bytes().unwrap(), b"{}");
+    }
     #[test]
     fn rejects_ssrf_targets_and_mixed_dns_answers() {
         for url in [

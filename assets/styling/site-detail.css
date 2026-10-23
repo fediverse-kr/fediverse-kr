@@ -1,0 +1,102 @@
+/* Detail-only composition; list cards keep their existing layout. */
+main.detail-page.server-detail-shell{max-width:1200px}
+.server-detail-page{min-width:0;padding-bottom:60px}
+.server-detail-hero{margin-top:22px}
+.server-detail-hero>.server-cover{width:100%;height:220px;min-height:0;flex:none;margin:0;border-radius:16px;overflow:hidden;background-position:center}
+.server-detail-identity{display:flex;align-items:center;gap:20px;padding:24px 0;min-width:0}
+.server-detail-identity>.site-icon{flex:0 0 72px;width:72px;height:72px;border-radius:18px;font-size:34px}
+.server-detail-identity>.site-icon img{width:72px;height:72px;max-width:72px;max-height:72px}
+.server-detail-identity>div{min-width:0}
+.server-detail-identity h1{font-size:clamp(28px,3.5vw,42px);line-height:1.22;letter-spacing:-.035em;overflow-wrap:anywhere}
+.server-detail-domain{margin-top:7px;color:var(--muted);font-size:15px;overflow-wrap:anywhere}
+.server-identity-tags{margin-left:auto;justify-content:flex-end;max-width:36%;flex-wrap:wrap}
+.server-identity-tags span{padding:7px 12px;background:var(--wash);color:var(--muted);font-size:13px}
+.server-detail-nav{display:flex;gap:28px;flex-wrap:wrap;border-bottom:1px solid var(--line);margin-bottom:32px}
+.server-detail-nav a{display:flex;align-items:center;min-height:48px;padding:8px 0;font-size:14px;color:var(--muted);border-bottom:2px solid transparent}
+.server-detail-nav a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.server-detail-nav a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.server-detail-content{display:grid;grid-template-columns:minmax(0,1fr) 330px;column-gap:64px;row-gap:32px;min-width:0}
+.server-detail-section{min-width:0;scroll-margin-top:32px}
+.server-detail-section>h2,.server-detail-content>section[aria-label="운영 정보"]>h2{font-size:22px;letter-spacing:-.025em;margin:0 0 18px}
+#site-intro{grid-column:1;grid-row:1}
+#site-intro .rich-description{font-size:17px;line-height:1.85;color:var(--ink)}
+#site-guidance{grid-column:1;grid-row:2;border-top:1px solid var(--line);padding-top:28px}
+.server-detail-content>section[aria-label="운영 정보"]{grid-column:1;grid-row:3;min-width:0;border-top:1px solid var(--line);padding-top:28px}
+.server-detail-content>section[aria-label="운영 정보"] h3{font-size:15px;margin-bottom:10px}
+.server-detail-content>section[aria-label="운영 정보"] p{line-height:1.75;overflow-wrap:anywhere}
+.server-detail-content>section[aria-label="운영 정보"] .review-note{font-size:12px;margin-top:12px;color:var(--muted)}
+.server-guidance-row{display:grid;grid-template-columns:120px minmax(0,1fr);gap:16px;padding:12px 0;min-width:0}
+.server-guidance-row strong{color:var(--muted);font-size:14px;font-weight:500}
+.server-guidance-row p{margin:0;line-height:1.75;overflow-wrap:anywhere}
+.server-decision-rail{grid-column:2;grid-row:1 / 4;align-self:start;border:1px solid var(--line);border-radius:16px;overflow:hidden;min-width:0}
+.server-join-status{padding:25px;background:#f5f3fa;border-bottom:1px solid var(--line)}
+.server-section-eyebrow{display:block;font-size:12px;font-weight:600;color:var(--accent);margin-bottom:9px}
+.server-join-status h2{font-size:24px;letter-spacing:-.025em;line-height:1.35}
+.server-join-status p{font-size:13px;line-height:1.7;color:var(--muted);margin:12px 0 0}
+.server-join-status .primary-button{width:100%;justify-content:center;margin-top:20px;min-height:46px;font-size:15px}
+.server-glance{padding:22px 25px}
+.server-response{display:flex;align-items:center;gap:8px;font-size:13px;margin-bottom:22px}
+.server-response>span{width:7px;height:7px;background:#8b919c;border-radius:50%;flex:none}
+.server-response.responding>span{background:#387b60}
+.server-glance-software{margin:0 0 20px}
+.server-glance-software dt,.server-population dt{font-size:12px;color:var(--muted);margin-bottom:7px}
+.server-glance-software dd{margin:0;font-size:19px;font-weight:600}
+.server-glance-software a{display:flex;align-items:center;justify-content:space-between}
+.server-glance-software a:hover{color:var(--accent)}
+.server-population{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0;border-top:1px solid var(--line);padding-top:19px}
+.server-population dd{margin:0;font-size:22px;font-weight:600;letter-spacing:-.02em;overflow-wrap:anywhere}
+.server-collected-note{color:var(--muted);font-size:11px;line-height:1.65;margin-top:14px}
+.server-follow-tip{display:block;border-top:1px solid var(--line);padding:18px 25px;font-size:12px}
+.server-follow-tip strong{display:block;font-weight:500;color:var(--muted);margin-bottom:6px}
+.server-follow-tip span{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--accent)}
+.server-follow-tip:hover{background:var(--wash)}
+.server-collected{grid-column:1 / -1;border-top:1px solid var(--line);padding-top:32px;margin-top:4px}
+.server-collected-intro{font-size:13px;color:var(--muted);line-height:1.7;margin-top:-8px}
+.server-operations-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:64px;margin-top:22px;align-items:start}
+.server-history-panel{min-width:0}
+.server-history-panel .server-health{margin:0}
+.server-history-panel .server-health h2{font-size:16px}
+.server-history-panel .server-health-head{align-items:start}
+.server-history-panel .server-health-summary{font-size:12px}
+.server-collected-facts{display:grid;grid-template-columns:115px minmax(0,1fr);gap:0 12px;margin:0;font-size:12px}
+.server-collected-facts dt,.server-collected-facts dd{margin:0;padding:11px 0;border-bottom:1px solid var(--line);line-height:1.65;overflow-wrap:anywhere}
+.server-collected-facts dt{color:var(--muted)}
+.server-detail-opinions{border-top:1px solid var(--line);margin-top:36px;padding-top:28px;scroll-margin-top:32px}
+.server-detail-opinions>.community-section{margin-top:0;padding-top:0;border-top:0}
+.server-operator-actions{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-top:36px;padding:24px;border-radius:12px;background:var(--wash)}
+.server-operator-actions h2{font-size:15px;margin-bottom:7px}
+.server-operator-actions p{font-size:12px;color:var(--muted);line-height:1.65;max-width:620px}
+.server-operator-actions .secondary-button{white-space:nowrap;flex-shrink:0;font-size:13px}
+@media(max-width:960px){
+ .server-detail-content,.server-operations-grid{column-gap:32px;grid-template-columns:minmax(0,1fr) 290px}
+ .server-detail-hero>.server-cover{height:190px}
+ .server-join-status,.server-glance{padding:22px}
+ .server-guidance-row{grid-template-columns:1fr;gap:6px}
+}
+@media(max-width:720px){
+ .server-detail-hero{margin-top:16px}
+ .server-detail-hero>.server-cover{height:160px;border-radius:12px}
+ .server-detail-identity{gap:14px;flex-wrap:wrap;padding:20px 0}
+ .server-detail-identity>.site-icon{width:58px;height:58px;flex-basis:58px;border-radius:14px;font-size:28px}
+ .server-detail-identity>.site-icon img{width:58px;height:58px;max-width:58px;max-height:58px}
+ .server-detail-identity>div:not(.tag-list){flex:1}
+ .server-detail-identity h1{font-size:28px}
+ .server-detail-domain{font-size:13px}
+ .server-identity-tags{margin:0;max-width:100%;width:100%;justify-content:flex-start}
+ .server-detail-nav{gap:22px;margin-bottom:26px}
+ .server-detail-nav a{font-size:13px;min-height:42px}
+ .server-detail-content{display:flex;flex-direction:column;gap:28px}
+ .server-decision-rail{width:100%}
+ .server-join-status{padding:20px}
+ .server-glance{padding:20px}
+ .server-population{grid-template-columns:1fr 1fr}
+ .server-glance-software{margin-bottom:16px}
+ .server-response{margin-bottom:16px}
+ .server-follow-tip{padding:17px 20px}
+ #site-intro .rich-description{font-size:16px}
+ .server-detail-section>h2,.server-detail-content>section[aria-label="운영 정보"]>h2{font-size:21px;margin-bottom:14px}
+ .server-operations-grid{grid-template-columns:1fr;gap:22px}
+ .server-collected-facts{grid-template-columns:120px minmax(0,1fr)}
+ .server-operator-actions{flex-direction:column;align-items:flex-start;padding:20px;gap:16px}
+}
+@media(max-width:360px){.server-detail-nav{gap:16px}.server-detail-identity h1{font-size:25px}}

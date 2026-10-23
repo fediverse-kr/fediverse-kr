@@ -19,6 +19,16 @@ const PALETTES: [[&str; 5]; 8] = [
     ["#DEF0E9", "#AFDAD3", "#68AEA9", "#EAA98C", "#427783"],
     ["#FAEBE7", "#EBC8BD", "#CA7D72", "#87ADCA", "#805D76"],
 ];
+
+/// Build the same deterministic SVG used by the server banner into a CSS data URL.
+/// Callers namespace non-domain keys before passing them here.
+pub fn background_image_for(key: &str) -> String {
+    use base64::Engine;
+    let svg = svg_for(key);
+    let encoded = base64::engine::general_purpose::STANDARD.encode(svg.as_bytes());
+    format!("background-image:url(data:image/svg+xml;base64,{encoded})")
+}
+
 pub fn svg_for(domain: &str) -> String {
     let mut hash = Sha256::new();
     hash.update(b"fediverse.kr:header:varied-v2\0");
@@ -253,6 +263,7 @@ pub fn svg_for(domain: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use base64::Engine;
     use sha2::{Digest, Sha256};
     #[test]
     fn artwork_is_stable_bounded_diverse_and_contains_no_input_markup() {
@@ -311,5 +322,24 @@ mod tests {
             let actual = format!("{:x}", Sha256::digest(svg.as_bytes()));
             assert_eq!(actual, row["sha256"].as_str().unwrap());
         }
+    }
+
+    #[test]
+    fn software_keys_are_stable_namespaced_and_share_the_data_url_encoder() {
+        let mastodon = "software:mastodon";
+        let misskey = "software:misskey";
+        assert_eq!(svg_for(mastodon), svg_for(mastodon));
+        assert_ne!(svg_for(mastodon), svg_for(misskey));
+        assert_ne!(svg_for("mastodon"), svg_for(mastodon));
+
+        let encoded = base64::engine::general_purpose::STANDARD.encode(svg_for(mastodon));
+        assert_eq!(
+            background_image_for(mastodon),
+            format!("background-image:url(data:image/svg+xml;base64,{encoded})")
+        );
+        assert_eq!(
+            background_image_for(mastodon),
+            background_image_for(mastodon)
+        );
     }
 }

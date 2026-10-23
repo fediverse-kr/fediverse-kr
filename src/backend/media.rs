@@ -172,7 +172,7 @@ fn valid_percent_encoding(value: &str) -> bool {
 }
 
 pub fn emoji_name(name: &str) -> bool {
-    valid_name(name, EMOJI_NAME_MAX_BYTES)
+    fedkr_federation::profile::emoji_name(name)
 }
 
 pub const EMOJI_NAME_MAX_BYTES: usize = 1024;

@@ -20,6 +20,17 @@ pub trait RequestSigner: Send + Sync {
         now: DateTime<Utc>,
     ) -> Result<Vec<(String, String)>, FederationError>;
 }
+/// Explicit publication capability. Read-only request signers cannot publish.
+#[cfg(feature = "publish")]
+pub trait ActivityRequestSigner: Send + Sync {
+    fn key_id(&self) -> &str;
+    fn sign_post(
+        &self,
+        url: &Url,
+        body: &[u8],
+        now: DateTime<Utc>,
+    ) -> Result<Vec<(String, String)>, FederationError>;
+}
 pub struct RsaHttpSigner {
     key_id: String,
     key: RsaPrivateKey,
@@ -98,6 +109,43 @@ impl RequestSigner for RsaHttpSigner {
     }
 }
 
+#[cfg(feature = "publish")]
+impl ActivityRequestSigner for RsaHttpSigner {
+    fn key_id(&self) -> &str {
+        &self.key_id
+    }
+
+    fn sign_post(
+        &self,
+        url: &Url,
+        body: &[u8],
+        now: DateTime<Utc>,
+    ) -> Result<Vec<(String, String)>, FederationError> {
+        use sha2::Digest;
+        super::transport::safe_url(url.as_str())?;
+        if body.len() > super::transport::MAX_BODY_BYTES {
+            return Err(FederationError::BodyTooLarge);
+        }
+        let host = url.host_str().ok_or(FederationError::UnsafeUrl)?;
+        let date = now.format("%a, %d %b %Y %H:%M:%S GMT").to_string();
+        let target = match url.query() {
+            Some(query) => format!("{}?{query}", url.path()),
+            None => url.path().to_owned(),
+        };
+        let digest = format!("SHA-256={}", STANDARD.encode(Sha256::digest(body)));
+        let content_type = "application/activity+json";
+        let signed = format!("(request-target): post {target}\nhost: {host}\ndate: {date}\ndigest: {digest}\ncontent-type: {content_type}");
+        let signature = SigningKey::<Sha256>::new(self.key.clone()).sign(signed.as_bytes());
+        Ok(vec![
+            ("host".into(), host.into()),
+            ("date".into(), date),
+            ("digest".into(), digest),
+            ("content-type".into(), content_type.into()),
+            ("signature".into(), format!("keyId=\"{}\",algorithm=\"rsa-sha256\",headers=\"(request-target) host date digest content-type\",signature=\"{}\"", self.key_id, STANDARD.encode(signature.to_bytes()))),
+        ])
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -108,6 +156,72 @@ mod tests {
         pkcs8::EncodePrivateKey,
         signature::Verifier,
     };
+
+    #[cfg(feature = "publish")]
+    #[test]
+    fn post_signature_covers_the_exact_body_destination_and_type() {
+        use sha2::Digest;
+        let key = RsaPrivateKey::new(&mut StdRng::seed_from_u64(78), 2048).unwrap();
+        let pem = key.to_pkcs8_pem(LineEnding::LF).unwrap();
+        let signer =
+            RsaHttpSigner::from_pem("https://social.example.org/actor#key".into(), pem.as_str())
+                .unwrap();
+        let now = DateTime::parse_from_rfc3339("2026-10-23T06:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc);
+        let url = Url::parse("https://remote.example.org/inbox?shared=1").unwrap();
+        let body = br#"{"type":"Create","object":{"content":"hello"}}"#;
+        let headers = signer.sign_post(&url, body, now).unwrap();
+        let get = |name: &str| {
+            headers
+                .iter()
+                .find(|(key, _)| key == name)
+                .unwrap()
+                .1
+                .as_str()
+        };
+        assert_eq!(
+            get("digest"),
+            format!("SHA-256={}", STANDARD.encode(Sha256::digest(body)))
+        );
+        assert_eq!(get("content-type"), "application/activity+json");
+        let signed = format!("(request-target): post /inbox?shared=1\nhost: {}\ndate: {}\ndigest: {}\ncontent-type: {}", get("host"), get("date"), get("digest"), get("content-type"));
+        let signature = get("signature")
+            .rsplit("signature=\"")
+            .next()
+            .unwrap()
+            .trim_end_matches('"');
+        let raw = STANDARD.decode(signature).unwrap();
+        let signature = Signature::try_from(raw.as_slice()).unwrap();
+        let verifier = VerifyingKey::<Sha256>::new(key.to_public_key());
+        assert!(verifier.verify(signed.as_bytes(), &signature).is_ok());
+        assert!(verifier
+            .verify(
+                signed.replace("post /inbox", "post /other").as_bytes(),
+                &signature
+            )
+            .is_err());
+        let changed_digest = STANDARD.encode(Sha256::digest(b"changed body"));
+        assert!(verifier
+            .verify(
+                signed
+                    .replace(get("digest"), &format!("SHA-256={changed_digest}"))
+                    .as_bytes(),
+                &signature
+            )
+            .is_err());
+        assert!(signer
+            .sign_post(&Url::parse("https://127.0.0.1/inbox").unwrap(), body, now)
+            .is_err());
+        assert_eq!(
+            signer.sign_post(
+                &url,
+                &vec![0; super::super::transport::MAX_BODY_BYTES + 1],
+                now
+            ),
+            Err(FederationError::BodyTooLarge)
+        );
+    }
 
     #[test]
     fn http_signing_identity_is_limited_to_canonical_literal_loopback() {

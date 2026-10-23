@@ -1,0 +1,253 @@
+{
+  "assets": [
+    {
+      "file": "bookwyrm-logo-small.png",
+      "kind": "official site header logo",
+      "source_url": "https://joinbookwyrm.com/static/images/logo-small.png",
+      "source_page": "https://joinbookwyrm.com/",
+      "attribution": "BookWyrm project",
+      "license": "No asset-specific reuse license found on the official source page.",
+      "usage_notes": "Direct image used as the official homepage header logo (alt text identifies the logo as a homepage link). Included unmodified for product identification only; no project endorsement implied. Preserve attribution and source link; review rights before broader/public reuse.",
+      "dimensions": "52x50",
+      "sha256": "14797a53223d4b4f1a80017b4fddbe09a1f5c84c9bb000a90f6b6377f47f5549"
+    },
+    {
+      "file": "bookwyrm-favicon.ico",
+      "kind": "official favicon / logo mark",
+      "source_url": "https://joinbookwyrm.com/static/images/favicon.ico",
+      "source_page": "https://joinbookwyrm.com/",
+      "attribution": "BookWyrm project",
+      "license": "No asset-specific reuse license found on the official source page.",
+      "usage_notes": "Homepage declares this as its favicon; the adjacent social-image alt text names the BookWyrm logo. The served original is PNG data despite the .ico URL and filename. Included unmodified for product identification only; preserve attribution and source link; review rights before broader/public reuse.",
+      "dimensions": "192x192",
+      "sha256": "ed90873c3c9a41028772a278341e0124f1be36d760464bccfe804cf074adf432"
+    },
+    {
+      "file": "mobilizon-logo-favicon.svg",
+      "kind": "official favicon / logo mark",
+      "source_url": "https://mobilizon.org/media/logo/favicon.svg",
+      "source_page": "https://mobilizon.org/",
+      "attribution": "Mobilizon / Framasoft",
+      "license": "No asset-specific reuse license found on the official source page. Framasoft trademark policy applies to marks and logos; it is not an image copyright license.",
+      "usage_notes": "Direct SVG declared by the official homepage as its SVG favicon. Included byte-for-byte for product identification only; no affiliation or endorsement implied. Preserve attribution and source link; review rights before broader/public reuse.",
+      "dimensions": "256x256",
+      "sha256": "659f1a28f8885086c6c96640d6b28c4d540e4a9446f98915fef61a189462119a"
+    },
+    {
+      "file": "mobilizon-logo-apple-touch-icon.png",
+      "kind": "official mobile site icon / logo mark",
+      "source_url": "https://mobilizon.org/media/logo/apple-touch-icon.png",
+      "source_page": "https://mobilizon.org/",
+      "attribution": "Mobilizon / Framasoft",
+      "license": "No asset-specific reuse license found on the official source page. Framasoft trademark policy applies to marks and logos; it is not an image copyright license.",
+      "usage_notes": "Direct image declared by the official homepage as its apple-touch-icon. Included unmodified for product identification only; no affiliation or endorsement implied. Preserve attribution and source link; review rights before broader/public reuse.",
+      "dimensions": "183x181",
+      "sha256": "ee0102ad9f051575748ce11b16b9b8b7a91a52f3d8d09393511afdd4202b3743"
+    },
+    {
+      "file": "bookwyrm-product-phone.png",
+      "kind": "official product screenshot",
+      "source_url": "https://joinbookwyrm.com/static/images/phone.png",
+      "source_page": "https://joinbookwyrm.com/",
+      "attribution": "BookWyrm project",
+      "license": "No asset-specific reuse license found on the official source page.",
+      "usage_notes": "Official homepage product-introduction image showing the BookWyrm interface. Included unmodified for product identification/introduction only; this record does not assert a general redistribution license or project endorsement. Preserve attribution and source link; review rights before broader/public reuse.",
+      "dimensions": "741x381",
+      "sha256": "62eea82a361d906c530156290a6b91833f4c83ceea0a6618b553e7d343e3c17b"
+    },
+    {
+      "file": "bookwyrm-product-compose.png",
+      "kind": "official product screenshot",
+      "source_url": "https://joinbookwyrm.com/static/images/compose.png",
+      "source_page": "https://joinbookwyrm.com/",
+      "attribution": "BookWyrm project",
+      "license": "No asset-specific reuse license found on the official source page.",
+      "usage_notes": "Official homepage product-introduction image showing a review-composition screen. Included unmodified for product identification/introduction only; this record does not assert a general redistribution license or project endorsement. Preserve attribution and source link; review rights before broader/public reuse.",
+      "dimensions": "1192x966",
+      "sha256": "dbfdf720ae7e85c266ef3b24ec61bcb2bf515d843fc05bfff29fe08bfd50c8ef"
+    },
+    {
+      "file": "mobilizon-product-main.jpg",
+      "kind": "official product screenshot",
+      "source_url": "https://mobilizon.org/media/mobilizon-main.jpg",
+      "source_page": "https://mobilizon.org/",
+      "attribution": "Mobilizon / Framasoft",
+      "license": "No asset-specific reuse license found on the official source page. Framasoft trademark policy applies to marks and logos; it is not an image copyright license.",
+      "usage_notes": "Official homepage product-introduction image showing mobile and desktop interfaces. Included unmodified for product identification/introduction only; no affiliation or endorsement implied. Preserve attribution and source link; review rights before broader/public reuse.",
+      "dimensions": "900x563",
+      "sha256": "5c8c71a04a6711dee4ca4fabeb05e93db2867829f2a95effab16f4dabcea3d73"
+    },
+    {
+      "file": "mobilizon-product-events.jpg",
+      "kind": "official product screenshot",
+      "source_url": "https://mobilizon.org/media/feature-events.jpg",
+      "source_page": "https://mobilizon.org/",
+      "attribution": "Mobilizon / Framasoft",
+      "license": "No asset-specific reuse license found on the official source page. Framasoft trademark policy applies to marks and logos; it is not an image copyright license.",
+      "usage_notes": "Official homepage product-introduction image showing event discovery and listing UI. Included unmodified for product identification/introduction only; no affiliation or endorsement implied. Preserve attribution and source link; review rights before broader/public reuse.",
+      "dimensions": "900x432",
+      "sha256": "8f12876b51c8aa6377c2134f68021acde59fa13d9fdc34331205eb1fab072c56"
+    },
+    {
+      "file": "mastodon-logo-full-black.svg",
+      "kind": "official wordmark",
+      "source_url": "https://joinmastodon.org/logos/logo-full-black.svg",
+      "source_page": "https://joinmastodon.org/branding",
+      "attribution": "Mastodon",
+      "license": "No asset-specific copyright license stated on the official brand page. Mastodon's trademark policy applies; it requires express written permission to use the name or logo as part of a server, service, or product's own branding.",
+      "usage_notes": "Unmodified official black wordmark, retained for factual product identification, not as this project's own branding and without implying affiliation or endorsement. Check the current trademark policy for intended placement.",
+      "dimensions": "SVG viewBox 0 0 313 80",
+      "sha256": "8b340b246e8c4e8bde8d75d94c48f188c8ffce157f403d4cfafcc1d259d56025"
+    },
+    {
+      "file": "mastodon-logo-purple.svg",
+      "kind": "official purple symbol",
+      "source_url": "https://joinmastodon.org/logos/logo-purple.svg",
+      "source_page": "https://joinmastodon.org/branding",
+      "attribution": "Mastodon",
+      "license": "No asset-specific copyright license stated on the official brand page. Mastodon's trademark policy applies; it requires express written permission to use the name or logo as part of a server, service, or product's own branding.",
+      "usage_notes": "Unmodified official purple standalone mark for factual product identification, not as this project's own branding and without implying affiliation or endorsement. The brand toolkit says standalone marks are for designs where the Mastodon brand is already established; check the current trademark policy for intended placement.",
+      "dimensions": "SVG viewBox 0 0 75 79",
+      "sha256": "7364fa0c83fcbf9220f80b1ea5ca3b118ca5f8807178b5e75267a0a6c48133e7"
+    },
+    {
+      "file": "mastodon-home-timeline.png",
+      "kind": "official product screenshot",
+      "source_url": "https://joinmastodon.org/_next/static/media/HomeTimeline-add072f5-fb82-41d6-a1b1-b42707d46cac.2rafid7ff3u08.png",
+      "source_page": "https://joinmastodon.org/branding",
+      "attribution": "Mastodon",
+      "license": "No asset-specific copyright license stated on the official brand page. Mastodon's trademark policy applies to marks shown in the image.",
+      "usage_notes": "Unmodified UI screenshot linked from Mastodon's official Product screenshots selection. For factual product introduction only; no affiliation or endorsement is implied. Check the current trademark policy for intended placement.",
+      "dimensions": "1080x2400",
+      "sha256": "924d73124761835d3d8c6006786a227ce5f938d9168705e241d3c9cd610a4abf"
+    },
+    {
+      "file": "misskey-icon.png",
+      "kind": "official full-color icon",
+      "source_url": "https://assets.misskey-hub.net/public/icon.png",
+      "source_page": "https://misskey-hub.net/en/brand-assets/",
+      "attribution": "syuilo and Misskey Project",
+      "license": "CC BY-SA 4.0. The official brand-assets page states CC BY-SA; the official misskey-dev/assets README specifies CC BY-SA 4.0 for files under public/.",
+      "usage_notes": "Unmodified official full-color icon from the public assets collection. Provide attribution, link the license, indicate modifications if any, and distribute adaptations under the same license. This is project media, not Misskey application source.",
+      "dimensions": "384x384",
+      "sha256": "5c0341d5b572cbc3491d17cfab4d4187f2d90b71c9b362310f257b0ceb9d2326"
+    },
+    {
+      "file": "misskey-banner.png",
+      "kind": "official brand banner",
+      "source_url": "https://assets.misskey-hub.net/public/banner.png",
+      "source_page": "https://misskey-hub.net/en/brand-assets/",
+      "attribution": "syuilo and Misskey Project",
+      "license": "CC BY-SA 4.0. The official brand-assets page states CC BY-SA; the official misskey-dev/assets README specifies CC BY-SA 4.0 for files under public/.",
+      "usage_notes": "Unmodified official banner from the public assets collection. Provide attribution, link the license, indicate modifications if any, and distribute adaptations under the same license. This is project media, not Misskey application source.",
+      "dimensions": "2048x1024",
+      "sha256": "ca01aaafb1eed081296ab2f912c1f068dac79e7e4a79b4f3c185a1c8f71819ff"
+    },
+    {
+      "file": "misskey-timeline-light.webp",
+      "kind": "official product UI screenshot",
+      "source_url": "https://misskey-hub.net/img/hero/ss/tl.light.webp",
+      "source_page": "https://misskey-hub.net/en/",
+      "attribution": "Misskey Project",
+      "license": "No asset-specific license for this homepage screenshot was found. The CC BY-SA 4.0 terms for the separate misskey-dev/assets public directory are not assumed to cover this screenshot.",
+      "usage_notes": "Unmodified timeline UI image directly linked from the official Misskey Hub site, retained as product-identification media. Its reuse terms remain unconfirmed; this record does not infer a prohibition or a general redistribution license.",
+      "dimensions": "5760x3240",
+      "sha256": "92f8ae4818c9111dc243977845ca1b44384ba2c7b671c658941620560d0d013f"
+    },
+    {
+      "file": "pixelfed-full-color.svg",
+      "kind": "official full-color horizontal wordmark",
+      "source_url": "https://pixelfed-web1.nyc3.cdn.digitaloceanspaces.com/assets/images/pixelfed-full-color.svg",
+      "source_page": "https://pixelfed.org/",
+      "attribution": "Pixelfed Project",
+      "license": "No asset-specific reuse license stated on the official homepage or in its linked logo reference.",
+      "usage_notes": "Unmodified full-color horizontal logo directly referenced by the official Pixelfed homepage. Included for factual product identification only; reuse terms remain unconfirmed and no general redistribution license or endorsement is asserted.",
+      "dimensions": "SVG viewBox 0 0 164 66",
+      "sha256": "78d5e50bcd05c8cc7be4c3c29e68af5d6aed2d41201dad3f1c91711ee626e916"
+    },
+    {
+      "file": "pixelfed-web-ui.webp",
+      "kind": "official homepage product UI image",
+      "source_url": "https://pixelfed-web1.nyc3.cdn.digitaloceanspaces.com/assets/images/group-1.webp",
+      "source_page": "https://pixelfed.org/",
+      "attribution": "Pixelfed Project",
+      "license": "No asset-specific reuse license stated on the official homepage or image reference.",
+      "usage_notes": "Unmodified product UI image exposed by the official homepage with alt text 'Pixelfed web user interface'. It is product-introduction media, not Pixelfed application source. Reuse terms remain unconfirmed; no general redistribution license or endorsement is asserted.",
+      "dimensions": "1286x1049",
+      "sha256": "6c8a67f88925c18647c4eb4b4a4bb32cb41b5ae6d879b17e86410da2d37233c1"
+    },
+    {
+      "file": "pixelfed-icon-white.png",
+      "kind": "official square favicon icon (white mark)",
+      "source_url": "https://pixelfed-web1.nyc3.cdn.digitaloceanspaces.com/assets/images/pixelfed-icon-white.png",
+      "source_page": "https://pixelfed.org/",
+      "attribution": "Pixelfed Project",
+      "license": "No asset-specific reuse license stated on the official homepage or favicon reference.",
+      "usage_notes": "Unmodified 500x500 PNG declared by the official homepage as its image/png favicon. It is the white mark variant; use against a contrasting dark background. The inspected homepage head did not declare an apple-touch-icon. Reuse terms remain unconfirmed; no general redistribution license or endorsement is asserted.",
+      "dimensions": "500x500",
+      "sha256": "af38181e8a6767ddeaacb6f49dd45181c8c12b10846ade32a8dfde780ea827d8"
+    },
+    {
+      "file": "peertube-logo.svg",
+      "kind": "official PeerTube logo mark",
+      "source_url": "https://joinpeertube.org/press-kit.zip (press-kit/peertube-logo.svg)",
+      "source_page": "https://joinpeertube.org/",
+      "attribution": "Framasoft / PeerTube",
+      "license": "CC BY-SA 4.0, as stated in press-kit/LICENCE in the official press-kit archive.",
+      "license_source_text": "PeerTube logo and Framasoft logo created by Framasoft, under CC-BY-SA 4.0",
+      "usage_notes": "Unmodified official logo from the official press kit. Attribute Framasoft/PeerTube, link the license, and distribute adaptations under the same license. The archive's code-free media files were used; no application source was used.",
+      "dimensions": "SVG viewBox 0 0 1916 1040",
+      "sha256": "f8e5010f2aa47f59f914b08900a2e238690d0c5aed4dbe246be79eea856dfdcc"
+    },
+    {
+      "file": "peertube-brand.svg",
+      "kind": "official PeerTube brand wordmark",
+      "source_url": "https://joinpeertube.org/press-kit.zip (press-kit/peertube-brand.svg)",
+      "source_page": "https://joinpeertube.org/",
+      "attribution": "Framasoft / PeerTube",
+      "license": "CC BY-SA 4.0, as stated in press-kit/LICENCE in the official press-kit archive.",
+      "license_source_text": "PeerTube logo and Framasoft logo created by Framasoft, under CC-BY-SA 4.0",
+      "usage_notes": "Unmodified official brand artwork from the official press kit. Attribute Framasoft/PeerTube, link the license, and distribute adaptations under the same license. The archive's code-free media files were used; no application source was used.",
+      "dimensions": "SVG viewBox 0 0 456 100",
+      "sha256": "8bab424db5d78147202a62da752b32b657ae6cf018407eb6a71e8858ca2030dc"
+    },
+    {
+      "file": "peertube-mascot-banner.jpg",
+      "kind": "official mascot-led app/brand promotional banner (contains mobile UI screenshots within an illustration-heavy composition)",
+      "source_url": "https://joinpeertube.org/press-kit.zip (press-kit/illustrations/app-banner.jpg)",
+      "source_page": "https://joinpeertube.org/",
+      "attribution": "David Revoy / PeerTube Project",
+      "license": "The press-kit license file assigns mascot/illustrations to CC-BY and PeerTube/Framasoft logos to CC-BY-SA 4.0; its wording does not specify a CC-BY version. This is a composite containing both artwork categories, so comply with both applicable terms.",
+      "license_source_text": "PeerTube mascot and illustrations created by David Revoy, under CC-BY | PeerTube logo and Framasoft logo created by Framasoft, under CC-BY-SA 4.0",
+      "usage_notes": "Unmodified official press-kit promotional composition, dominated by mascot and brand artwork but containing mobile UI screenshots. Attribute David Revoy for the mascot/illustration and Framasoft/PeerTube for logos; link both applicable licenses. This is not a screenshot-only asset.",
+      "dimensions": "1920x1080",
+      "sha256": "904d8319bc4a37516988bb922ffe4a4b463503ceae1bd0b36d06b56bae8dfae2"
+    }
+  ],
+  "not_included": [
+    {
+      "software": "Lemmy",
+      "reason": "No logo/product asset copied. The repository landing page credits the logo as CC BY-SA 4.0, while the Wikimedia file page identifies the logo as AGPL-3.0-or-later and describes it as containing AGPL-licensed content. The AGPL image claim is unresolved and the requested exclusion rule applies until maintainers clarify it."
+    },
+    {
+      "software": "Ghost",
+      "reason": "No logo copied. Ghost's official trademark policy says the software license does not grant logo rights and that logo use requires permission; the official logo-assets page is subscriber-only."
+    },
+    {
+      "software": "BookWyrm",
+      "reason": "The homepage logo and favicon above are the only direct official logo assets found; no separate full-size brand kit or asset-specific reuse license was found."
+    },
+    {
+      "software": "Mobilizon",
+      "reason": "The homepage favicon and apple-touch-icon above are the direct official logo marks found; no separate downloadable full-size brand kit or asset-specific reuse license was found."
+    }
+  ],
+  "references": {
+    "mobilizon_trademark_policy": "https://framasoft.org/en/trademarks/",
+    "ghost_trademark_policy": "https://ghost.org/trademark/",
+    "ghost_logo_assets_page": "https://ghost.org/referrals/logos-and-images/",
+    "lemmy_repository_logo_credit": "https://github.com/LemmyNet/lemmy",
+    "lemmy_logo_license_conflict": "https://commons.wikimedia.org/wiki/File:Lemmy_logo.svg",
+    "peertube_press_kit": "https://joinpeertube.org/press-kit.zip"
+  }
+}

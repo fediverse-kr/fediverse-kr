@@ -33,7 +33,11 @@ pub fn Shell() -> Element {
         Route::Servers { .. } | Route::ServerDetail { .. } | Route::SoftwareServers { .. }
     );
     let community_active = matches!(route, Route::Community {});
-    let operate_active = matches!(route, Route::Operate {} | Route::SelfHosting {});
+    let operate_active = matches!(
+        route,
+        Route::Operate {} | Route::SelfHosting {} | Route::HostingList {}
+            | Route::HostingDetail { .. } | Route::HostingHistory { .. }
+    );
     let develop_active = matches!(route, Route::Develop {});
     let account_active = matches!(route, Route::Login {} | Route::Account {});
 

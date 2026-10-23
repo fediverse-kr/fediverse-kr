@@ -4,6 +4,12 @@ use serde_json::Value;
 
 pub const MAX_EMOJIS: usize = 10;
 
+/// Keep empty-name, byte-length, and control-character checks aligned with
+/// the site's media route validation.
+pub fn emoji_name(name: &str) -> bool {
+    !name.is_empty() && name.len() <= 1024 && !name.chars().any(char::is_control)
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct ActorMedia {
     /// None means absent; Some invalid URL is a failed image, not deletion.
@@ -41,7 +47,7 @@ pub fn parse(actor: &Value) -> ActorMedia {
             else {
                 continue;
             };
-            if !crate::backend::media::emoji_name(name) || emojis.iter().any(|(n, _)| n == name) {
+            if !emoji_name(name) || emojis.iter().any(|(n, _)| n == name) {
                 continue;
             }
             emojis.push((name.to_owned(), image_url(&tag["icon"]).unwrap_or_default()));

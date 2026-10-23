@@ -12,10 +12,14 @@ pub(super) fn OperatorInformation(owner_comment: String) -> Element {
                 p { "아직 등록된 운영 안내가 없어요." }
             }
             p { class: "review-note", "기존에 등록된 안내를 포함하며, 현재 운영자 신원이나 인증 상태를 보증하지 않아요. 최신 내용은 서버에서 확인해 주세요." }
-            h3 { "이 서버를 운영하시나요?" }
-            p { "로그인 후 DNS TXT로 도메인 제어권을 확인하면 소개·규칙·운영 안내를 직접 수정할 수 있어요. 이미 인증했다면 내 서버 관리에서 수정하세요." }
-            a { class: "secondary-button", href: "/account/sites", "운영자 인증 · 정보 수정" }
         }
+    }
+}
+
+#[component]
+pub(super) fn OperatorEditFooter() -> Element {
+    rsx! {
+        a { class: "secondary-button", href: "/account/sites", "운영자 인증 · 정보 수정" }
     }
 }
 
@@ -24,16 +28,18 @@ mod tests {
     use super::*;
 
     #[test]
-    fn operator_information_without_note_still_explains_the_dns_edit_path() {
+    fn operator_information_without_note_does_not_imply_verified_ownership() {
         let mut dom = VirtualDom::new(|| rsx! { OperatorInformation { owner_comment: "  \n" } });
         dom.rebuild_in_place();
         let html = dioxus::ssr::render(&dom);
         assert!(html.contains("아직 등록된 운영 안내가 없어요."), "{html}");
         assert!(!html.contains("<h3>등록된 운영 안내"));
-        assert!(html.contains("DNS TXT"), "{html}");
-        assert!(html.contains("운영자 인증 · 정보 수정"), "{html}");
-        assert!(html.contains("href=\"/account/sites\""), "{html}");
-        assert!(!html.contains("fk-verify="));
+        assert!(
+            html.contains("신원이나 인증 상태를 보증하지 않아요."),
+            "{html}"
+        );
+        assert!(!html.contains("DNS TXT"), "{html}");
+        assert!(!html.contains("/account/sites"), "{html}");
     }
 
     #[test]
@@ -50,5 +56,15 @@ mod tests {
         assert!(!html.contains("<script>"));
         assert!(html.contains("등록된 운영 안내"), "{html}");
         assert!(!html.contains("인증된 운영자"));
+    }
+
+    #[test]
+    fn operator_edit_action_is_a_separate_compact_footer_link() {
+        let mut dom = VirtualDom::new(|| rsx! { OperatorEditFooter {} });
+        dom.rebuild_in_place();
+        let html = dioxus::ssr::render(&dom);
+        assert!(html.contains("href=\"/account/sites\""), "{html}");
+        assert!(html.contains("운영자 인증 · 정보 수정"), "{html}");
+        assert!(!html.contains("fk-verify="));
     }
 }

@@ -10,13 +10,23 @@ pub fn CatalogListing(criteria: CatalogQuery) -> Element {
     let result = use_server_future(use_reactive((&criteria,), |(criteria,)| {
         api::search_software(criteria.to_string())
     }))?;
+    // The bounded public catalog provides examples even when they are on page two.
+    // Search/pagination remain authoritative and work if this optional introduction fails.
+    let overview = use_server_future(use_reactive((&criteria,), |(criteria,)| async move {
+        if criteria.query.is_empty() && criteria.page == 0 && criteria.validate().is_ok() {
+            api::catalog().await.map(Some)
+        } else {
+            Ok(None)
+        }
+    }))?;
     let ready = use_context::<Signal<bool>>()();
     let navigator = use_navigator();
     let for_search = criteria.clone();
     rsx! {
         document::Title { "소프트웨어 둘러보기 — fediverse.kr" }
-        main {id:"content",class:"directory-page wrap",
-            header {class:"page-heading",p{"소프트웨어 둘러보기"}h1{"무엇을 나누고 싶으세요?"}p{"같은 연합우주, 서로 다른 쓰임새. 종류부터 골라보세요."}}
+        document::Stylesheet { href:asset!("/assets/styling/software-catalog.css") }
+        main {id:"content",class:"directory-page software-catalog-page wrap",
+            header {class:"page-heading",p{"소프트웨어 둘러보기"}h1{"무엇을 나누고 싶으세요?"}p{"대화부터 사진, 독서까지. 하고 싶은 일에서 시작해요."}}
             if let Err(message)=criteria.validate() {
                 {crate::portal::response_status(400)}
                 p {class:"data-notice",role:"alert","{message}"}
@@ -24,11 +34,11 @@ pub fn CatalogListing(criteria: CatalogQuery) -> Element {
             } else {
                 match result() {
                     Some(Ok(data))=>rsx! {
-                        PreviewNote{preview:data.preview}
-                        nav {class:"kind-grid",aria_label:"소프트웨어 종류",
-                            Link{to:Route::Platforms{filters:criteria.category(String::new())},aria_current:if criteria.category.is_empty(){"true"}else{"false"},span{"✳"}strong{"모든 종류"}}
+                        CatalogPreviewNote{preview:data.preview}
+                        nav {class:"software-kinds",aria_label:"소프트웨어 종류",
+                            Link{to:Route::Platforms{filters:criteria.category(String::new())},aria_current:if criteria.category.is_empty(){"true"}else{"false"},strong{"모두 둘러보기"}}
                             for kind in &data.kinds.categories {
-                                Link{key:"{kind.name}",to:Route::Platforms{filters:criteria.category(kind.name.clone())},aria_current:if criteria.category==kind.name{"true"}else{"false"},span{"{kind.emoji}"}strong{"{kind.label}"}}
+                                Link{key:"{kind.name}",to:Route::Platforms{filters:criteria.category(kind.name.clone())},aria_current:if criteria.category==kind.name{"true"}else{"false"},strong{{super::discovery::activity(kind)}}}
                             }
                         }
                         if data.kinds.total>CATEGORY_PAGE_SIZE as i64 || criteria.kind_page>0 {
@@ -37,6 +47,13 @@ pub fn CatalogListing(criteria: CatalogQuery) -> Element {
                         if data.kinds.categories.is_empty() && criteria.kind_page>0 {
                             p {class:"review-note","이 페이지에 표시할 종류가 없어요. " Link{class:"text-link",to:Route::Platforms{filters:CatalogQuery{kind_page:0,..criteria.clone()}},"첫 종류로"}}
                         }
+                        if let Some(Ok(Some(catalog)))=overview() {
+                            super::discovery::Examples {items:catalog.software.clone(),category:criteria.category.clone()}
+                            super::families::FamilyIndex {items:catalog.software,category:criteria.category.clone(),current:None}
+                        }
+                        section {id:"software-all",class:"software-all",aria_labelledby:"software-all-title",
+                        div {class:"software-directory-heading",
+                            div {h2 {id:"software-all-title",if criteria.category.is_empty(){"전체 소프트웨어"}else{"이 종류의 소프트웨어"}}p{"파생 프로젝트도 빠짐없이. 이름을 알고 있다면 바로 찾아보세요."}}
                         form {class:"directory-search-form catalog-search-form",onsubmit:move|event|{
                             event.prevent_default(); if !ready{return;}
                             navigator.push(Route::Platforms{filters:CatalogQuery{query:draft().trim().into(),page:0,..for_search.clone()}});
@@ -44,12 +61,13 @@ pub fn CatalogListing(criteria: CatalogQuery) -> Element {
                             label{class:"search-box",Search{size:19}input{r#type:"search",name:"q",maxlength:256,disabled:!ready,placeholder:"소프트웨어 이름 검색",aria_label:"소프트웨어 이름 검색",value:draft(),oninput:move|e|draft.set(e.value())}}
                             button{r#type:"submit",class:"secondary-button",disabled:!ready,"검색"}
                         }
+                        }
                         div {class:"catalog-results-heading",
                             p {class:"directory-result-count",role:"status","소프트웨어 {number(data.total)}개"}
                             if !criteria.category.is_empty() {p{class:"catalog-kind",{data.labels.iter().find(|k|k.name==criteria.category).map(|k|k.label.clone()).unwrap_or(criteria.category.clone())}}}
                             if !criteria.query.is_empty() || !criteria.category.is_empty() {Link{class:"text-link",to:Route::Platforms{filters:Default::default()},"초기화"}}
                         }
-                        div {class:"software-grid",
+                        div {class:"software-directory-grid",
                             for item in data.software.clone() {SoftwareCard{key:"{item.name}",item,labels:data.labels.clone()}}
                         }
                         if data.software.is_empty() {
@@ -58,22 +76,31 @@ pub fn CatalogListing(criteria: CatalogQuery) -> Element {
                             }
                         }
                         if data.total>SOFTWARE_PAGE_SIZE as i64 || criteria.page>0 {CatalogPager{criteria:criteria.clone(),kinds:false,total:data.total,has_next:data.has_next}}
+                        }
                     },
                     Some(Err(_))=>rsx!{DataError{}},
                     None=>rsx!{p{role:"status","목록을 불러오는 중…"}},
                 }
             }
-            aside {class:"directory-help",strong{"소프트웨어와 서버는 달라요."}p{"소프트웨어는 공간을 만드는 도구, 서버는 누군가 그 도구로 운영하는 실제 공간이에요."}Link{class:"text-link",to:Route::Start{},"화면으로 이해하기" ArrowRight{size:16}}}
-            aside {class:"directory-help",strong{"빠진 도구가 있나요?"}p{"회원이 직접 소개를 등록하고, 틀린 정보를 고칠 수 있어요. 변경 이력은 함께 남습니다."}Link{class:"text-link",to:Route::SoftwareNew{},"소프트웨어 등록"}}
+            section {class:"catalog-next",aria_label:"다음으로",
+                div {h2{"마음에 드는 도구를 찾았다면"}p{"그 도구로 운영하는 서버를 골라 가입해요."}Link{class:"text-link",to:Route::Servers {filters:Default::default()},"가입할 서버 찾기" ArrowRight{size:16}}}
+                div {h2{"함께 채우는 목록"}p{"빠진 소프트웨어를 등록하거나, 소개를 직접 고칠 수 있어요."}div {class:"catalog-contribution-links",Link{class:"text-link",to:Route::SoftwareNew{},"소프트웨어 등록"}a{class:"text-link",href:"/about#software-marks","로고 출처"}}}
+            }
         }
     }
 }
 #[component]
 fn SoftwareCard(item: Software, labels: Vec<Category>) -> Element {
-    rsx! {Link{class:"software-card",to:Route::SoftwareDetail{name:item.name.clone()},
-        span{class:"catalog-kind",{item.categories.iter().map(|c|labels.iter().find(|k|&k.name==c).map(|k|k.label.clone()).unwrap_or(c.clone())).collect::<Vec<_>>().join(" · ")}}
-        h2{class:"software-title",if item.logo_available{crate::media_ui::ImageMark{source:crate::media_ui::software_source(&item.name),fallback:item.display_name.chars().next().unwrap_or('·').to_string(),class:"software-mark"}}span{"{item.display_name}"}}
-        p{"{item.description}"}span{class:"text-link","살펴보기" ArrowRight{size:16}}
+    rsx! {Link{class:"software-directory-item",to:Route::SoftwareDetail{name:item.name.clone()},
+        brand::SoftwareMark{item:item.clone(),size:44}
+        div {class:"software-directory-copy",
+            div {class:"software-directory-name",h3{"{item.display_name}"}
+                if let Some(family)=super::discovery::family_name(&item) {span{class:"software-family","{family} 계열"}}
+            }
+            span{class:"catalog-kind",{super::discovery::category_names(&item,&labels)}}
+            p{{super::discovery::summary(&item)}}
+        }
+        ArrowRight{size:17}
     }}
 }
 #[component]
@@ -103,4 +130,59 @@ fn CatalogPager(criteria: CatalogQuery, kinds: bool, total: i64, has_next: bool)
         span{"{page+1} / {pages}페이지"}
         if has_next && page<10_000{Link{class:"secondary-button",to:Route::Platforms{filters:next},"다음"}}else{button{class:"secondary-button",disabled:true,"다음"}}
     }}
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use dioxus_history::{History, MemoryHistory};
+    use dioxus_router::components::HistoryProvider;
+    use std::rc::Rc;
+
+    #[derive(Clone, Debug, PartialEq, Routable)]
+    enum TestRoute {
+        #[route("/")]
+        TestCards {},
+    }
+
+    #[component]
+    fn TestApp() -> Element {
+        use_context_provider(|| Signal::new(false));
+        rsx! {HistoryProvider{history:move |_|Rc::new(MemoryHistory::with_initial_path("/")) as Rc<dyn History>,Router::<TestRoute>{}}}
+    }
+
+    #[component]
+    fn TestCards() -> Element {
+        let data = crate::directory::preview::catalog();
+        rsx! {for item in data.software {SoftwareCard{item,labels:data.categories.clone()}}}
+    }
+
+    #[test]
+    fn cards_have_recognizable_marks_in_ssr_without_requiring_uploaded_logos() {
+        let mut dom = VirtualDom::new(TestApp);
+        dom.rebuild_in_place();
+        let html = dioxus::ssr::render(&dom);
+        assert_eq!(
+            html.matches("class=\"software-directory-item\"").count(),
+            28
+        );
+        assert_eq!(html.matches("software-emblem").count(), 28);
+        assert!(html.matches("<img").count() >= 5);
+        assert_eq!(html.matches("software-artwork ").count(), 0);
+        for name in [
+            "mastodon",
+            "misskey",
+            "pixelfed",
+            "peertube",
+            "lemmy",
+            "bookwyrm",
+            "cherrypick",
+        ] {
+            assert!(
+                html.contains(&format!("href=\"/software/{name}\"")),
+                "{name}"
+            );
+        }
+        assert!(!html.contains("/api/public/software-logo/"));
+    }
 }

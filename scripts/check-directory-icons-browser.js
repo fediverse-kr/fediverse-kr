@@ -31,8 +31,8 @@ async (page) => {
     await page.waitForFunction(width=>document.querySelector('.server-mark img')?.naturalWidth===width,width);
     check('cached icon actually renders in list',await page.locator('.server-mark img').count()===1);
     await page.locator('.server-card').click();
-    await page.locator('.page-heading .server-mark').scrollIntoViewIfNeeded();
-    await page.waitForFunction(width=>document.querySelector('.page-heading .server-mark img')?.naturalWidth===width,width);
+    await page.locator('.server-detail-hero .site-icon').scrollIntoViewIfNeeded();
+    await page.waitForFunction(width=>document.querySelector('.server-detail-hero .site-icon img')?.naturalWidth===width,width);
     check('cached icon renders in detail',true);
     await page.screenshot({path:'output/playwright/site-icon-'+(svg?'svg':'png')+'.png'});
     if(svg){
@@ -48,8 +48,8 @@ async (page) => {
     await page.route(icon,route=>route.fulfill({status:200,contentType:'image/png',body:'not an image'}));
     try {
         await open('/servers/'+item.domain);
-        await page.locator('.page-heading .server-mark').scrollIntoViewIfNeeded();
-        await page.waitForFunction(()=>!document.querySelector('.page-heading .server-mark img') && document.querySelector('.page-heading .server-mark')?.textContent==='B');
+        await page.locator('.server-detail-hero .site-icon').scrollIntoViewIfNeeded();
+        await page.waitForFunction(()=>!document.querySelector('.server-detail-hero .site-icon img') && document.querySelector('.server-detail-hero .site-icon')?.textContent==='B');
         check('invalid image decoding falls back to initial',true);
     } finally {await page.unroute(icon);}
     const save=async(hidden)=>{

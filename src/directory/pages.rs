@@ -24,8 +24,19 @@ fn PreviewNote(preview: bool) -> Element {
 pub fn Platforms(filters: super::catalog::CatalogQuery) -> Element {
     rsx! { catalog::CatalogListing { key:"{filters}", criteria:filters } }
 }
+mod brand;
 mod catalog;
+mod discovery;
+mod families;
 mod software;
+
+#[component]
+fn CatalogPreviewNote(preview: bool) -> Element {
+    rsx! {if preview {div {class:"data-notice",
+        span {"운영 목록으로 미리보기"}
+        p {"{super::preview::catalog_snapshot_date()} 공개 소프트웨어 목록을 가져왔어요. 운영 DB와 연결되지 않았으며, 서버 목록은 가상의 예시입니다."}
+    }}}
+}
 
 #[component]
 pub fn SoftwareDetail(name: String) -> Element {
@@ -34,6 +45,8 @@ pub fn SoftwareDetail(name: String) -> Element {
 #[component]
 fn SoftwareDetails(name: String) -> Element {
     let catalog = use_server_future(use_reactive((&name,), |(name,)| api::software(name)))?;
+    // Optional navigation: a catalog failure must not hide the requested product.
+    let related = use_server_future(|| async { api::catalog().await.ok() })?;
     rsx! { main { id:"content", class:"detail-page software-detail-page wrap",
         Link { class:"back-link", to:Route::Platforms { filters: Default::default() }, ArrowLeft { size:16 } "소프트웨어 목록" }
         match catalog() {
@@ -42,8 +55,8 @@ fn SoftwareDetails(name: String) -> Element {
                 match item {
                     Some(item)=>rsx! {
                         document::Title { "{item.display_name} — 소프트웨어 — fediverse.kr" }
-                        PreviewNote { preview:data.preview }
-                        software::Overview { item:item.clone(), categories:data.categories.clone() }
+                        CatalogPreviewNote { preview:data.preview }
+                        software::Overview { item:item.clone(), categories:data.categories.clone(),related:related().flatten().map(|all|all.software).unwrap_or_default() }
                     },
                     None=>rsx! { MissingRecord { title:"아직 등록되지 않은 소프트웨어예요." } Link { class:"text-link", to:Route::Platforms { filters: Default::default() }, "전체 목록 보기" } },
                 }
@@ -58,6 +71,7 @@ mod health;
 mod icon;
 mod listing;
 mod operator;
+mod site;
 #[component]
 pub fn Servers(filters: search::ServerQuery) -> Element {
     rsx! { listing::ServerListing { key:"{filters}", criteria:filters } }
@@ -78,49 +92,13 @@ pub fn ServerDetail(slug: String) -> Element {
 #[component]
 fn SiteDetails(domain: String) -> Element {
     let result = use_server_future(use_reactive((&domain,), |(domain,)| api::server(domain)))?;
-    rsx! { main { id:"content", class:"detail-page wrap",
+    rsx! { main { id:"content", class:"detail-page wrap server-detail-shell",
         Link { class:"back-link", to:Route::Servers { filters: Default::default() }, ArrowLeft { size:16 } "서버 목록" }
         match result() {
             Some(Ok(data))=>rsx! {
-                PreviewNote { preview:data.preview }
                 if let Some(site)=data.site {
                     document::Title { "{site.name} — 서버 정보 — fediverse.kr" }
-                    header { class:"page-heading",
-                        icon::SiteHeader{site:site.clone()}
-                        div {class:"server-detail-identity",icon::SiteIcon{site:site.clone()} h1 { "{site.name}" }}
-                        p { "{site.domain}" }
-                    }
-                    div { class:"detail-layout",
-                        section { class:"information-prose",
-                            h2 { "이곳의 소개" }
-                            if site.description_html.is_empty() { p { class:"server-description", "아직 수집된 소개가 없어요. 서버에서 직접 확인해 주세요." } } else { div { class:"server-description rich-description", dangerous_inner_html:"{site.description_html}" } }
-                            h2 { "최근 확인한 정보" }
-                            dl { class:"server-facts",
-                                dt { "응답 상태" } dd { "{site.status()}" }
-                                dt { "응답 확인 시각" } dd { {site.checked_at.as_deref().unwrap_or("확인 전")} }
-                                dt { "소프트웨어" } dd { if let Some(name)=&site.software { Link { to:Route::SoftwareDetail { name:name.clone() }, "{name}" } } else { "확인 전" } }
-                                dt { "가입 계정" } dd { {site.users.map(number).unwrap_or_else(||"알 수 없음".into())} }
-                                dt { "활동 계정" } dd { {site.active_users.map(number).unwrap_or_else(||"알 수 없음".into())} }
-                                dt { "위 정보 수집 시각" } dd { {site.metadata_checked_at.as_deref().unwrap_or("수집 시각 미확인")} }
-                                dt { "7일 평균 응답" } dd { {site.average_response_ms.map(|n|format!("{n} ms")).unwrap_or_else(||"자료 부족".into())} }
-                            }
-                            p { class:"review-note", "계정 수는 사람 수가 아니에요. 활동 계정의 집계 기간은 소프트웨어마다 다르며, 수집 이후 변경되었을 수 있어요." }
-                            health::HealthHistory { domain:site.domain.clone() }
-                            if !site.guidance.language.is_empty() {h2 {"주로 쓰는 언어"}p {"{site.guidance.language}"}}
-                            if !site.guidance.tags.is_empty() {div {class:"tag-list",for tag in &site.guidance.tags {span {"{tag}"}}}}
-                            h2 {"이곳의 규칙"}
-                            p {class:"server-description",if site.guidance.rules.is_empty() {"등록된 규칙이 없어요. 가입 전 서버에서 직접 확인해 주세요."}else{"{site.guidance.rules}"}}
-                            operator::OperatorInformation { owner_comment:site.guidance.owner_comment.clone() }
-                        }
-                        aside { class:"join-panel", h2 { "{site.registration()}" }
-                            if !data.preview && !site.closed {
-                                if let Some(url)=site_link(&site.domain) { a { class:"primary-button", href:url, target:"_blank", rel:"noopener noreferrer", "서버 방문하기" } }
-                            }
-                            p { if data.preview { "예시 주소는 열 수 없어요." } else if site.closed { "운영 종료로 기록된 서버예요." } else { "승인·초대·운영 규칙은 해당 사이트의 안내를 확인하세요." } }
-                            Link { class:"text-link", to:Route::Explain { topic:"find".into() }, "다른 서버의 사람을 팔로우하려면" }
-                        }
-                    }
-                    crate::community::pages::Discussion{domain:site.domain.clone()}
+                    site::SiteDetailPage { site:site.clone(), preview:data.preview }
                 } else { MissingRecord { title:"표시할 수 있는 서버 정보가 없어요." } }
             },
             Some(Err(_))=>rsx!{ DataError{} },

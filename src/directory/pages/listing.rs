@@ -32,7 +32,6 @@ pub fn ServerListing(criteria: ServerQuery) -> Element {
     };
     let filter_options = options().and_then(|value| value.ok());
     let active = filters::active_filters(&criteria, filter_options.as_ref());
-    let active_count = active.len();
     let has_pending = {
         let mut pending = draft();
         pending.page = criteria.page;
@@ -53,12 +52,14 @@ pub fn ServerListing(criteria: ServerQuery) -> Element {
                             label {class:"search-box",Search{size:19} input{disabled:!ready,r#type:"search",maxlength:256,aria_label:"서버 이름, 주소, 소프트웨어 검색",placeholder:"이름, 주소, 소프트웨어 검색",value:draft().query,oninput:move|e|draft.write().query=e.value()}}
                             button{r#type:"submit",class:"secondary-button",disabled:!ready,"검색"}
                         }
-                        DirectoryActions {}
+                        FilterSelect{id:"directory-registration",label:"가입 방식",all:false,value:draft().registration,options:choices(&[("all","모두"),("open","가입 접수 중"),("approval","가입 승인 필요"),("invite_only","초대 필요"),("closed","가입 접수 닫힘"),("unknown","가입 방식 확인 전")]),on_change:move|value:String|draft.write().registration=value}
                     }
+                    if has_pending {p {class:"filter-pending",role:"status","조건이 바뀌었어요. 검색 또는 조건 적용을 눌러 반영하세요."}}
+                    DirectoryActions {}
                     if let Some(Ok(data))=options() {
                         details {class:"directory-filter-panel",
                             summary {
-                                span {class:"directory-filter-summary-copy",strong{"필터 · 정렬" if active_count>0 {span{class:"directory-filter-count","{active_count}"}}}span{"소프트웨어 · 가입 방식 · 응답 상태"}}
+                                span {class:"directory-filter-summary-copy",strong{"고급 필터"}span{"종류 · 계열 · 소프트웨어 · 태그 · 응답 · 정렬 · 표시 수"}}
                                 span {class:"directory-filter-summary-action",span{class:"filter-open-label","열기"}span{class:"filter-close-label","닫기"}}
                             }
                             div {class:"directory-filter-panel-body",
@@ -67,31 +68,24 @@ pub fn ServerListing(criteria: ServerQuery) -> Element {
                                     FilterSelect{id:"directory-family",label:"계열",value:draft().family,options:{let mut values:Vec<_>=data.software.iter().filter(|s|draft().category.is_empty() || s.categories.contains(&draft().category)).map(|s|(s.family.clone(),s.family.clone())).collect();values.sort();values.dedup();values},on_change:move|value:String|{let mut d=draft.write();d.family=value;d.software.clear();}}
                                     FilterSelect{id:"directory-software",label:"소프트웨어",value:draft().software,options:data.software.into_iter().filter(|s|(draft().category.is_empty() || s.categories.contains(&draft().category)) && (draft().family.is_empty() || s.family==draft().family)).map(|s|(s.name,s.label)).collect(),on_change:move|value:String|draft.write().software=value}
                                     FilterSelect{id:"directory-tag",label:"태그",value:draft().tag,options:data.tags.into_iter().map(|s|(s.clone(),s)).collect(),on_change:move|value:String|draft.write().tag=value}
-                                    FilterSelect{id:"directory-registration",label:"가입 방식",all:false,value:draft().registration,options:choices(&[("all","모두"),("open","가입 접수 중"),("approval","가입 승인 필요"),("invite_only","초대 필요"),("closed","가입 접수 닫힘"),("unknown","가입 방식 확인 전")]),on_change:move|value:String|draft.write().registration=value}
                                     FilterSelect{id:"directory-health",label:"응답 상태",all:false,value:draft().alive,options:choices(&[("all","모두"),("yes","최근 응답 확인"),("no","최근 응답 없음"),("unknown","아직 확인 전"),("closed","운영 종료")]),on_change:move|value:String|draft.write().alive=value}
                                     FilterSelect{id:"directory-sort",label:"정렬 기준",all:false,value:draft().sort,options:sort_options(),on_change:move|value:String|{let mut d=draft.write();d.direction=default_sort_direction(&value).into();d.sort=value;}}
                                     FilterSelect{id:"directory-direction",label:"정렬 방향",all:false,value:draft().direction,options:choices(&[("asc","오름차순"),("desc","내림차순")]),on_change:move|value:String|draft.write().direction=value}
                                     FilterSelect{id:"directory-size",label:"한 페이지에",all:false,value:draft().page_size.to_string(),options:choices(&[("24","24개"),("25","25개"),("50","50개"),("100","100개"),("200","200개")]),on_change:move|value:String|{if let Ok(size)=value.parse(){draft.write().page_size=size;}}}
                                 }
                                 if data.truncated {p {class:"review-note","선택 항목 일부만 표시됩니다. 주소의 직접 필터와 검색은 전체 데이터를 조회해요."}}
-                                if has_pending {p {class:"filter-pending",role:"status","변경한 조건을 적용해 주세요."}}
                                 div {class:"directory-filter-actions",button{r#type:"submit",class:"primary-button",disabled:!ready,"조건 적용"}Link{class:"text-link",to:Route::Servers{filters:ServerQuery::default()},"초기화"}}
                             }
                         }
                     } else if matches!(options(),Some(Err(_))) {p{role:"alert",class:"data-notice","선택 항목을 불러오지 못했어요. 검색은 계속 사용할 수 있습니다."}}
                 }
-                if !active.is_empty() {
-                    nav {class:"active-filter-chips",aria_label:"적용 중인 조건",
-                        for (label, query) in active {
-                            Link {to:Route::Servers{filters:query},aria_label:"{label} 해제", "{label}" span {aria_hidden:"true","×"}}
-                        }
-                        Link {class:"filter-reset",to:Route::Servers{filters:ServerQuery::default()},"모두 해제"}
-                    }
-                }
                 match result() {
                     Some(Ok(data))=>rsx! {
                         PreviewNote{preview:data.listing.preview}
-                        p {class:"directory-result-count",role:"status","{number(data.total)}곳"}
+                        section {class:"directory-results-summary",aria_label:"검색 결과와 적용한 조건",
+                            p {class:"directory-result-count",role:"status","{number(data.total)}곳"}
+                            ActiveFilterChips {filters:active.clone()}
+                        }
                         if data.without_registration>data.total {
                             p{class:"directory-filter-excluded","다른 가입 방식으로 {number(data.without_registration-data.total)}곳이 더 있어요. " Link{class:"text-link",to:Route::Servers{filters:all_registration},"가입 방식 모두 보기"}}
                         }
@@ -117,10 +111,25 @@ pub fn ServerListing(criteria: ServerQuery) -> Element {
                             if data.listing.has_next && criteria.page<10_000 {Link{class:"secondary-button",to:Route::Servers{filters:next},"다음"}}else{button{class:"secondary-button",disabled:true,"다음"}}
                         }
                     },
-                    Some(Err(_))=>rsx!{DataError{}},None=>rsx!{p{role:"status","목록을 불러오는 중…"}},
+                    Some(Err(_))=>rsx!{if !active.is_empty(){section{class:"directory-results-summary",aria_label:"적용한 조건",ActiveFilterChips{filters:active.clone()}}}DataError{}},
+                    None=>rsx!{if !active.is_empty(){section{class:"directory-results-summary",aria_label:"적용한 조건",ActiveFilterChips{filters:active.clone()}}}p{role:"status","목록을 불러오는 중…"}},
                 }
             }
             aside{class:"directory-help",strong{"서버는 소프트웨어와 운영자가 함께 만들어요."}p{"응답 확인은 가입 가능이나 운영 품질을 보증하지 않아요. 가입 전 해당 사이트의 안내를 확인하세요."}Link{class:"text-link",to:Route::Platforms { filters: Default::default() },"소프트웨어부터 둘러보기" ArrowRight{size:16}}}
+        }
+    }
+}
+
+#[component]
+fn ActiveFilterChips(filters: Vec<(String, ServerQuery)>) -> Element {
+    rsx! {
+        if !filters.is_empty() {
+            nav {class:"active-filter-chips",aria_label:"적용 중인 조건",
+                for (label, query) in filters {
+                    Link {to:Route::Servers{filters:query},aria_label:"{label} 해제", "{label}" span {aria_hidden:"true","×"}}
+                }
+                Link {class:"filter-reset",to:Route::Servers{filters:ServerQuery::default()},"모두 해제"}
+            }
         }
     }
 }

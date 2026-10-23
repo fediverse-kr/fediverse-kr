@@ -138,13 +138,16 @@ fn EditForm(
                 div{class:"membership-field",label{r#for:"software-{field}","{label}"}
                     if rows==1 {input{id:"software-{field}",r#type:if field=="website_url" {"url"}else{"text"},value:field_value(&draft(),field),maxlength:max,required:field=="display_name",disabled:pending() || !ready || locked,oninput:move|e|set_field(&mut draft.write(),field,e.value())}}
                     else {textarea{id:"software-{field}",value:field_value(&draft(),field),rows,maxlength:max,disabled:pending() || !ready || locked,oninput:move|e|set_field(&mut draft.write(),field,e.value())}}
+                    if field=="description" {p{class:"membership-hint","무엇을 하는 도구인지 먼저 1~2문장으로 알려 주세요. 소개의 첫 부분은 목록과 상세 상단에도 표시됩니다."}}
                 }
             }
             fieldset{class:"catalog-kinds",disabled:pending() || !ready || locked,legend{"종류 · 하나 이상"}
                 for kind in options {label{class:"owner-checkbox",input{r#type:"checkbox",checked:draft().categories.contains(&kind.name),onchange:move|e|{let mut edit=draft.write();if e.checked(){if !edit.categories.contains(&kind.name){edit.categories.push(kind.name.clone());}}else{edit.categories.retain(|v|v!=&kind.name);}}}"{kind.emoji} {kind.label}"}}
                 if kinds.truncated {p{class:"membership-hint","분류가 많아 앞의 200개만 표시합니다. 기존 분류는 유지할 수 있어요."}}
             }
-            div{class:"membership-field",label{r#for:"software-features","주요 기능 · 한 줄에 하나, 최대 32개"}textarea{id:"software-features",value:features,rows:5,maxlength:9632,disabled:pending() || !ready || locked,oninput:move|e|features.set(e.value())}}
+            div{class:"membership-field",label{r#for:"software-features","주요 특징 · 한 줄에 하나, 최대 32개"}textarea{id:"software-features",value:features,rows:5,maxlength:9632,disabled:pending() || !ready || locked,oninput:move|e|features.set(e.value())}
+                p{class:"membership-hint","앞의 3개가 소개 화면에서 강조됩니다. ‘사진 앨범 — 여러 장을 묶어 올려요’처럼 제목과 설명을 나눌 수도 있어요. 일반 문장도 그대로 표시됩니다."}
+            }
             div{class:"membership-field",label{r#for:"software-summary","변경 요약"}input{id:"software-summary",value:summary,required:true,maxlength:200,placeholder:"어떤 내용을 추가하거나 바로잡았나요?",disabled:pending() || !ready || locked,oninput:move|e|summary.set(e.value())}}
             if !message().is_empty(){p{class:"membership-notice",role:"status","{message}"}}
             if !creating {

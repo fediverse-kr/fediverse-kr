@@ -82,6 +82,14 @@ def quick():
         run(cargo_graph("check", target, feature))
     run(cargo_graph("test", native, "server") + ["--bin", "fediversekr2"],
         require_tests=True)
+    run([
+        "cargo", "test", "--locked", "--target", native,
+        "--package", "fedkr-federation", "--all-targets",
+    ], require_tests=True)
+    run([
+        "cargo", "test", "--locked", "--target", native,
+        "--package", "fedkr-federation", "--all-targets", "--features", "publish",
+    ], require_tests=True)
     run(["cargo", "deny", "fetch", "db"])
     failures = []
     for target, feature in GRAPHS:

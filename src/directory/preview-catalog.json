@@ -1,0 +1,547 @@
+{
+  "fetched_at": "2026-10-23T14:35:08.3149141+00:00",
+  "source": "https://fediverse.kr/api/public/catalog",
+  "family_source": "https://fediverse.kr/api/public/software-edit?name={name}",
+  "family_fetched_at": "2026-10-24T01:32:47.7887250+09:00",
+  "catalog": {
+    "preview": false,
+    "categories": [
+      {
+        "name": "microblogging",
+        "label": "마이크로블로깅",
+        "emoji": "📝"
+      },
+      {
+        "name": "blog",
+        "label": "블로그",
+        "emoji": "✍️"
+      },
+      {
+        "name": "reading",
+        "label": "독서",
+        "emoji": "📖"
+      },
+      {
+        "name": "forum",
+        "label": "포럼",
+        "emoji": "💬"
+      },
+      {
+        "name": "media",
+        "label": "미디어",
+        "emoji": "📸"
+      }
+    ],
+    "software": [
+      {
+        "logo_available": false,
+        "name": "akkoma",
+        "display_name": "Akkoma",
+        "description": "Pleroma에서 포크. 이모지 리액션, 번역, 버블 타임라인 등 기능을 빠르게 도입.",
+        "description_html": "<p>Pleroma에서 포크. 이모지 리액션, 번역, 버블 타임라인 등 기능을 빠르게 도입.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "커스텀 이모지 리액션 및 MFM 지원",
+          "버블 타임라인 (친한 서버끼리의 피드)",
+          "DeepL/LibreTranslate 자동 번역 연동",
+          "Mastodon 앱 호환"
+        ],
+        "website_url": "https://akkoma.social/",
+        "tech_stack": "Elixir"
+      },
+      {
+        "logo_available": false,
+        "name": "calckey",
+        "display_name": "Calckey",
+        "description": "Misskey 포크로, 2023년 Firefish로 리브랜딩됨. 현재 개발 중단.",
+        "description_html": "<p>Misskey 포크로, 2023년 Firefish로 리브랜딩됨. 현재 개발 중단.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "Misskey 대비 개선된 UI",
+          "커뮤니티 요청 기능 반영",
+          "Firefish로 리브랜딩 후 개발 중단"
+        ],
+        "website_url": "https://codeberg.org/firefish/firefish",
+        "tech_stack": "TypeScript / Node.js"
+      },
+      {
+        "logo_available": false,
+        "name": "catodon",
+        "display_name": "Catodon",
+        "description": "연합우주 커뮤니티 구축을 위한 실험적 플랫폼. Sharkey 기반으로 재출발, 초기 단계.",
+        "description_html": "<p>연합우주 커뮤니티 구축을 위한 실험적 플랫폼. Sharkey 기반으로 재출발, 초기 단계.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "미니멀한 디자인, 핵심 기능에 집중",
+          "신규 사용자 친화적 설계",
+          "Sharkey 기반으로 재개발 중 (실험 단계)"
+        ],
+        "website_url": "https://codefloe.com/catodon/catodon",
+        "tech_stack": "TypeScript / Node.js"
+      },
+      {
+        "logo_available": false,
+        "name": "fedibird",
+        "display_name": "Fedibird",
+        "description": "일본에서 개발된 Mastodon 포크. 이모지 리액션, 인용, 그룹, 구독 등 확장 기능.",
+        "description_html": "<p>일본에서 개발된 Mastodon 포크. 이모지 리액션, 인용, 그룹, 구독 등 확장 기능.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "이모지 리액션 (Misskey/Pleroma 호환)",
+          "인용 게시 지원",
+          "그룹 및 구독 피드",
+          "게시물 만료(비공개 전환) 기능"
+        ],
+        "website_url": "https://github.com/fedibird/mastodon",
+        "tech_stack": "Ruby on Rails"
+      },
+      {
+        "logo_available": false,
+        "name": "firefish",
+        "display_name": "Firefish",
+        "description": "Misskey 포크로 다양한 기능을 추가했으나, 현재는 개발이 중단된 상태.",
+        "description_html": "<p>Misskey 포크로 다양한 기능을 추가했으나, 현재는 개발이 중단된 상태.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "개선된 UI/UX와 온보딩",
+          "게시물 인용, 리치 텍스트",
+          "추천 타임라인 및 그룹 기능",
+          "개발 중단 — Sharkey 등으로 이전 권장"
+        ],
+        "website_url": "https://codeberg.org/firefish/firefish",
+        "tech_stack": "TypeScript / Node.js"
+      },
+      {
+        "logo_available": false,
+        "name": "foundkey",
+        "display_name": "FoundKey",
+        "description": "Misskey 13 기반 경량 포크. 소규모 인스턴스(20명 이하)에 최적화. 제한적 유지보수 중.",
+        "description_html": "<p>Misskey 13 기반 경량 포크. 소규모 인스턴스(20명 이하)에 최적화. 제한적 유지보수 중.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "불필요한 기능을 제거한 경량 코드베이스",
+          "소규모 인스턴스 최적화",
+          "보안/버그 수정 위주 유지보수"
+        ],
+        "website_url": "https://akkoma.dev/FoundKeyGang/FoundKey",
+        "tech_stack": "TypeScript / Node.js"
+      },
+      {
+        "logo_available": false,
+        "name": "glitch-soc",
+        "display_name": "Glitch-soc",
+        "description": "Mastodon에 실험적 기능을 더한 포크. 리치 텍스트, 로컬 전용 게시, 테마 커스터마이징 등.",
+        "description_html": "<p>Mastodon에 실험적 기능을 더한 포크. 리치 텍스트, 로컬 전용 게시, 테마 커스터마이징 등.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "Markdown/HTML 리치 텍스트 지원",
+          "로컬 전용 게시 (서버 안에서만 보이는 글)",
+          "플레이버 기반 테마 커스터마이징",
+          "팔로워 수 숨기기 등 UI 개선"
+        ],
+        "website_url": "https://glitch-soc.github.io/docs/",
+        "tech_stack": "Ruby on Rails"
+      },
+      {
+        "logo_available": false,
+        "name": "hometown",
+        "display_name": "Hometown",
+        "description": "커뮤니티 중심의 가벼운 Mastodon 포크. 로컬 전용 게시로 서버 내 소통을 강화.",
+        "description_html": "<p>커뮤니티 중심의 가벼운 Mastodon 포크. 로컬 전용 게시로 서버 내 소통을 강화.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "로컬 전용 게시 (연합되지 않는 글)",
+          "다양한 ActivityPub 콘텐츠 형식 렌더링",
+          "전용 리스트 (홈에서 특정 계정 분리)",
+          "본가 Mastodon과 99% 호환"
+        ],
+        "website_url": "https://github.com/hometown-fork/hometown",
+        "tech_stack": "Ruby on Rails"
+      },
+      {
+        "logo_available": false,
+        "name": "kmyblue",
+        "display_name": "kmyblue",
+        "description": "소규모 커뮤니티를 위한 Mastodon 포크. 서클, 안테나 등 내부 소통에 특화.",
+        "description_html": "<p>소규모 커뮤니티를 위한 Mastodon 포크. 서클, 안테나 등 내부 소통에 특화.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "이모지 리액션 및 인용 게시",
+          "서클 (특정 그룹에게만 공유)",
+          "안테나 (키워드 기반 자동 수집)",
+          "게시물별 검색 허용 범위 설정"
+        ],
+        "website_url": "https://github.com/kmycode/mastodon",
+        "tech_stack": "Ruby on Rails"
+      },
+      {
+        "logo_available": false,
+        "name": "kosmo",
+        "display_name": "KOSMO",
+        "description": "별마루가 한국 동인 창작 문화 향유자를 위해 개발 중인 연합우주 SNS입니다. 현재 오픈 베타 단계로, 기능과 화면이 변경될 수 있습니다. 개발 주체 안내 · 개발 배경 · 공식 소식 · 소스 코드 소스는 공개되어 있으나, 프로젝트 라이선스는 확인되지 않았습니다.",
+        "description_html": "<p>별마루가 한국 동인 창작 문화 향유자를 위해 개발 중인 연합우주 SNS입니다. 현재 오픈 베타 단계로, 기능과 화면이 변경될 수 있습니다.</p>\n<p><a href=\"https://planet.moe/@byulmaru/116950841207566409\" rel=\"noopener noreferrer ugc\">개발 주체 안내</a> · <a href=\"https://planet.moe/@kosmo/116985757378791889\" rel=\"noopener noreferrer ugc\">개발 배경</a> · <a href=\"https://planet.moe/@kosmo\" rel=\"noopener noreferrer ugc\">공식 소식</a> · <a href=\"https://github.com/byulmaru/kosmo\" rel=\"noopener noreferrer ugc\">소스 코드</a></p>\n<p>소스는 공개되어 있으나, 프로젝트 라이선스는 확인되지 않았습니다.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [],
+        "website_url": "https://kos.moe/",
+        "tech_stack": "TypeScript / Fedify"
+      },
+      {
+        "logo_available": false,
+        "name": "lemmy",
+        "display_name": "Lemmy",
+        "description": "Reddit과 유사한 분산형 링크 공유 및 토론 플랫폼. 커뮤니티별 게시판과 투표.",
+        "description_html": "<p>Reddit과 유사한 분산형 링크 공유 및 토론 플랫폼. 커뮤니티별 게시판과 투표.</p>\n",
+        "categories": [
+          "forum"
+        ],
+        "features": [
+          "추천/비추천 투표, 스레드형 댓글",
+          "커뮤니티별 게시판 (서버 간 구독 가능)",
+          "Rust 기반 경량 설계",
+          "10개 이상의 서드파티 앱"
+        ],
+        "website_url": "https://join-lemmy.org",
+        "tech_stack": "Rust (Actix)"
+      },
+      {
+        "logo_available": false,
+        "name": "meisskey",
+        "display_name": "Meisskey",
+        "description": "Misskey v10 기반의 레거시 포크. 일본 개발자가 독자적으로 유지보수 중.",
+        "description_html": "<p>Misskey v10 기반의 레거시 포크. 일본 개발자가 독자적으로 유지보수 중.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "Misskey v10 기반 안정적 아키텍처",
+          "릴레이 및 리모트 커스텀 이모지 리액션",
+          "지속적인 보안 패치"
+        ],
+        "website_url": "https://github.com/mei23/misskey",
+        "tech_stack": "TypeScript / Node.js / MongoDB"
+      },
+      {
+        "logo_available": false,
+        "name": "peertube",
+        "display_name": "PeerTube",
+        "description": "YouTube의 분산형 대안. P2P 기반 동영상 호스팅과 라이브 스트리밍.",
+        "description_html": "<p>YouTube의 분산형 대안. P2P 기반 동영상 호스팅과 라이브 스트리밍.</p>\n",
+        "categories": [
+          "media"
+        ],
+        "features": [
+          "P2P 스트리밍으로 서버 부하 분산",
+          "RTMP 라이브 스트리밍",
+          "Mastodon 등에서 동영상 팔로우/댓글 가능",
+          "플러그인 시스템으로 기능 확장"
+        ],
+        "website_url": "https://joinpeertube.org",
+        "tech_stack": "TypeScript (Node.js)"
+      },
+      {
+        "logo_available": false,
+        "name": "pixelfed",
+        "display_name": "Pixelfed",
+        "description": "Instagram과 유사한 분산형 사진 공유 플랫폼. 알고리즘 없는 시간순 타임라인.",
+        "description_html": "<p>Instagram과 유사한 분산형 사진 공유 플랫폼. 알고리즘 없는 시간순 타임라인.</p>\n",
+        "categories": [
+          "media"
+        ],
+        "features": [
+          "앨범, 필터, 스토리, 컬렉션",
+          "광고/추적 없는 시간순 타임라인",
+          "Mastodon 등과 상호 팔로우 가능",
+          "자동 삭제 게시물 지원"
+        ],
+        "website_url": "https://pixelfed.org",
+        "tech_stack": "PHP (Laravel)"
+      },
+      {
+        "logo_available": false,
+        "name": "siliconbeest",
+        "display_name": "SiliconBeest",
+        "description": "Wildebeest 기반 서버리스 페디버스 서버",
+        "description_html": "<p>Wildebeest 기반 서버리스 페디버스 서버</p>\n",
+        "categories": [],
+        "features": [],
+        "website_url": "https://github.com/SJang1/siliconbeest",
+        "tech_stack": "Cloudflare Workers"
+      },
+      {
+        "logo_available": false,
+        "name": "wildebeest",
+        "display_name": "Wildebeest",
+        "description": "Cloudflare의 서버리스 ActivityPub 서버 (archived)",
+        "description_html": "<p>Cloudflare의 서버리스 ActivityPub 서버 (archived)</p>\n",
+        "categories": [],
+        "features": [],
+        "website_url": "https://github.com/cloudflare/wildebeest",
+        "tech_stack": "Cloudflare Workers"
+      },
+      {
+        "logo_available": false,
+        "name": "wordpress",
+        "display_name": "WordPress",
+        "description": "ActivityPub 플러그인으로 WordPress 블로그를 연합우주에 연결. Automattic이 개발.",
+        "description_html": "<p>ActivityPub 플러그인으로 WordPress 블로그를 연합우주에 연결. Automattic이 개발.</p>\n",
+        "categories": [
+          "blog"
+        ],
+        "features": [
+          "플러그인 설치만으로 연합우주 연동",
+          "블로그·작성자별 연합우주 프로필 생성",
+          "연합우주에서 받은 댓글/좋아요 확인",
+          "Mastodon, Misskey 등 주요 플랫폼 호환"
+        ],
+        "website_url": "https://wordpress.org/plugins/activitypub/",
+        "tech_stack": "PHP (WordPress)"
+      },
+      {
+        "logo_available": false,
+        "name": "writefreely",
+        "display_name": "WriteFreely",
+        "description": "글쓰기에 집중하는 미니멀 블로그 플랫폼. 연합우주에서 블로그를 팔로우할 수 있어요.",
+        "description_html": "<p>글쓰기에 집중하는 미니멀 블로그 플랫폼. 연합우주에서 블로그를 팔로우할 수 있어요.</p>\n",
+        "categories": [
+          "blog"
+        ],
+        "features": [
+          "방해 없는 미니멀 글쓰기 환경",
+          "Mastodon 등에서 블로그 팔로우 가능",
+          "단일 바이너리, 설치 간편",
+          "이메일 뉴스레터 구독 지원"
+        ],
+        "website_url": "https://writefreely.org",
+        "tech_stack": "Go"
+      },
+      {
+        "logo_available": false,
+        "name": "mastodon",
+        "display_name": "Mastodon",
+        "description": "가장 많은 사람이 사용하는 연합우주 소프트웨어. 안정적이고, 앱이 풍부하고, 자료도 많아요.",
+        "description_html": "<p>가장 많은 사람이 사용하는 연합우주 소프트웨어. 안정적이고, 앱이 풍부하고, 자료도 많아요.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "트위터와 비슷한 타임라인 구조",
+          "iOS/Android/Web 앱이 가장 많음",
+          "인용 게시 지원 (4.5+)",
+          "서버 이사 시 팔로워 자동 이전"
+        ],
+        "website_url": "https://joinmastodon.org",
+        "tech_stack": "Ruby on Rails"
+      },
+      {
+        "logo_available": false,
+        "name": "gotosocial",
+        "display_name": "GoToSocial",
+        "description": "가볍고 심플한 소규모 마이크로블로그. 자기만의 작은 공간을 원하는 분에게.",
+        "description_html": "<p>가볍고 심플한 소규모 마이크로블로그. 자기만의 작은 공간을 원하는 분에게.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "메모리 250~350MB로 구동 가능",
+          "Mastodon 앱과 호환 (자체 웹 UI 없음)",
+          "SQLite 또는 PostgreSQL, 외부 의존성 최소",
+          "프라이버시와 안전 기능에 집중"
+        ],
+        "website_url": "https://gotosocial.org",
+        "tech_stack": "Go"
+      },
+      {
+        "logo_available": false,
+        "name": "pleroma",
+        "display_name": "Pleroma",
+        "description": "매우 가벼운 서버. 라즈베리 파이에서도 돌아갈 정도. 커스터마이즈를 좋아하는 분에게.",
+        "description_html": "<p>매우 가벼운 서버. 라즈베리 파이에서도 돌아갈 정도. 커스터마이즈를 좋아하는 분에게.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "극도로 낮은 리소스 사용량",
+          "Akkoma는 Pleroma 포크, 더 활발한 개발",
+          "Bubble 타임라인 (Akkoma, 친한 서버끼리의 피드)",
+          "다양한 프론트엔드 선택 가능"
+        ],
+        "website_url": "https://pleroma.social",
+        "tech_stack": "Elixir"
+      },
+      {
+        "logo_available": false,
+        "name": "hollo",
+        "display_name": "Hollo",
+        "description": "한국에서 만든 1인용 마이크로블로그. Fedify 프레임워크 기반.",
+        "description_html": "<p>한국에서 만든 1인용 마이크로블로그. Fedify 프레임워크 기반.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "딱 한 사람을 위한 개인 연합우주 서버",
+          "Mastodon 앱과 호환",
+          "설치와 관리가 간편"
+        ],
+        "website_url": "https://docs.hollo.social",
+        "tech_stack": "TypeScript / Fedify"
+      },
+      {
+        "logo_available": false,
+        "name": "misskey",
+        "display_name": "Misskey",
+        "description": "일본에서 시작된, 화려하고 자유로운 소셜 네트워크. 한국에서 특히 인기가 많아요.",
+        "description_html": "<p>일본에서 시작된, 화려하고 자유로운 소셜 네트워크. 한국에서 특히 인기가 많아요.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "이모지 리액션 (좋아요 대신 다양한 반응)",
+          "MFM으로 글자를 반짝이고, 흔들고, 무지개빛으로 꾸미기",
+          "드라이브 (파일 관리 시스템)",
+          "위젯, 테마, 안테나 등 커스터마이즈"
+        ],
+        "website_url": "https://misskey-hub.net",
+        "tech_stack": "TypeScript / Node.js"
+      },
+      {
+        "logo_available": false,
+        "name": "cherrypick",
+        "display_name": "CherryPick",
+        "description": "한국 커뮤니티에서 만든 Misskey 포크. Misskey의 모든 기능 + 추가 개선.",
+        "description_html": "<p>한국 커뮤니티에서 만든 Misskey 포크. Misskey의 모든 기능 + 추가 개선.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "향상된 텍스트 꾸미기 도구",
+          "개선된 이모지 관리",
+          "UI/UX 개선 및 추가 커스터마이징",
+          "Misskey 업스트림 보안 패치 반영"
+        ],
+        "website_url": "https://kokonect.link",
+        "tech_stack": "TypeScript / Misskey 포크"
+      },
+      {
+        "logo_available": false,
+        "name": "sharkey",
+        "display_name": "Sharkey",
+        "description": "Misskey 포크 중 가장 활발한 프로젝트 중 하나. Mastodon API도 호환.",
+        "description_html": "<p>Misskey 포크 중 가장 활발한 프로젝트 중 하나. Mastodon API도 호환.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "Mastodon 호환 API (Mastodon 앱 사용 가능)",
+          "게시글 수정 + 수정 이력 연합",
+          "Mastodon/Twitter 등에서 게시글 가져오기",
+          "예약 게시 지원"
+        ],
+        "website_url": "https://activitypub.software/TransFem-org/Sharkey",
+        "tech_stack": "TypeScript / Misskey 포크"
+      },
+      {
+        "logo_available": false,
+        "name": "iceshrimp",
+        "display_name": "Iceshrimp",
+        "description": "안정성과 성능에 집중하는 Misskey 계열 포크. 현재 .NET으로 재작성 중.",
+        "description_html": "<p>안정성과 성능에 집중하는 Misskey 계열 포크. 현재 .NET으로 재작성 중.</p>\n",
+        "categories": [
+          "microblogging"
+        ],
+        "features": [
+          "기존 JS 버전은 유지보수 모드",
+          "Iceshrimp.NET은 베타 단계",
+          "Mastodon API 호환"
+        ],
+        "website_url": "https://iceshrimp.dev",
+        "tech_stack": "C# (.NET) / Misskey 계열"
+      },
+      {
+        "logo_available": false,
+        "name": "hackerspub",
+        "display_name": "Hackers' Pub",
+        "description": "한국에서 만든 개발자 커뮤니티 + 블로그 플랫폼. 기술 글을 쓰고 연합우주로 공유할 수 있어요.",
+        "description_html": "<p>한국에서 만든 개발자 커뮤니티 + 블로그 플랫폼. 기술 글을 쓰고 연합우주로 공유할 수 있어요.</p>\n",
+        "categories": [
+          "blog",
+          "microblogging"
+        ],
+        "features": [
+          "Fedify 프레임워크 기반",
+          "ActivityPub으로 다른 서버와 연합",
+          "개발자 중심 콘텐츠"
+        ],
+        "website_url": "https://hackers.pub",
+        "tech_stack": "TypeScript / Fedify"
+      },
+      {
+        "logo_available": false,
+        "name": "bookwyrm",
+        "display_name": "BookWyrm",
+        "description": "연합우주의 Goodreads. 읽은 책을 기록하고 리뷰를 공유해요.",
+        "description_html": "<p>연합우주의 Goodreads. 읽은 책을 기록하고 리뷰를 공유해요.</p>\n",
+        "categories": [
+          "reading"
+        ],
+        "features": [
+          "책 평점, 리뷰, 인용 기능",
+          "Goodreads/StoryGraph에서 데이터 가져오기",
+          "분산된 책 데이터베이스를 공동으로 구축"
+        ],
+        "website_url": "https://joinbookwyrm.com",
+        "tech_stack": "Python / Django"
+      }
+    ],
+    "truncated": false
+  },
+  "families": {
+    "akkoma": "pleroma",
+    "bookwyrm": "bookwyrm",
+    "calckey": "misskey",
+    "catodon": "misskey",
+    "cherrypick": "misskey",
+    "fedibird": "mastodon",
+    "firefish": "misskey",
+    "foundkey": "misskey",
+    "glitch-soc": "mastodon",
+    "gotosocial": "gotosocial",
+    "hackerspub": "hackerspub",
+    "hollo": "hollo",
+    "hometown": "mastodon",
+    "iceshrimp": "misskey",
+    "kmyblue": "mastodon",
+    "kosmo": "kosmo",
+    "lemmy": "lemmy",
+    "mastodon": "mastodon",
+    "meisskey": "misskey",
+    "misskey": "misskey",
+    "peertube": "peertube",
+    "pixelfed": "pixelfed",
+    "pleroma": "pleroma",
+    "sharkey": "misskey",
+    "siliconbeest": "wildebeest",
+    "wildebeest": "wildebeest",
+    "wordpress": "wordpress",
+    "writefreely": "writefreely"
+  }
+}

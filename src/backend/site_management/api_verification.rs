@@ -2,7 +2,7 @@
 //! Contract reference: fedkr-ref (MIT); no Mastodon/Misskey source is copied.
 use super::{auth, AuthenticatedSession, Database, Error};
 use crate::backend::federation::{
-    transport::{pinned_client, safe_url, FederationTransport, MAX_BODY_BYTES},
+    transport::{pinned_request, safe_url, FederationTransport, MAX_BODY_BYTES},
     webfinger::AccountHandle,
     FederationClient,
 };
@@ -103,14 +103,19 @@ impl OperatorApi for HttpOperatorApi {
             let domain = super::domain(domain)?;
             let url = safe_url(&format!("https://{domain}{}", endpoint.path()))
                 .map_err(|_| Error::ApiUnavailable)?;
-            let client = pinned_client(&url)
+            // users/show is a read-only lookup using POST, never a login/write.
+            let method = if endpoint == Endpoint::MisskeyUser {
+                reqwest::Method::POST
+            } else {
+                reqwest::Method::GET
+            };
+            let request = pinned_request(method, &url)
                 .await
                 .map_err(|_| Error::ApiUnavailable)?;
-            // users/show is a read-only lookup using POST, never a login/write.
             let request = if endpoint == Endpoint::MisskeyUser {
-                client.post(url).json(&json!({"username": username}))
+                request.json(&json!({"username": username}))
             } else {
-                client.get(url)
+                request
             };
             let mut response = request
                 .header("accept", "application/json")

@@ -74,7 +74,8 @@ DB 연결 시 목록/통계는 공개용 필드만 조회합니다. 숨김/강�
 - src/membership/: 세션/API/계정 화면
 - src/moderation/: 관리자 전용 DTO/API/신고·서버·소프트웨어/분류 관리 ([권한 부여](docs/porting/moderation.md), [카탈로그 관리](docs/porting/catalog-moderation.md))
 - src/backend/db/: Diesel/diesel-async 저장소 경계
-- src/backend/federation/: WebFinger·AP 읽기·서명·안전한 전송 계층
+- [src/backend/federation/](src/backend/federation/mod.rs): 기존 앱 호출을 유지하는 호환 재수출 shim
+- [crates/fedkr-federation/](crates/fedkr-federation/README.md): 분리 가능한 ActivityPub 조회·검증 기반과 opt-in 게시 준비/1회 전송 API
 - src/backend/runtime.rs: HTTP와 같은 프로세스의 PG 영속 작업 큐 실행
 - src/backend/storage.rs: OpenDAL 파일 조회·정리 ([공유 파일과 탈퇴 수명주기](docs/porting/media-cleanup.md))
 - migrations/diesel/: 바이너리에 포함되는 마이그레이션
@@ -87,6 +88,8 @@ DB 연결 시 목록/통계는 공개용 필드만 조회합니다. 숨김/강�
 ./scripts/dev.ps1 -Mode Test
 cargo check --locked --offline --release --no-default-features --features server --bin fediversekr2
 cargo check --locked --offline --target wasm32-unknown-unknown --no-default-features --features web --bin fediversekr2
+cargo test --locked --offline -p fedkr-federation --all-targets
+cargo test --locked --offline -p fedkr-federation --all-targets --features publish
 ```
 
 /healthz는 프로세스 응답, /readyz는 설정된 DB 조회 가능 여부입니다. **readiness 200은 기능 동등성이나 이관 완료의 증거가 아닙니다.** 미설정 UI 미리보기는 /readyz 503을 반환합니다.

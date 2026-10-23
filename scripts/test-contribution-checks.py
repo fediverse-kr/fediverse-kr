@@ -105,6 +105,16 @@ class ContributionChecksTest(unittest.TestCase):
              "--no-default-features", "--features", "server", "--bin", "fediversekr2"],
             commands,
         )
+        self.assertIn(
+            ["test", "--locked", "--target", "x86_64-unknown-linux-gnu",
+             "--package", "fedkr-federation", "--all-targets"],
+            commands,
+        )
+        self.assertIn(
+            ["test", "--locked", "--target", "x86_64-unknown-linux-gnu",
+             "--package", "fedkr-federation", "--all-targets", "--features", "publish"],
+            commands,
+        )
         self.assertIn(["deny", "fetch", "db"], commands)
         self.assertIn("42 passed", result.stdout)
 
@@ -126,6 +136,16 @@ class ContributionChecksTest(unittest.TestCase):
         self.assertIn(
             ["test", "--locked", "--target", "aarch64-unknown-linux-gnu",
              "--no-default-features", "--features", "server", "--bin", "fediversekr2"],
+            self.commands(),
+        )
+        self.assertIn(
+            ["test", "--locked", "--target", "aarch64-unknown-linux-gnu",
+             "--package", "fedkr-federation", "--all-targets"],
+            self.commands(),
+        )
+        self.assertIn(
+            ["test", "--locked", "--target", "aarch64-unknown-linux-gnu",
+             "--package", "fedkr-federation", "--all-targets", "--features", "publish"],
             self.commands(),
         )
         self.assertIn(

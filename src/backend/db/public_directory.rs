@@ -34,6 +34,8 @@ struct SoftwareRow {
     name: String,
     #[diesel(sql_type=Text)]
     display_name: String,
+    #[diesel(sql_type=Nullable<Text>)]
+    family: Option<String>,
     #[diesel(sql_type=Text)]
     description: String,
     #[diesel(sql_type=Array<Text>)]
@@ -142,6 +144,7 @@ impl From<SoftwareRow> for Software {
             logo_available: r.logo_available,
             name: r.name,
             display_name: r.display_name,
+            family: r.family,
             description: description.plain,
             description_html: description.html,
             categories: r.categories,
@@ -152,6 +155,7 @@ impl From<SoftwareRow> for Software {
     }
 }
 const SOFTWARE_SELECT: &str = "SELECT EXISTS(SELECT 1 FROM stored_files f WHERE f.object_key=catalog_software.logo_key AND (catalog_software.logo_key LIKE 'software-logos/%' OR catalog_software.logo_key LIKE 'software/%')) AS logo_available,name,left(display_name,200) AS display_name,left(coalesce(description,''),4000) AS description,
+            NULLIF(left(family,128),'') AS family,
             ARRAY(SELECT left(v,128) FROM unnest(CASE WHEN cardinality(categories)>0 THEN categories ELSE ARRAY[category_tag] END) v WHERE v IS NOT NULL LIMIT 32) AS categories,
             ARRAY(SELECT left(v,300) FROM unnest(features) v WHERE v IS NOT NULL LIMIT 32) AS features,
             left(website_url,2048) AS website_url,left(tech_stack,1000) AS tech_stack
@@ -283,6 +287,7 @@ mod tests {
             logo_available: false,
             name: "test".into(),
             display_name: "Test".into(),
+            family: None,
             description: "## 소개\n\n**안전한** 설명<script>alert(1)</script>".into(),
             categories: vec![],
             features: vec![],
@@ -369,10 +374,13 @@ mod tests {
         let db = fixtures::database().await;
         let mut conn = db.pool.get().await.unwrap();
         let marker = format!("test-{}", uuid::Uuid::new_v4());
-        diesel::sql_query("INSERT INTO catalog_software (id,name,display_name,categories,features,website_url,is_featured,display_order,inserted_at,updated_at) VALUES (-98123,$1,'Test',ARRAY['image',NULL],ARRAY['Photo',NULL],'javascript:alert(1)',false,0,now(),now())").bind::<Text,_>(&marker).execute(&mut conn).await.unwrap();
+        let family = format!("family-{marker}");
+        diesel::sql_query("INSERT INTO catalog_software (id,name,display_name,family,categories,features,website_url,is_featured,display_order,inserted_at,updated_at) VALUES (-98123,$1,'Test',$2,ARRAY['image',NULL],ARRAY['Photo',NULL],'javascript:alert(1)',false,0,now(),now())")
+            .bind::<Text,_>(&marker).bind::<Text,_>(&family).execute(&mut conn).await.unwrap();
         let data = db.public_catalog().await.unwrap();
         let row = data.software.iter().find(|s| s.name == marker).unwrap();
         assert!(row.website_url.is_none());
+        assert_eq!(row.family.as_deref(), Some(family.as_str()));
         assert_eq!(row.categories, vec!["image"]);
         assert_eq!(row.features, vec!["Photo"]);
         assert_eq!(
@@ -410,7 +418,9 @@ mod tests {
         .unwrap();
         assert!(list.truncated);
         assert!(!list.software.iter().any(|s| s.name == last));
-        assert_eq!(detail.software.unwrap().name, last);
+        let detail = detail.software.unwrap();
+        assert_eq!(detail.name, last);
+        assert_eq!(detail.family, None);
         assert!(missing.software.is_none());
     }
 }

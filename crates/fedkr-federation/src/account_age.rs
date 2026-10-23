@@ -258,7 +258,7 @@ async fn lookup_inner<T: FederationTransport>(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::backend::federation::{transport::JsonFuture, FederationError};
+    use crate::{transport::JsonFuture, FederationError};
     use serde_json::json;
     use std::sync::{
         atomic::{AtomicUsize, Ordering},

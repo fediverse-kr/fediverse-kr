@@ -26,10 +26,7 @@ pub fn SiteHeader(site: PublicSite) -> Element {
     };
     use_effect(use_reactive((&image,), move |_| failed.set(false)));
     // Render the same fallback in SSR and WASM, including before a real image loads.
-    use base64::Engine;
-    let svg = crate::directory::header_art::svg_for(&site.domain);
-    let encoded = base64::engine::general_purpose::STANDARD.encode(svg.as_bytes());
-    let background = format!("background-image:url(data:image/svg+xml;base64,{encoded})");
+    let background = crate::directory::header_art::background_image_for(&site.domain);
     rsx! {
         div {class:"server-cover",style:background,aria_hidden:"true",
             if ready && !failed() {

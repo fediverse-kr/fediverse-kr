@@ -1,5 +1,74 @@
 //! Never inserted into a database. Reserved domains and explicit preview state.
 use super::*;
+use std::{collections::HashMap, sync::LazyLock};
+
+#[derive(serde::Deserialize)]
+struct CatalogSnapshot {
+    fetched_at: String,
+    #[allow(dead_code)]
+    source: String,
+    #[allow(dead_code)]
+    family_source: String,
+    catalog: Catalog,
+    #[serde(default)]
+    families: HashMap<String, String>,
+}
+
+static CATALOG_SNAPSHOT: LazyLock<CatalogSnapshot> = LazyLock::new(|| {
+    serde_json::from_str(include_str!("preview-catalog.json"))
+        .expect("the checked-in preview catalog snapshot is valid JSON")
+});
+
+static CATALOG: LazyLock<Catalog> = LazyLock::new(|| {
+    let snapshot = &*CATALOG_SNAPSHOT;
+    let mut catalog = snapshot.catalog.clone();
+    catalog.preview = true;
+    for software in &mut catalog.software {
+        software.family = preview_family(
+            &software.name,
+            software.family.as_deref(),
+            &snapshot.families,
+        );
+        software.website_url = software.website_url.as_deref().and_then(web_link);
+        #[cfg(feature = "server")]
+        {
+            let description_source = if software.description_html.trim().is_empty() {
+                &software.description
+            } else {
+                &software.description_html
+            };
+            software.description_html =
+                super::rich_text::render_description(description_source).html;
+        }
+    }
+    catalog
+});
+
+fn preview_family(
+    name: &str,
+    source_family: Option<&str>,
+    known_families: &HashMap<String, String>,
+) -> Option<String> {
+    if let Some(family) = source_family
+        .map(str::trim)
+        .filter(|family| !family.is_empty())
+    {
+        return Some(family.to_owned());
+    }
+    known_families
+        .iter()
+        .find(|(software, _)| software.eq_ignore_ascii_case(name))
+        .map(|(_, family)| family.clone())
+}
+
+pub(crate) fn catalog_snapshot_date() -> String {
+    CATALOG_SNAPSHOT
+        .fetched_at
+        .split('T')
+        .next()
+        .unwrap_or_default()
+        .to_owned()
+}
 pub fn health_history(domain: &str) -> Option<health::History> {
     all_sites().iter().find(|site| site.domain == domain)?;
     Some(health::History {
@@ -58,92 +127,7 @@ pub fn search_catalog(query: &catalog::CatalogQuery) -> catalog::CatalogPage {
     }
 }
 pub fn catalog() -> Catalog {
-    let kinds = [
-        ("microblogging", "짧은 글 · SNS", "✳"),
-        ("image", "사진", "▧"),
-        ("video", "영상", "▷"),
-        ("discussion", "게시판", "☷"),
-        ("book", "독서", "▤"),
-        ("event", "모임 · 행사", "◷"),
-    ];
-    Catalog {
-        preview: true,
-        truncated: false,
-        categories: kinds
-            .into_iter()
-            .map(|(name, label, emoji)| Category {
-                name: name.into(),
-                label: label.into(),
-                emoji: emoji.into(),
-            })
-            .collect(),
-        software: [
-            (
-                "mastodon",
-                "Mastodon",
-                "microblogging",
-                "짧은 글로 일상을 나누고, 다른 곳의 이웃을 팔로우해요.",
-                "https://joinmastodon.org/",
-            ),
-            (
-                "misskey",
-                "Misskey",
-                "microblogging",
-                "노트와 리액션으로 이야기를 나누는 소셜 네트워크예요.",
-                "https://misskey-hub.net/ko/",
-            ),
-            (
-                "pixelfed",
-                "Pixelfed",
-                "image",
-                "사진을 중심으로 기록하고 감상하는 공간이에요.",
-                "https://pixelfed.org/",
-            ),
-            (
-                "peertube",
-                "PeerTube",
-                "video",
-                "영상을 올리고 채널을 구독하는 공간이에요.",
-                "https://joinpeertube.org/",
-            ),
-            (
-                "lemmy",
-                "Lemmy",
-                "discussion",
-                "주제별 커뮤니티에서 링크와 이야기를 나눠요.",
-                "https://join-lemmy.org/",
-            ),
-            (
-                "bookwyrm",
-                "BookWyrm",
-                "book",
-                "읽는 책을 기록하고, 서평을 나눠요.",
-                "https://joinbookwyrm.com/",
-            ),
-            (
-                "mobilizon",
-                "Mobilizon",
-                "event",
-                "행사를 알리고, 함께할 사람을 모아요.",
-                "https://joinmobilizon.org/",
-            ),
-        ]
-        .into_iter()
-        .map(
-            |(name, display_name, category, description, url)| Software {
-                logo_available: false,
-                name: name.into(),
-                display_name: display_name.into(),
-                description: description.into(),
-                description_html: format!("<p>{description}</p>"),
-                categories: vec![category.into()],
-                features: vec![],
-                website_url: Some(url.into()),
-                tech_stack: None,
-            },
-        )
-        .collect(),
-    }
+    CATALOG.clone()
 }
 pub fn all_sites() -> Vec<PublicSite> {
     [
@@ -215,11 +199,19 @@ pub fn search_options() -> search::SearchOptions {
         software: catalog
             .software
             .into_iter()
-            .map(|s| search::FilterSoftware {
-                family: s.name.clone(),
-                name: s.name,
-                label: s.display_name,
-                categories: s.categories,
+            .map(|s| {
+                let family = s
+                    .family
+                    .filter(|family| {
+                        !family.trim().is_empty() && !family.eq_ignore_ascii_case(&s.name)
+                    })
+                    .unwrap_or_else(|| s.name.clone());
+                search::FilterSoftware {
+                    family,
+                    name: s.name,
+                    label: s.display_name,
+                    categories: s.categories,
+                }
             })
             .collect(),
         tags: vec!["사진".into(), "일상".into()],
@@ -339,6 +331,173 @@ pub fn servers(query: &str, software: &str, page: u32) -> SitePage {
 mod tests {
     use super::*;
 
+    #[test]
+    fn snapshot_catalog_counts_pages_and_keeps_unique_products() {
+        let data = catalog();
+        assert!(data.preview);
+        assert_eq!(data.software.len(), 28);
+        assert_eq!(data.categories.len(), 5);
+        assert_eq!(
+            data.software
+                .iter()
+                .filter(|software| software
+                    .categories
+                    .iter()
+                    .any(|category| category == "microblogging"))
+                .count(),
+            20
+        );
+        let mut microblogging = catalog::CatalogQuery::default();
+        microblogging.category = "microblogging".into();
+        assert_eq!(search_catalog(&microblogging).total, 20);
+        let mut query = catalog::CatalogQuery::default();
+        let first = search_catalog(&query);
+        assert_eq!(first.total, 28);
+        assert_eq!(first.software.len(), 24);
+        assert!(first.has_next);
+        query.page = 1;
+        let second = search_catalog(&query);
+        assert_eq!(second.software.len(), 4);
+        assert!(!second.has_next);
+
+        let names: std::collections::HashSet<_> = data
+            .software
+            .iter()
+            .map(|software| software.name.as_str())
+            .collect();
+        assert_eq!(names.len(), 28);
+    }
+
+    #[test]
+    fn snapshot_preserves_source_descriptions_and_features_and_known_families() {
+        let snapshot: CatalogSnapshot =
+            serde_json::from_str(include_str!("preview-catalog.json")).unwrap();
+        let data = catalog();
+        for source in &snapshot.catalog.software {
+            let software = data
+                .software
+                .iter()
+                .find(|software| software.name == source.name)
+                .unwrap();
+            assert_eq!(software.description, source.description, "{}", source.name);
+            assert_eq!(software.features, source.features, "{}", source.name);
+            assert_eq!(
+                software.website_url,
+                source.website_url.as_deref().and_then(web_link),
+                "{}",
+                source.name
+            );
+        }
+        for (name, family) in [
+            ("mastodon", "mastodon"),
+            ("misskey", "misskey"),
+            ("pleroma", "pleroma"),
+            ("wildebeest", "wildebeest"),
+        ] {
+            assert_eq!(
+                data.software
+                    .iter()
+                    .find(|software| software.name == name)
+                    .and_then(|software| software.family.as_deref()),
+                Some(family)
+            );
+        }
+        #[cfg(feature = "server")]
+        {
+            let kosmo = data
+                .software
+                .iter()
+                .find(|software| software.name == "kosmo")
+                .unwrap();
+            assert!(kosmo
+                .description_html
+                .contains("href=\"https://planet.moe/@kosmo/116985757378791889\""));
+            assert!(kosmo.description_html.contains("개발 배경"));
+        }
+        assert_eq!(catalog_snapshot_date(), "2026-10-23");
+    }
+
+    #[test]
+    fn explicit_source_families_and_fallbacks_are_preserved() {
+        let families = HashMap::from([
+            ("known".into(), "mapped-family".into()),
+            ("self".into(), "self".into()),
+        ]);
+        assert_eq!(
+            preview_family("known", Some(" source-family "), &families).as_deref(),
+            Some("source-family")
+        );
+        assert_eq!(
+            preview_family("known", Some("known"), &families).as_deref(),
+            Some("known")
+        );
+        assert_eq!(
+            preview_family("known", Some("  "), &families).as_deref(),
+            Some("mapped-family")
+        );
+        assert_eq!(preview_family("unknown", None, &families), None);
+        assert_eq!(
+            preview_family("self", None, &families).as_deref(),
+            Some("self")
+        );
+
+        let options = search_options();
+        assert_eq!(
+            options
+                .software
+                .iter()
+                .find(|software| software.name == "cherrypick")
+                .map(|software| software.family.as_str()),
+            Some("misskey")
+        );
+        assert_eq!(
+            options
+                .software
+                .iter()
+                .find(|software| software.name == "bookwyrm")
+                .map(|software| software.family.as_str()),
+            Some("bookwyrm")
+        );
+    }
+
+    #[test]
+    fn snapshot_family_groups_match_the_public_software_edit_data() {
+        let data = catalog();
+        for (family, expected) in [
+            ("mastodon", 5),
+            ("misskey", 9),
+            ("pleroma", 2),
+            ("wildebeest", 2),
+        ] {
+            assert_eq!(
+                data.software
+                    .iter()
+                    .filter(|software| software.family.as_deref() == Some(family))
+                    .count(),
+                expected,
+                "{family}"
+            );
+        }
+    }
+
+    #[test]
+    fn reserved_preview_sites_remain_unchanged() {
+        let sites = all_sites();
+        assert_eq!(sites.len(), 4);
+        assert!(sites.iter().all(|site| site.domain.ends_with(".example")));
+        assert_eq!(
+            sites
+                .iter()
+                .map(|site| site.domain.as_str())
+                .collect::<Vec<_>>(),
+            [
+                "dog-town.example",
+                "cat-tower.example",
+                "light.example",
+                "screen.example"
+            ]
+        );
+    }
     #[test]
     fn recommended_preview_keeps_the_curated_order() {
         let actual = search(&search::ServerQuery::default())

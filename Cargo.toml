@@ -9,6 +9,10 @@ default-run = "fediversekr2"
 license = "MIT OR Apache-2.0"
 publish = false
 
+[workspace]
+members = ["crates/fedkr-federation"]
+resolver = "2"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -49,6 +53,7 @@ quick-xml = { version = "=0.41.0", default-features = false, optional = true }
 sanitize_html = { version = "=0.10.0", optional = true }
 comrak = { version = "=0.54.0", default-features = false, optional = true }
 html2text = { version = "=0.17.1", optional = true }
+fedkr-federation = { version = "=0.1.0", path = "crates/fedkr-federation", optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 gloo-timers = { version = "0.3", features = ["futures"] }
@@ -65,4 +70,4 @@ desktop = ["dioxus/desktop", "dep:url", "dep:base64", "dep:sha2"]
 # The feature that are only required for the mobile = ["dioxus/mobile"] build target should be optional and only enabled in the mobile = ["dioxus/mobile"] feature
 mobile = ["dioxus/mobile", "dep:url", "dep:base64", "dep:sha2"]
 # The feature that are only required for the server = ["dioxus/server"] build target should be optional and only enabled in the server = ["dioxus/server"] feature
-server = ["dioxus/server", "dep:diesel", "dep:diesel-async", "dep:diesel_migrations", "dep:dioxus-cli-config", "dep:tokio-postgres", "dep:tokio-postgres-rustls", "dep:rustls", "dep:webpki-roots", "dep:argon2", "dep:rand", "dep:sha2", "dep:uuid", "dep:chrono", "dep:tokio", "dep:url", "dep:reqwest", "dep:rsa", "dep:base64", "dep:html5ever", "dep:hickory-resolver", "dep:opendal", "dep:image", "dep:subtle", "dep:cookie", "dep:percent-encoding", "dep:quick-xml", "dep:sanitize_html", "dep:comrak", "dep:html2text"]
+server = ["dioxus/server", "dep:diesel", "dep:diesel-async", "dep:diesel_migrations", "dep:dioxus-cli-config", "dep:tokio-postgres", "dep:tokio-postgres-rustls", "dep:rustls", "dep:webpki-roots", "dep:argon2", "dep:rand", "dep:sha2", "dep:uuid", "dep:chrono", "dep:tokio", "dep:url", "dep:reqwest", "dep:rsa", "dep:base64", "dep:html5ever", "dep:hickory-resolver", "dep:opendal", "dep:image", "dep:subtle", "dep:cookie", "dep:percent-encoding", "dep:quick-xml", "dep:sanitize_html", "dep:comrak", "dep:html2text", "dep:fedkr-federation"]

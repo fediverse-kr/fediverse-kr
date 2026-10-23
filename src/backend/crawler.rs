@@ -1,7 +1,7 @@
 //! Bounded unsigned public-site reads. Authentication remains AP-only and signed.
 use super::{
     directory::{canonical_domain, CrawlJob, Icon, NodeInfo, Observation},
-    federation::transport::{pinned_client, safe_url},
+    federation::transport::{pinned_request, safe_url},
 };
 use chrono::Utc;
 use serde_json::Value;
@@ -33,11 +33,10 @@ impl SiteTransport for PublicHttp {
             tokio::time::timeout(Duration::from_secs(10), async {
                 let mut url = safe_url(input.as_str()).map_err(|_| "unsafe_url")?;
                 for redirect in 0..=3 {
-                    let client = pinned_client(&url)
+                    let request = pinned_request(reqwest::Method::GET, &url)
                         .await
                         .map_err(|_| "unsafe_or_unreachable_host")?;
-                    let mut response = client
-                        .get(url.clone())
+                    let mut response = request
                         .header("user-agent", "fediverse.kr/2 site-directory")
                         .header("accept", "application/json, text/html, image/*;q=0.8")
                         .send()

@@ -6,16 +6,24 @@ async (page) => {
     const check=(name,ok)=>{if(!ok)throw Error(name);checks.push(name);};
     const open=async(path)=>{await page.goto(base+path);await page.waitForFunction(()=>document.querySelector('.portal-root')?.dataset.ready==='true');};
     const req=page.context().request;
+    const panel=page.locator('.directory-filter-panel');
+    const openAdvanced=async()=>{if(!(await panel.getAttribute('open')))await panel.locator('summary').click();};
     check('preview only',(await(await req.get(base+'/api/public/catalog')).json()).preview===true);
     for(const [width,height] of [[1440,1000],[390,844],[320,667]]) {
         await page.setViewportSize({width,height});
         await open('/servers');
-        check(width+' all nine controls visible',await page.getByRole('combobox').count()===9);
+        check(width+' advanced filters start collapsed',!(await panel.getAttribute('open')));
+        check(width+' primary registration filter visible',await page.getByLabel('가입 방식',{exact:true}).isVisible());
+        check(width+' primary controls visible while advanced filters are closed',await page.getByRole('combobox').count()===1);
+        await openAdvanced();
+        check(width+' all nine controls visible when advanced filters open',await page.getByRole('combobox').count()===9);
+        check(width+' no horizontal overflow with advanced filters open',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+        await panel.locator('summary').click();
         check(width+' no horizontal overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
         check(width+' unknown source status retained',(await page.locator('.server-card').allTextContents()).every(t=>t.includes('아직 확인 전')));
         await page.getByLabel('가입 방식',{exact:true}).selectOption('invite_only');
         const origin=await page.evaluate(()=>performance.timeOrigin);
-        await page.getByRole('button',{name:'조건 적용',exact:true}).click();
+        await page.getByRole('button',{name:'검색',exact:true}).click();
         await page.waitForURL('**/servers?reg=invite_only');
         await page.waitForFunction(()=>document.querySelector('.directory-result-count')?.textContent==='1곳');
         check(width+' invite-only result',await page.locator('.server-card h2').innerText()==='냥냥.타워');
@@ -30,6 +38,7 @@ async (page) => {
         check(width+' history restores selected control',await page.getByLabel('가입 방식',{exact:true}).inputValue()==='invite_only');
         await page.goForward();
         await page.waitForFunction(()=>document.querySelector('.directory-result-count')?.textContent==='4곳');
+        await openAdvanced();
         await page.getByLabel('종류',{exact:true}).selectOption('image');
         await page.getByLabel('계열',{exact:true}).selectOption('pixelfed');
         await page.getByLabel('소프트웨어',{exact:true}).selectOption('pixelfed');
@@ -40,8 +49,10 @@ async (page) => {
         check(width+' Korean tag survives URL',await page.evaluate(()=>new URL(location.href).searchParams.get('tag'))==='사진');
         await page.reload();await page.waitForFunction(()=>document.querySelector('.portal-root')?.dataset.ready==='true');
         check(width+' SSR selected kind retained',await page.getByLabel('종류',{exact:true}).inputValue()==='image');
+        await openAdvanced();
         await page.getByRole('link',{name:'초기화',exact:true}).click();
         await page.waitForFunction(()=>document.querySelector('.directory-result-count')?.textContent==='4곳');
+        await openAdvanced();
         await page.getByLabel('정렬 기준',{exact:true}).selectOption('users');
         check(width+' numeric default descending',await page.getByLabel('정렬 방향',{exact:true}).inputValue()==='desc');
         await page.getByLabel('정렬 기준',{exact:true}).selectOption('domain');

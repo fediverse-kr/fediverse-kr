@@ -329,7 +329,7 @@ fn visible_text(content: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::backend::federation::{transport::JsonFuture, FederationClient};
+    use crate::{transport::JsonFuture, FederationClient};
     use serde_json::json;
     use std::{collections::HashMap, sync::Mutex};
 

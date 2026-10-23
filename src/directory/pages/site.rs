@@ -9,8 +9,20 @@ pub(super) fn SiteDetailPage(site: PublicSite, preview: bool) -> Element {
         SiteDetailFrame {
             site,
             preview,
-            health_history: rsx! { health::HealthHistory { domain:health_domain } },
-            opinions: rsx! { crate::community::pages::Discussion { domain:discussion_domain } }
+            // Secondary requests must not suspend the already-resolved route again.
+            // Keep their loading/retry lifecycle local to each independent panel.
+            health_history: rsx! {
+                SuspenseBoundary {
+                    fallback: |_| rsx! { p { role:"status", "응답 기록을 불러오는 중…" } },
+                    health::HealthHistory { domain:health_domain }
+                }
+            },
+            opinions: rsx! {
+                SuspenseBoundary {
+                    fallback: |_| rsx! { p { role:"status", "댓글을 불러오는 중…" } },
+                    crate::community::pages::Discussion { domain:discussion_domain }
+                }
+            }
         }
     }
 }

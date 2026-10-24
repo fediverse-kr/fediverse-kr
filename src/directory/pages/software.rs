@@ -13,15 +13,17 @@ pub(super) fn Overview(
         .filter(|s| !s.trim().is_empty())
         .collect();
     let extended = super::discovery::has_more_description(&item);
+    let inactive = item.inactive();
     rsx! {
         document::Stylesheet { href:asset!("/assets/styling/software-catalog.css") }
         div { class:if source.is_some() {"software-product-hero"} else {"software-product-hero software-unprofiled"},
             header { class:"software-summary",
-                div { class:"software-heading",
+                div { class:"software-heading", "data-inactive":inactive.to_string(),
                     brand::SoftwareMark { item:item.clone(), size:80 }
                     div {
                         p { class:"software-eyebrow", "연합우주 소프트웨어" }
                         h1 { "{item.display_name}" }
+                        brand::SoftwareStatus { item:item.clone() }
                     }
                 }
                 div { class:"software-categories",
@@ -54,11 +56,11 @@ pub(super) fn Overview(
                 if let Some(image)=brand::artwork(&item.name) {
                     a {class:"software-image-link",href:image,target:"_blank",rel:"noopener noreferrer",aria_label:format!("{} 소개 이미지 크게 보기",item.display_name),brand::SoftwareArtwork {item:item.clone()}}
                 } else {brand::SoftwareArtwork { item:item.clone() }}
-                figcaption {
-                    if let Some(source)=source {
+                if let Some(source)=source {
+                    figcaption {
                         span { if item.name.eq_ignore_ascii_case("peertube") {"공식 프로젝트 일러스트"}else{"공식 소개 화면 · 서버와 앱에 따라 달라질 수 있어요."} }
                         a { href:source, target:"_blank", rel:"noopener noreferrer", "원출처 ↗" }
-                    } else { span { "제품 이미지 미등록 · 자동 생성한 표지" } }
+                    }
                 }
             }
         }
@@ -151,6 +153,7 @@ mod tests {
             tech_stack: Some("Rust".into()),
             logo_available: false,
             family: None,
+            development_status: None,
         }
     }
 
@@ -192,6 +195,25 @@ mod tests {
         assert!(html.contains("href=\"/account/software/independent-tool/edit\""));
         assert!(html.contains("software-emblem"));
         assert!(html.contains("등록된 기능"));
+        assert!(!html.contains("자동 생성한 표지"));
+        assert!(!html.contains("제품 이미지 미등록"));
+    }
+    #[test]
+    fn development_state_is_explicit_and_not_inferred_from_description() {
+        let mut value = serde_json::to_value(example()).unwrap();
+        value["development_status"] = "discontinued".into();
+        let html = render(serde_json::from_value(value.clone()).unwrap());
+        assert!(html.contains("개발 중단"));
+        assert!(html.contains("data-inactive=\"true\""));
+        value["development_status"] = "uncertain".into();
+        let html = render(serde_json::from_value(value.clone()).unwrap());
+        assert!(html.contains("유지보수 확인 필요"));
+        assert!(!html.contains("data-inactive=\"true\""));
+        value["development_status"] = serde_json::Value::Null;
+        value["description"] = "개발 중단 프로젝트를 기반으로 한 새 프로젝트".into();
+        let html = render(serde_json::from_value(value).unwrap());
+        assert!(!html.contains("software-status"));
+        assert!(!html.contains("data-inactive=\"true\""));
     }
     #[test]
     fn edited_known_product_and_new_fork_use_the_same_member_content() {

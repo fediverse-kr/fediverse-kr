@@ -91,10 +91,11 @@ pub fn CatalogListing(criteria: CatalogQuery) -> Element {
 }
 #[component]
 fn SoftwareCard(item: Software, labels: Vec<Category>) -> Element {
-    rsx! {Link{class:"software-directory-item",to:Route::SoftwareDetail{name:item.name.clone()},
+    rsx! {Link{class:"software-directory-item","data-inactive":item.inactive().to_string(),to:Route::SoftwareDetail{name:item.name.clone()},
         brand::SoftwareMark{item:item.clone(),size:44}
         div {class:"software-directory-copy",
             div {class:"software-directory-name",h3{"{item.display_name}"}
+                brand::SoftwareStatus{item:item.clone()}
                 if let Some(family)=super::discovery::family_name(&item) {span{class:"software-family","{family} 계열"}}
             }
             span{class:"catalog-kind",{super::discovery::category_names(&item,&labels)}}

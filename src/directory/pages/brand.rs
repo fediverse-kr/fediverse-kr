@@ -97,9 +97,17 @@ pub(super) fn SoftwareArtwork(item: Software, #[props(default = false)] compact:
             } else {
                 div { class:"software-artwork-fallback", style:fallback_background,
                     span { "{item.display_name}" }
-                    small { "자동 생성한 표지" }
                 }
             }
+        }
+    }
+}
+
+#[component]
+pub(super) fn SoftwareStatus(item: Software) -> Element {
+    rsx! {
+        if let Some(status) = item.development_status {
+            span { class:"software-status", "{status.label()}" }
         }
     }
 }

@@ -134,10 +134,11 @@ pub(super) fn Examples(items: Vec<Software>, category: String) -> Element {
             }
             div { class:"software-example-grid", style:format!("--software-example-columns:{columns}"),
                 for item in selected {
-                    Link { key:"{item.name}", class:"software-example", to:Route::SoftwareDetail {name:item.name.clone()},
+                    Link { key:"{item.name}", class:"software-example", "data-inactive":item.inactive().to_string(), to:Route::SoftwareDetail {name:item.name.clone()},
                         brand::SoftwareArtwork {item:item.clone(),compact:true}
                         div {class:"software-example-copy",
                             div {class:"software-example-name",brand::SoftwareMark {item:item.clone(),size:38} h3 {"{item.display_name}"}}
+                            brand::SoftwareStatus{item:item.clone()}
                             p {{summary(&item)}}
                             if !item.features.is_empty() {
                                 div {class:"software-example-points",for feature in item.features.iter().filter(|s|!s.trim().is_empty()).take(2) {span {{feature_parts(feature).0}}}}

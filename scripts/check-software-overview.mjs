@@ -44,7 +44,19 @@ async (page) => {
   await page.waitForURL(base + '/software/glitch-soc');
   await page.locator('main h1').filter({hasText:'Glitch-soc'}).waitFor();
   assert(await page.locator('.software-artwork-fallback').isVisible(), 'Unbundled fork has its own generated artwork, not the parent brand');
+  assert(!(await page.locator('main').innerText()).includes('자동 생성한 표지'), 'Decorative covers do not expose generation details');
+  assert(!(await page.locator('main').innerText()).includes('제품 이미지 미등록'), 'Decorative covers do not expose editorial missing-asset state');
   await page.reload(); await ready();
   assert((await page.locator('main h1').innerText()).includes('Glitch-soc'), 'Same-route product navigation survives reload');
+  await page.goto(base + '/platforms?q=wildebeest'); await ready();
+  const retired = page.locator('a.software-directory-item[href="/software/wildebeest"]');
+  assert(await retired.getAttribute('data-inactive') === 'true', 'Discontinued software is marked in search');
+  assert(await retired.locator('.software-status').innerText() === '개발 중단', 'Discontinued label is explicit, not just color');
+  assert((await retired.locator('h3').evaluate(el => getComputedStyle(el).textDecorationLine)).includes('line-through'), 'Discontinued title is visibly struck through');
+  await retired.click(); await page.waitForURL(base + '/software/wildebeest');
+  await page.locator('main h1').filter({hasText:'Wildebeest'}).waitFor();
+  assert(await page.locator('.software-heading .software-status').innerText() === '개발 중단', 'Detail retains development status');
+  assert(await page.locator('.software-family-anchor[data-inactive="true"]').count() === 1, 'Family anchor retains development status');
+  assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'Status badges do not overflow mobile layout');
   return {checks};
 }

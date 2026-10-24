@@ -36,6 +36,8 @@ struct SoftwareRow {
     display_name: String,
     #[diesel(sql_type=Nullable<Text>)]
     family: Option<String>,
+    #[diesel(sql_type=Nullable<Text>)]
+    development_status: Option<String>,
     #[diesel(sql_type=Text)]
     description: String,
     #[diesel(sql_type=Array<Text>)]
@@ -145,6 +147,9 @@ impl From<SoftwareRow> for Software {
             name: r.name,
             display_name: r.display_name,
             family: r.family,
+            development_status: r
+                .development_status
+                .and_then(|value| serde_json::from_value(serde_json::Value::String(value)).ok()),
             description: description.plain,
             description_html: description.html,
             categories: r.categories,
@@ -156,6 +161,7 @@ impl From<SoftwareRow> for Software {
 }
 const SOFTWARE_SELECT: &str = "SELECT EXISTS(SELECT 1 FROM stored_files f WHERE f.object_key=catalog_software.logo_key AND (catalog_software.logo_key LIKE 'software-logos/%' OR catalog_software.logo_key LIKE 'software/%')) AS logo_available,name,left(display_name,200) AS display_name,left(coalesce(description,''),4000) AS description,
             NULLIF(left(family,128),'') AS family,
+            (SELECT development_status FROM catalog_software_state t WHERE t.software_id=catalog_software.id) AS development_status,
             ARRAY(SELECT left(v,128) FROM unnest(CASE WHEN cardinality(categories)>0 THEN categories ELSE ARRAY[category_tag] END) v WHERE v IS NOT NULL LIMIT 32) AS categories,
             ARRAY(SELECT left(v,300) FROM unnest(features) v WHERE v IS NOT NULL LIMIT 32) AS features,
             left(website_url,2048) AS website_url,left(tech_stack,1000) AS tech_stack
@@ -288,6 +294,7 @@ mod tests {
             name: "test".into(),
             display_name: "Test".into(),
             family: None,
+            development_status: None,
             description: "## 소개\n\n**안전한** 설명<script>alert(1)</script>".into(),
             categories: vec![],
             features: vec![],
@@ -383,10 +390,19 @@ mod tests {
         assert_eq!(row.family.as_deref(), Some(family.as_str()));
         assert_eq!(row.categories, vec!["image"]);
         assert_eq!(row.features, vec!["Photo"]);
+        assert_eq!(row.development_status, None);
         assert_eq!(
             db.public_software(&marker).await.unwrap().software.as_ref(),
             Some(row)
         );
+        diesel::sql_query("INSERT INTO catalog_software_state(software_id,development_status) SELECT id,'discontinued' FROM catalog_software WHERE id=-98123 AND name=$1 ON CONFLICT(software_id) DO UPDATE SET development_status=excluded.development_status")
+            .bind::<Text, _>(&marker).execute(&mut conn).await.unwrap();
+        let item = db.public_software(&marker).await.unwrap().software.unwrap();
+        assert_eq!(
+            item.development_status,
+            Some(crate::directory::DevelopmentStatus::Discontinued)
+        );
+        assert!(item.inactive());
         diesel::sql_query("DELETE FROM catalog_software WHERE id=-98123 AND name=$1")
             .bind::<Text, _>(&marker)
             .execute(&mut conn)

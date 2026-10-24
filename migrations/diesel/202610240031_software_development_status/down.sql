@@ -1,0 +1,1 @@
+ALTER TABLE catalog_software_state DROP COLUMN development_status;

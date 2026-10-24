@@ -29,12 +29,40 @@ pub struct Software {
     pub display_name: String,
     #[serde(default)]
     pub family: Option<String>,
+    /// Explicit editorial status; absence is not a maintenance guarantee.
+    #[serde(default)]
+    pub development_status: Option<DevelopmentStatus>,
     pub description: String,
     pub description_html: String,
     pub categories: Vec<String>,
     pub features: Vec<String>,
     pub website_url: Option<String>,
     pub tech_stack: Option<String>,
+}
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum DevelopmentStatus {
+    Discontinued,
+    Renamed,
+    Uncertain,
+}
+impl DevelopmentStatus {
+    pub fn label(self) -> &'static str {
+        match self {
+            Self::Discontinued => "개발 중단",
+            Self::Renamed => "이전 이름",
+            Self::Uncertain => "유지보수 확인 필요",
+        }
+    }
+    pub fn inactive(self) -> bool {
+        matches!(self, Self::Discontinued | Self::Renamed)
+    }
+}
+impl Software {
+    pub fn inactive(&self) -> bool {
+        self.development_status
+            .is_some_and(DevelopmentStatus::inactive)
+    }
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Catalog {

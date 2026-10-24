@@ -290,6 +290,7 @@
       {
         "logo_available": false,
         "name": "wildebeest",
+        "development_status": "discontinued",
         "display_name": "Wildebeest",
         "description": "Cloudflare의 서버리스 ActivityPub 서버 (archived)",
         "description_html": "<p>Cloudflare의 서버리스 ActivityPub 서버 (archived)</p>\n",
@@ -427,16 +428,15 @@
         "logo_available": false,
         "name": "cherrypick",
         "display_name": "CherryPick",
-        "description": "한국 커뮤니티에서 만든 Misskey 포크. Misskey의 모든 기능 + 추가 개선.",
-        "description_html": "<p>한국 커뮤니티에서 만든 Misskey 포크. Misskey의 모든 기능 + 추가 개선.</p>\n",
+        "description": "Misskey를 기반으로 한 소셜 네트워크 소프트웨어.",
+        "description_html": "<p>Misskey를 기반으로 한 소셜 네트워크 소프트웨어.</p>\n",
         "categories": [
           "microblogging"
         ],
         "features": [
           "향상된 텍스트 꾸미기 도구",
           "개선된 이모지 관리",
-          "UI/UX 개선 및 추가 커스터마이징",
-          "Misskey 업스트림 보안 패치 반영"
+          "UI/UX 개선 및 추가 커스터마이징"
         ],
         "website_url": "https://kokonect.link",
         "tech_stack": "TypeScript / Misskey 포크"

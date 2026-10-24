@@ -82,9 +82,10 @@ pub(super) fn FamilyIndex(
                         div {class:"software-family-origin",
                             if let Some(anchor)=family.anchor {
                                 Link {class:"software-family-anchor",to:Route::SoftwareDetail{name:anchor.name.clone()},
+                                    "data-inactive":anchor.inactive().to_string(),
                                     aria_current:if current.as_deref()==Some(anchor.name.as_str()) {"page"}else{"false"},
                                     brand::SoftwareMark{item:anchor.clone(),size:44}
-                                    div {span {class:"software-family-overline","계열 기준"}h3 {"{family.label}"}}
+                                    div {span {class:"software-family-overline","계열 기준"}h3 {"{family.label}"}brand::SoftwareStatus{item:anchor.clone()}}
                                     ArrowRight{size:16}
                                 }
                                 p {class:"software-family-description",{super::discovery::summary(&anchor)}}
@@ -100,9 +101,11 @@ pub(super) fn FamilyIndex(
                             div {class:"software-family-members",
                                 for item in family.members {
                                     Link {key:"{item.name}",to:Route::SoftwareDetail{name:item.name.clone()},
+                                        "data-inactive":item.inactive().to_string(),
                                         title:item.description.clone(),
                                         aria_current:if current.as_deref()==Some(item.name.as_str()) {"page"}else{"false"},
-                                        "{item.display_name}"
+                                        span {class:"software-family-member-name","{item.display_name}"}
+                                        brand::SoftwareStatus{item:item.clone()}
                                     }
                                 }
                             }

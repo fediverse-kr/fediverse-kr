@@ -19,6 +19,10 @@ async (page) => {
   await page.locator('#hosting-customer_responsibilities').fill('가입 승인과 운영 규칙 · 테스트용 범위');
   await page.locator('#hosting-source_url').fill('https://'+slug+'.example/about');
   await page.locator('#hosting-checked_on').fill('2026-09-28');
+  check(await page.locator('#hosting-region').inputValue()==='unknown','New classifications start unknown, not overseas');
+  await page.locator('#hosting-region').selectOption('korea');
+  await page.locator('#hosting-korean-support').selectOption('yes');
+  await page.locator('#hosting-classification_source_url').fill('https://'+slug+'.example/about');
   await page.locator('#hosting-summary').fill('브라우저 합성 자료 등록');
   await page.getByRole('button',{name:'저장하기',exact:true}).click();
   await page.waitForURL(base+'/hosting/'+slug);
@@ -32,13 +36,18 @@ async (page) => {
   }
   await page.getByRole('link',{name:'정보 수정',exact:true}).click();
   await page.locator('#hosting-name').fill('수정한 예시 대리운영');
-  await page.locator('#hosting-summary').fill('이름 수정');
+  check(await page.locator('#hosting-region').inputValue()==='korea','Saved region is selected when reopening the editor');
+  await page.locator('#hosting-region').selectOption('overseas');
+  await page.locator('#hosting-korean-support').selectOption('unknown');
+  await page.locator('#hosting-summary').fill('이름과 분류 수정');
   await page.getByRole('button',{name:'저장하기',exact:true}).click();
   await page.waitForURL(base+'/hosting/'+slug);
   await page.reload();
   check(await page.getByRole('heading',{name:'수정한 예시 대리운영',exact:true}).isVisible(),'Edited data survives a full reload');
   const live=await (await page.request.get(base+'/api/public/hosting/detail?slug='+slug)).json();
   check(live.revision===2,'Canonical revision advances after the saved edit');
+  check(live.edit.operator_region==='overseas' && live.edit.korean_support===null,'Region and unknown support survive editing and reload');
+  check(await page.locator('.hosting-tags [data-region="overseas"]').isVisible(),'Detail displays the saved regional tag');
   const conflict=await page.evaluate(async ({slug,edit})=>{
     const r=await fetch('/api/member/hosting/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug,revision:1,edit:{...edit,name:'stale overwrite'},summary:'stale edit'})});return r.status;
   },{slug,edit:live.edit});
@@ -57,6 +66,7 @@ async (page) => {
   check(await page.getByRole('heading',{name:'예시 대리운영 서비스',exact:true}).isVisible(),'Confirmed history restore returns the first saved contents');
   const restored=await (await page.request.get(base+'/api/public/hosting/detail?slug='+slug)).json();
   check(restored.revision===3,'Restore creates a new canonical revision rather than erasing history');
+  check(restored.edit.operator_region==='korea' && restored.edit.korean_support===true,'History restore also restores the original tags');
   const anonymous=await page.context().browser().newContext();
   const anon=await anonymous.newPage();await anon.goto(base+'/account/hosting/'+slug+'/edit');
   await anon.waitForFunction(()=>document.querySelector('.portal-root')?.dataset.ready==='true');

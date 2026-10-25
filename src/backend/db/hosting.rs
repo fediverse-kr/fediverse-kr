@@ -8,7 +8,7 @@ use crate::{
 };
 use diesel::{
     prelude::*,
-    sql_types::{BigInt, Bool, Text, Uuid as SqlUuid},
+    sql_types::{BigInt, Bool, Nullable, Text, Uuid as SqlUuid},
 };
 use diesel_async::{AsyncConnection, AsyncPgConnection, RunQueryDsl};
 
@@ -103,25 +103,36 @@ async fn save_locked(
     if before.edit == edit {
         return Ok(before);
     }
-    diesel::sql_query("UPDATE hosting_services SET name=$2,website_url=$3,scope=$4,software=$5,provider_responsibilities=$6,customer_responsibilities=$7,source_url=$8,checked_on=NULLIF($9,'')::date,revision=revision+1,updated_at=now() WHERE slug=$1")
+    diesel::sql_query("UPDATE hosting_services SET name=$2,website_url=$3,scope=$4,software=$5,provider_responsibilities=$6,customer_responsibilities=$7,source_url=$8,checked_on=NULLIF($9,'')::date,operator_region=$10,korean_support=$11,classification_source_url=$12,revision=revision+1,updated_at=now() WHERE slug=$1")
         .bind::<Text,_>(slug).bind::<Text,_>(&edit.name).bind::<Text,_>(&edit.website_url).bind::<Text,_>(&edit.scope)
         .bind::<Text,_>(&edit.software).bind::<Text,_>(&edit.provider_responsibilities)
         .bind::<Text,_>(&edit.customer_responsibilities).bind::<Text,_>(&edit.source_url)
-        .bind::<Text,_>(&edit.checked_on).execute(conn).await?;
+        .bind::<Text,_>(&edit.checked_on).bind::<Text,_>(edit.operator_region.as_str())
+        .bind::<Nullable<Bool>,_>(edit.korean_support).bind::<Text,_>(&edit.classification_source_url)
+        .execute(conn).await?;
     let after = load(conn, slug).await?;
     record(conn, session, &after, action, summary).await?;
     Ok(after)
 }
 impl Database {
-    pub async fn hosting_list(&self, page: u32) -> Result<HostingPage, Error> {
+    pub async fn hosting_list(&self, page: u32, rotation_day: u32) -> Result<HostingPage, Error> {
         if page > 10000 {
             return Err(Error::Invalid);
         }
         let mut conn = self.pool.get().await.map_err(|_| Error::Unavailable)?;
+        // Rotate a stable slug-hash ring, independently in each region. Names and
+        // registration timestamps confer no permanent position. Windowing happens
+        // BEFORE LIMIT/OFFSET; the caller pins rotation_day across pagination.
         let mut rows = diesel::sql_query(format!(
-            "{PROJECTION} ORDER BY lower(name),slug LIMIT 21 OFFSET $1"
+            "{PROJECTION}
+             WINDOW ring AS (PARTITION BY operator_region ORDER BY md5(slug),slug),
+                    peers AS (PARTITION BY operator_region)
+             ORDER BY CASE operator_region WHEN 'korea' THEN 0 WHEN 'overseas' THEN 1 ELSE 2 END,
+                mod(row_number() OVER ring - 1 + count(*) OVER peers - mod($2,count(*) OVER peers), count(*) OVER peers)
+             LIMIT 21 OFFSET $1"
         ))
         .bind::<BigInt, _>(i64::from(page) * 20)
+        .bind::<BigInt, _>(i64::from(rotation_day))
         .load::<Row>(&mut conn)
         .await?;
         let has_next = rows.len() > 20;
@@ -129,6 +140,7 @@ impl Database {
         Ok(HostingPage {
             items: rows.into_iter().map(Row::dto).collect::<Result<_, _>>()?,
             page,
+            rotation_day,
             has_next,
         })
     }
@@ -155,11 +167,12 @@ impl Database {
             let exists=diesel::sql_query("SELECT EXISTS(SELECT 1 FROM hosting_services WHERE slug=$1 OR lower(website_url)=lower($2)) AS value")
                 .bind::<Text,_>(&slug).bind::<Text,_>(&edit.website_url).get_result::<Flag>(conn).await?.value;
             if exists { return Err(Error::Duplicate); }
-            diesel::sql_query("INSERT INTO hosting_services(slug,name,website_url,scope,software,provider_responsibilities,customer_responsibilities,source_url,checked_on) VALUES($1,$2,$3,$4,$5,$6,$7,$8,NULLIF($9,'')::date)")
+            diesel::sql_query("INSERT INTO hosting_services(slug,name,website_url,scope,software,provider_responsibilities,customer_responsibilities,source_url,checked_on,operator_region,korean_support,classification_source_url) VALUES($1,$2,$3,$4,$5,$6,$7,$8,NULLIF($9,'')::date,$10,$11,$12)")
                 .bind::<Text,_>(&slug).bind::<Text,_>(&edit.name).bind::<Text,_>(&edit.website_url)
                 .bind::<Text,_>(&edit.scope).bind::<Text,_>(&edit.software).bind::<Text,_>(&edit.provider_responsibilities)
                 .bind::<Text,_>(&edit.customer_responsibilities).bind::<Text,_>(&edit.source_url).bind::<Text,_>(&edit.checked_on)
-                .execute(conn).await?;
+                .bind::<Text,_>(edit.operator_region.as_str()).bind::<Nullable<Bool>,_>(edit.korean_support)
+                .bind::<Text,_>(&edit.classification_source_url).execute(conn).await?;
             let saved=load(conn,&slug).await?;
             record(conn,session,&saved,"create",&summary).await?;
             Ok(saved)

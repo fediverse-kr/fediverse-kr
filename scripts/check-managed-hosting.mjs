@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 const read = p => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const main = read('src/main.rs');
-const guide = read('src/information.rs');
+const guide = read('src/information/guides.rs');
 const api = read('src/hosting/api.rs');
 const db = read('src/backend/db/hosting.rs');
 const page = read('src/hosting/pages.rs');

@@ -1,5 +1,5 @@
 use crate::backend::auth::AuthError;
-use crate::hosting::HostingEdit;
+use crate::hosting::{HostingEdit, OperatorRegion};
 
 #[derive(Debug)]
 pub enum Error {
@@ -67,6 +67,7 @@ pub fn validate(
         (&mut edit.scope, 240),
         (&mut edit.software, 240),
         (&mut edit.source_url, 2048),
+        (&mut edit.classification_source_url, 2048),
         (&mut edit.checked_on, 10),
         (&mut summary, 200),
     ] {
@@ -81,7 +82,16 @@ pub fn validate(
     if edit.name.is_empty() || edit.website_url.is_empty() || summary.is_empty() {
         return Err(Error::Invalid);
     }
-    for link in [&edit.website_url, &edit.source_url] {
+    if (edit.operator_region != OperatorRegion::Unknown || edit.korean_support.is_some())
+        && edit.classification_source_url.is_empty()
+    {
+        return Err(Error::Invalid);
+    }
+    for link in [
+        &edit.website_url,
+        &edit.source_url,
+        &edit.classification_source_url,
+    ] {
         if link.is_empty() {
             continue;
         }
@@ -103,9 +113,34 @@ pub fn validate(
     }
     Ok((edit, summary))
 }
+/// A shared day key makes SSR, browser requests and all visitors agree.
+pub fn rotation_day() -> u32 {
+    ((chrono::Utc::now().timestamp() + 9 * 3600) / 86400) as u32
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn managed_hosting_classification_requires_safe_evidence_not_inferred_language() {
+        let mut edit = HostingEdit {
+            name: "공간".into(),
+            website_url: "https://example.org".into(),
+            operator_region: OperatorRegion::Korea,
+            ..Default::default()
+        };
+        assert!(validate(edit.clone(), "분류".into()).is_err());
+        edit.classification_source_url = "javascript:alert(1)".into();
+        assert!(validate(edit.clone(), "분류".into()).is_err());
+        edit.classification_source_url = "https://example.org/about".into();
+        let (saved, _) = validate(edit.clone(), "분류".into()).unwrap();
+        assert_eq!(saved.korean_support, None);
+        edit.operator_region = OperatorRegion::Unknown;
+        edit.korean_support = Some(false);
+        edit.classification_source_url.clear();
+        assert!(validate(edit, "분류".into()).is_err());
+    }
+
     #[test]
     fn managed_hosting_multiline_responsibilities_keep_line_breaks() {
         let base = HostingEdit {

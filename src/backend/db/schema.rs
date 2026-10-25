@@ -5,6 +5,7 @@ diesel::table! {
         provider_responsibilities -> Text, customer_responsibilities -> Text,
         source_url -> Text, checked_on -> Nullable<Date>, revision -> Int8,
         updated_at -> Timestamptz,
+        operator_region -> Text, korean_support -> Nullable<Bool>, classification_source_url -> Text,
     }
 }
 diesel::table! {

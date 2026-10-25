@@ -25,20 +25,21 @@ fn failure(e: domain::Error) -> ServerFnError {
         &e.to_string(),
     )
 }
-#[get("/api/public/hosting?page")]
-pub async fn list(page: u32) -> Result<HostingPage, ServerFnError> {
+#[get("/api/public/hosting?page&rotation_day")]
+pub async fn list(page: u32, rotation_day: Option<u32>) -> Result<HostingPage, ServerFnError> {
     if std::env::var_os("FEDKR_DATABASE_URL").is_none() {
         return Ok(HostingPage {
             items: vec![],
             page,
             has_next: false,
+            rotation_day: rotation_day.unwrap_or_else(domain::rotation_day),
         });
     }
     config::state()
         .await
         .map_err(|_| unavailable())?
         .db
-        .hosting_list(page)
+        .hosting_list(page, rotation_day.unwrap_or_else(domain::rotation_day))
         .await
         .map_err(failure)
 }

@@ -24,7 +24,7 @@ fn InfoPage(title: String, intro: String, children: Element) -> Element {
 pub fn People() -> Element {
     let mut mode = use_signal(|| 0usize);
     let ready = use_context::<Signal<bool>>()();
-    rsx! { InfoPage { title:"다른 곳의 나, 여기의 이웃.", intro:"계정의 주인임을 확인하는 일과, 나를 소개하는 일은 따로예요.",
+    rsx! { InfoPage { title:"다른 곳의 나, 여기의 이웃.", intro:"계정의 주인임을 확인하는 일과 나를 소개하는 일은 따로예요.",
         div { class:"data-notice", span { "공개 범위 검토안" } p { "아래는 공개 방식의 예시입니다. 선택해도 저장되거나 실제 회원이 공개되지 않아요." } }
         div { class:"people-preview",
             div { class:"choice-list", role:"group", aria_label:"공개 방식 예시",
@@ -35,7 +35,7 @@ pub fn People() -> Element {
             div { class:"identity-preview", "data-mode":mode(),
                 p { class:"catalog-kind", "다른 사람이 보는 화면" }
                 if mode()==0 { div { class:"private-identity", span { "◌" } h2 { "공개 프로필 없음" } p { "연동한 계정 목록도 공개하지 않아요." } } }
-                else { div { class:"public-identity", span { class:"server-mark violet", "나" } h2 { "내 소개 이름" } p { "이름과 소개, 공개로 고른 계정만." } ul { li { "@me@photo.example" } li { "@me@notes.example" } } span { class:"identity-listing-state", if mode()==2 { "사람 찾기에 표시" } else { "사람 찾기에는 표시하지 않음" } } } }
+                else { div { class:"public-identity", span { class:"server-mark violet", "나" } h2 { "내 소개 이름" } p { "이름과 소개, 공개로 고른 계정만 보여요." } ul { li { "@me@photo.example" } li { "@me@notes.example" } } span { class:"identity-listing-state", if mode()==2 { "사람 찾기에 표시" } else { "사람 찾기에는 표시하지 않음" } } } }
             }
         }
         div { class:"information-prose",
@@ -104,9 +104,9 @@ pub fn Contact() -> Element {
 
 #[component]
 pub fn About() -> Element {
-    rsx! { InfoPage { title:"연합우주를 만나보는 곳.", intro:"fediverse.kr은 서로 연결된 공간을 이해하고, 머물 곳을 찾도록 돕습니다.",
+    rsx! { InfoPage { title:"연합우주를 만나보는 곳.", intro:"fediverse.kr은 서로 연결된 공간을 이해하고 머물 곳을 찾도록 돕습니다.",
         div { class:"information-prose", h2 { "이 사이트가 연합우주 전체는 아니에요." } p { "여기에 가입하지 않아도 다른 서버를 이용할 수 있어요. 서버 목록도 연합우주 전체 목록이 아니라, 이곳에 등록된 한국어권 공간을 다룹니다." }
-            h2 { "정보는 함께 고치고, 기록은 남기기." } p { "회원이 소프트웨어 소개를 직접 등록·수정하고, 서버 오너는 자신의 서버 정보를 관리해요. 소프트웨어 변경 이력을 비교하고 이전 내용으로 되돌릴 수 있습니다." } p { class:"review-note", "운영 자료의 공동 편집과 관리자의 분쟁 개입 화면은 준비 중입니다." }
+            h2 { "정보는 함께 고치고 기록은 남겨요." } p { "회원이 소프트웨어 소개를 직접 등록·수정하고, 서버 오너는 자신의 서버 정보를 관리해요. 소프트웨어 변경 이력을 비교하고 이전 내용으로 되돌릴 수 있습니다." } p { class:"review-note", "운영 자료의 공동 편집과 관리자의 분쟁 개입 화면은 준비 중입니다." }
             h2 { "오류나 의견이 있다면" } p { "서버 등록 제안, 정보 수정, 목록 노출에 관한 요청은 문의 페이지의 GitHub 또는 운영 문의 계정으로 보내 주세요." }
             Link { class:"text-link", to:Route::Contact{}, "문의하기" ArrowRight { size:16 } }
             h2 { "목록을 읽을 때" } p { "서버마다 운영자와 가입 방식, 규칙이 달라요. 이곳의 목록과 수집 정보는 참고하되, 가입 전에는 해당 서버의 최신 안내를 확인해 주세요." }

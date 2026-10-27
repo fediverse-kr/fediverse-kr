@@ -141,9 +141,7 @@ pub fn SiteWindow(
     #[props(default = "글 / 발행됨".into())] journal_status: String,
     #[props(default = true)] visible: bool,
     #[props(default = "comfortable".into())] density: String,
-    #[props(default)] interactive: bool,
     #[props(default)] compose_hint: bool,
-    #[props(default)] on_compose: EventHandler,
     #[props(default = rsx! {})] overlays: Element,
     children: Element,
 ) -> Element {
@@ -152,7 +150,8 @@ pub fn SiteWindow(
     let photo_site = site == Site::Photo;
     let blog_site = site == Site::Blog;
     rsx! { ProductIcons { key: "{site.software()}", family: site.family(),
-        section { class: "social-window", "data-software": site.software(), "data-remote": site != Site::Dog, "data-visible": visible, "data-photo-site": photo_site, "data-density": density, aria_label: "{name} 예시 화면",
+        // Illustration only, including before hydration. Playback controls live outside.
+        section { class: "social-window", inert: true, "data-software": site.software(), "data-remote": site != Site::Dog, "data-visible": visible, "data-photo-site": photo_site, "data-density": density, aria_label: "{name} 예시 화면",
             div { class: "social-browser", aria_hidden: "true", span { class: "window-dots", i {} i {} i {} } span { Globe { size: 11 } "{site.domain()}" } Ellipsis { size: 16 } }
             header { class: "social-header",
                 if blog_site { div { class: "journal-appbar", strong { "{name}" } } }
@@ -166,22 +165,22 @@ pub fn SiteWindow(
             else if site == Site::Cat { div { class: "sogon-nav", aria_hidden: "true", span { class: "sogon-selected", "{heading}" } span { "로컬" } span { "소셜" } } }
             else { div { class: "social-nav", aria_hidden: "true", span { class: "social-nav-active", DemoIcon { kind: Glyph::Home, size: 18 } "{heading}" } span { DemoIcon { kind: Glyph::Bell, size: 18 } "알림" } span { DemoIcon { kind: Glyph::Public, size: 18 } "탐색" } } }
             div { class: "social-app-body",
-                div { class: "social-feed", tabindex: if interactive { "0" } else { "-1" }, role: "feed", aria_label: "{name} {heading} 타임라인", {children} }
+                div { class: "social-feed", {children} }
                 if site == Site::Cat {
                     aside { class: "misskey-rail", aria_label: "{name} 메뉴",
                         span { class: "rail-active", title: "홈", DemoIcon { kind: Glyph::Home, size: 20 } small { "홈" } }
                         span { title: "알림", DemoIcon { kind: Glyph::Bell, size: 20 } small { "알림" } }
                         span { title: "탐색", DemoIcon { kind: Glyph::Search, size: 20 } small { "탐색" } }
-                        DemoControl { class: "rail-compose", label: "{name} 글쓰기", interactive, onclick: on_compose, DemoIcon { kind: Glyph::Write, size: 22 } small { "글쓰기" } }
+                        DemoControl { class: "rail-compose", label: "{name} 글쓰기", DemoIcon { kind: Glyph::Write, size: 22 } small { "글쓰기" } }
                         span { class: "rail-more", title: "더 보기", DemoIcon { kind: Glyph::More, size: 21 } }
                         span { class: "rail-profile", title: "{USERS[account].address()}", Avatar { author: account } small { "{viewer.name()}" } }
                     }
                 }
-                if site == Site::Dog { DemoControl { class: "mastodon-compose-fab", label: "{name} 글쓰기", interactive, onclick: on_compose, DemoIcon { kind: Glyph::Write, size: 22 } if compose_hint { ClickRipple {} } } }
+                if site == Site::Dog { DemoControl { class: "mastodon-compose-fab", label: "{name} 글쓰기", DemoIcon { kind: Glyph::Write, size: 22 } if compose_hint { ClickRipple {} } } }
                 {overlays}
             }
             if photo_site { div { class: "photo-bottom", DemoIcon { kind: Glyph::Home, size: 19 }
-                DemoControl { class: "photo-compose", label: "{name} 사진 올리기", interactive, onclick: on_compose, DemoIcon { kind: Glyph::Image, size: 21 } if compose_hint { ClickRipple {} } }
+                DemoControl { class: "photo-compose", label: "{name} 사진 올리기", DemoIcon { kind: Glyph::Image, size: 21 } if compose_hint { ClickRipple {} } }
                 DemoIcon { kind: Glyph::Heart, size: 19 } Avatar { author: account }
             } }
         }
@@ -196,18 +195,8 @@ fn ProductIcons(family: IconFamily, children: Element) -> Element {
 }
 
 #[component]
-fn DemoControl(
-    class: String,
-    label: String,
-    interactive: bool,
-    onclick: EventHandler,
-    children: Element,
-) -> Element {
-    if interactive {
-        rsx! { button { class, aria_label: label, onclick: move |_| onclick.call(()), {children} } }
-    } else {
-        rsx! { span { class, title: label, aria_hidden: "true", {children} } }
-    }
+fn DemoControl(class: String, label: String, children: Element) -> Element {
+    rsx! { span { class, title: label, aria_hidden: "true", {children} } }
 }
 
 #[component]
@@ -328,7 +317,7 @@ pub fn SocialPost(
         identity.username,
         SITES[identity.site].domain,
     );
-    let mut liked = use_signal(|| false);
+
     rsx! { article { class: "social-post", "data-person": user, "data-photo": photo, "data-photo-native": photo_site, "data-incoming": remote_arrival, "data-highlighted": highlighted, "data-fresh": fresh, "data-compact": compact,
         if !reply_to.is_empty() { div { class: "social-reply-context", DemoIcon { kind: Glyph::Reply, size: 13 } "{reply_to} 님에게 답글" } }
         div { class: "social-post-heading", Avatar { author } div { strong { "{name}" } span { "@{user}" if reveal_address { b { class: "social-domain", "data-site": identity.site, "@{domain}" } } } } time { if old { "12분" } else { "방금" } } }
@@ -345,7 +334,7 @@ pub fn SocialPost(
         div { class: "social-post-actions",
             span { aria_hidden: "true", class: "post-reply-action", "data-selected": reply_selected, DemoIcon { kind: Glyph::Reply, size: 17 } if reply_count > 0 { small { "{reply_count}" } } if reply_selected { ClickRipple {} } }
             span { aria_hidden: "true", DemoIcon { kind: Glyph::Repeat, size: 18 } }
-            button { aria_label: format!("{name}의 글 좋아요"), aria_pressed: liked(), onclick: move |_| liked.set(!liked()), DemoIcon { kind: Glyph::Heart, size: 17, selected: liked() } if liked() { small { "1" } } }
+            span { class: "post-like-action", aria_hidden: "true", DemoIcon { kind: Glyph::Heart, size: 17 } }
             span { aria_hidden: "true", DemoIcon { kind: Glyph::More, size: 19 } }
         }
     } }
@@ -390,21 +379,15 @@ pub fn Composer(
     #[props(default)] recipient: usize,
     #[props(default)] quote: String,
     #[props(default)] photo: bool,
-    #[props(default)] interactive: bool,
-    #[props(default)] on_close: EventHandler,
-    #[props(default)] on_submit: EventHandler<String>,
 ) -> Element {
-    let mut draft = use_signal(String::new);
-    let mut attached = use_signal(|| false);
-    let visible_text = if interactive { draft() } else { message };
-    let can_publish = interactive && !visible_text.trim().is_empty() && (!photo || attached());
+    let visible_text = message;
     let name = USERS[author].name;
     rsx! { div { class: "social-compose-layer", "data-photo-editor": photo,
-        section { class: "social-composer", "data-sending": sending, "data-photo": photo, "data-interactive": interactive, aria_label: "글을 작성하고 전송하는 장면",
+        section { class: "social-composer", "data-sending": sending, "data-photo": photo, aria_label: "글을 작성하고 전송하는 장면",
             div { class: "compose-titlebar",
-                button { class: "compose-close", aria_label: "작성 창 닫기", onclick: move |_| on_close.call(()), DemoIcon { kind: if photo { Glyph::Back } else { Glyph::Close }, size: 18 } }
+                span { class: "compose-close", aria_hidden: "true", DemoIcon { kind: if photo { Glyph::Back } else { Glyph::Close }, size: 18 } }
                 strong { if photo { "새 게시물" } else if reply { "답글 작성" } else { "새 글 작성" } }
-                if photo { button { class: "social-publish", disabled: !can_publish, onclick: move |_| on_submit.call(draft().trim().to_string()),
+                if photo { span { class: "social-publish", aria_hidden: "true",
                     if submit_hint { ClickRipple {} }
                     if sending { span { class: "social-spinner" } "공유 중" } else { "공유" }
                 } }
@@ -412,19 +395,15 @@ pub fn Composer(
             if reply { div { class: "compose-reply-preview", Avatar { author: recipient } div { strong { "{USERS[recipient].name}" } p { "{quote}" } } } }
             div { class: "social-compose-author", Avatar { author } div { strong { "{name}" } small { DemoIcon { kind: Glyph::Public, size: 11 } "공개" span { "⌄" } } } }
             if photo {
-                if !attached() && (interactive || !photo_selected) { button { class: "compose-photo-picker", onclick: move |_| attached.set(true), DemoIcon { kind: Glyph::Image, size: 32 } span { "사진을 추가하세요" } if photo_hint { ClickRipple {} } } }
+                if !photo_selected { div { class: "compose-photo-picker", aria_hidden: "true", DemoIcon { kind: Glyph::Image, size: 32 } span { "사진을 추가하세요" } if photo_hint { ClickRipple {} } } }
                 else { div { class: "compose-attachment", img { src: PHOTO, alt: "선택한 산책길 사진", width: "960", height: "640" } span { "ALT" } } }
             }
             if reply { div { class: "compose-recipient", "{USERS[recipient].address()}" } }
-            if interactive {
-                textarea { class: "social-draft", aria_label: "게시할 글", maxlength: "500", oninput: move |event| draft.set(event.value()), placeholder: if photo { "사진에 대해 이야기해 보세요…" } else if reply { "답글을 남겨보세요…" } else { "무슨 생각을 하고 있나요?" }, value: "{visible_text}" }
-            } else {
-                TypingPreview { class: "social-draft", label: "게시할 글 (자동 재생)", placeholder: if photo { "사진에 대해 이야기해 보세요…" } else if reply { "답글을 남겨보세요…" } else { "무슨 생각을 하고 있나요?" }, text: visible_text.clone(), caret: !sending }
-            }
+            TypingPreview { class: "social-draft", label: "게시할 글 (자동 재생)", placeholder: if photo { "사진에 대해 이야기해 보세요…" } else if reply { "답글을 남겨보세요…" } else { "무슨 생각을 하고 있나요?" }, text: visible_text.clone(), caret: !sending }
             if !photo { div { class: "social-compose-tools",
                 span { aria_hidden: "true", DemoIcon { kind: Glyph::Image, size: 18 } DemoIcon { kind: Glyph::Smile, size: 18 } span { class: "compose-cw", "CW" } }
                 small { "{500usize.saturating_sub(visible_text.chars().count())}" }
-                button { class: "social-publish", disabled: !can_publish, "data-empty": visible_text.is_empty(), onclick: move |_| on_submit.call(draft().trim().to_string()),
+                span { class: "social-publish", aria_hidden: "true", "data-empty": visible_text.is_empty(),
                     if submit_hint { ClickRipple {} }
                     if sending { span { class: "social-spinner" } "게시 중" } else { "게시하기" }
                 }
@@ -445,13 +424,12 @@ pub fn JournalEditor(
     rsx! {
             section { class: "journal-editor", aria_label: "블로그 글 작성 데모",
                 div { class: "journal-editor-toolbar", span { if !saved { "초안 저장됨" } else { "모든 변경사항 저장됨" } }
-                    button { disabled: true, class: "journal-publish", "data-sending": sending,
+                    span { class: "journal-publish", aria_hidden: "true", "data-sending": sending,
                         if submit_hint { ClickRipple {} }
                         if sending { span { class: "social-spinner" } "발행 중" } else { "발행하기" }
                     }
                 }
-                label { class: "sr-only", r#for: "journal-draft-title", "글 제목 (자동 재생)" }
-                input { id: "journal-draft-title", class: "journal-title-input", readonly: true, tabindex: "-1", value: title }
+                div { class: "journal-title-input", "{title}" }
                 img { class: "journal-editor-cover", src: PHOTO, alt: "글에 첨부한 산책길 사진", width: "960", height: "640" }
                 div { class: "journal-format-tools", aria_hidden: "true", b { "B" } i { "I" } span { "H₂" } span { "❝" } DemoIcon { kind: Glyph::Image, size: 15 } }
                 TypingPreview { class: "journal-body-input", label: "블로그 본문 (자동 재생)", placeholder: "이야기를 시작해 보세요…", text: text.clone(), caret: caret }

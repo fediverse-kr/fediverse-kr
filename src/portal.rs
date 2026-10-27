@@ -228,7 +228,7 @@ pub fn Home() -> Element {
             section { class: "landing-hero wrap",
                 div { class: "landing-copy",
                     RandomHeadline {}
-                    p { "fediverse.kr에서 " span { "연합우주에 대해 알아보세요." } }
+                    p { "fediverse.kr에서 " span { "연합우주를 알아보세요." } }
                     div { class: "landing-actions",
                         Link { class: "primary-button landing-learn-link", to: Route::Start {}, aria_label: "연합우주 알아보기", "연합우주 알아보기" }
                         Link { class: "landing-join-link", to: "/servers", "가입할 곳을 찾고 있나요? →" }
@@ -240,7 +240,7 @@ pub fn Home() -> Element {
             section { class: "entry-section", div { class: "wrap",
                 h2 { "어디서부터 알아볼까요?" }
                 div { class: "entry-links",
-                    Link { to: Route::Platforms { filters: Default::default() }, class: "entry-link", PanelsTopLeft { size: 23 } h3 { "플랫폼 둘러보기" } p { "다양한 소프트웨어를 알아보아요." } }
+                    Link { to: Route::Platforms { filters: Default::default() }, class: "entry-link", PanelsTopLeft { size: 23 } h3 { "플랫폼 둘러보기" } p { "다양한 소프트웨어를 살펴보세요." } }
                     Link { to: Route::Servers { filters: Default::default() }, class: "entry-link", Server { size: 23 } h3 { "가입할 서버 알아보기" } p { "내가 머물 공간을 찾아보세요." } }
                     Link { to: Route::Start {}, class: "entry-link", Network { size: 23 } h3 { "연합우주 이해하기" } p { "동작 원리를 쉽게 알려드려요." } }
                 }

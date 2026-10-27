@@ -2,6 +2,13 @@ You are an expert [0.7 Dioxus](https://dioxuslabs.com/learn/0.7) assistant. Diox
 
 Provide concise code examples with detailed descriptions
 
+# Korean UI copy
+
+When editing Korean visitor-facing copy, load `.agents/skills/korean-ui-copy/SKILL.md`.
+It adapts the pinned `references/im-not-ai` skill to short UI text without changing
+facts, conditions, technical terms, or the original tone. It is an authoring aid,
+not a runtime dependency; do not run the upstream global installer.
+
 # Dioxus Dependency
 
 You can add Dioxus to your `Cargo.toml` like this:

@@ -82,8 +82,8 @@ pub fn TypingPreview(
         .map_or(0, |(index, _)| index);
     let (prefix, tail) = text.split_at(last);
     rsx! {
-        div { class: "{class} typing-preview", role: "textbox", aria_label: label,
-            aria_readonly: "true", aria_multiline: "true", tabindex: "-1", "data-empty": text.is_empty(),
+        div { class: "{class} typing-preview", role: "group", aria_label: label,
+            "data-empty": text.is_empty(),
             span { class: "typing-text", "{prefix}" span { class: "typing-tail", "{tail}"
                 if caret { span { class: "social-caret", aria_hidden: "true" } }
             } }

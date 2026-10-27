@@ -247,7 +247,7 @@ pub fn LandingDemo() -> Element {
             }
             div { class: "landing-windows",
                 for remote in [false, true] {
-                    LandingWindow { key: "{scene()}-{remote}-{playback_id()}", remote, scene: scene(), tick: elapsed, visible: side == remote, on_interact: move |_| { side_override.set(Some(remote)); paused.set(true); } }
+                    LandingWindow { key: "{scene()}-{remote}-{playback_id()}", remote, scene: scene(), tick: elapsed, visible: side == remote }
                 }
             }
             div { class: "landing-step", role: "status", aria_atomic: "true",
@@ -285,13 +285,7 @@ pub fn LandingDemo() -> Element {
 }
 
 #[component]
-fn LandingWindow(
-    remote: bool,
-    scene: usize,
-    tick: u16,
-    visible: bool,
-    on_interact: EventHandler,
-) -> Element {
+fn LandingWindow(remote: bool, scene: usize, tick: u16, visible: bool) -> Element {
     let photo_site = remote && scene == 1;
     let blog_site = remote && scene == 2;
     let site = Site::ALL[if remote { scene + 1 } else { 0 }];
@@ -300,9 +294,7 @@ fn LandingWindow(
     let reply_author = if scene == 0 { 2 } else { 0 };
     let source = if scene == 0 { !remote } else { remote };
     let step = story_step(tick);
-    let mut manual_compose = use_signal(|| false);
-    let mut manual_posts = use_signal(Vec::<(String, bool)>::new);
-    let mut dismissed = use_signal(|| false);
+
     let original = if source {
         tick >= PUBLISHED
     } else {
@@ -313,9 +305,8 @@ fn LandingWindow(
     } else {
         tick >= REPLY_PUBLISHED
     };
-    let composing = !dismissed()
-        && ((source && (COMPOSE_OPEN..PUBLISHED).contains(&tick))
-            || (!source && (REPLY_OPEN..REPLY_PUBLISHED).contains(&tick)));
+    let composing = (source && (COMPOSE_OPEN..PUBLISHED).contains(&tick))
+        || (!source && (REPLY_OPEN..REPLY_PUBLISHED).contains(&tick));
     let compose_tick = if source {
         tick
     } else {
@@ -332,22 +323,17 @@ fn LandingWindow(
         _ => "조금 느리게 걸으면 보이는 것들.",
     };
     rsx! {
-        SiteWindow { site, viewer: Person::ALL[account], visible, interactive: true,
+        SiteWindow { site, viewer: Person::ALL[account], visible,
             journal_status: if tick < PUBLISHED { "글 / 편집기" } else { "글 / 발행됨" },
             compose_hint: source && (2..COMPOSE_OPEN).contains(&tick),
-            on_compose: move |_| { on_interact.call(()); manual_compose.set(true); },
+
             overlays: rsx! {
-                if manual_compose() {
-                    DemoComposer { key: "manual-compose-{remote}", elapsed: 0, author: account, message: "", interactive: true, photo: photo_site,
-                        on_close: move |_| manual_compose.set(false),
-                        on_submit: move |body| { manual_posts.write().push((body, photo_site)); manual_compose.set(false); dismissed.set(true); },
-                    }
-                } else if composing && !blog_site {
+                if composing && !blog_site {
                     DemoComposer { key: "compose-{source}", elapsed: compose_tick,
                         author: account, recipient: origin_author,
                         message: if source { original_body } else { reply_body },
                         reply: !source, quote: original_body, photo: photo_site && source,
-                        on_close: move |_| { on_interact.call(()); dismissed.set(true); },
+
                     }
                 }
                 if (PUBLISHED..STEP_STARTS[1]).contains(&tick) && source || (REPLY_PUBLISHED..STEP_STARTS[3]).contains(&tick) && !source {
@@ -357,7 +343,7 @@ fn LandingWindow(
             },
                     if blog_site { JournalDemo { tick } }
                     else {
-                        for (index, (body, photo)) in manual_posts().iter().enumerate().rev() { SocialPost { key: "manual-{index}", author: account, body: body.clone(), photo: *photo, photo_site: *photo && photo_site } }
+
                         if reply && !photo_site { Arrival { SocialPost { author: reply_author, body: reply_body,
                             reply_to: USERS[origin_author].name, remote_arrival: source, highlighted: reply_highlight(tick), compact: true,
                         } } }
@@ -424,16 +410,13 @@ fn DemoComposer(
     #[props(default)] recipient: usize,
     #[props(default)] quote: String,
     #[props(default)] photo: bool,
-    #[props(default)] interactive: bool,
-    #[props(default)] on_close: EventHandler,
-    #[props(default)] on_submit: EventHandler<String>,
 ) -> Element {
     rsx! { Composer {
-        author, recipient, reply, quote, photo, interactive, on_close, on_submit,
+        author, recipient, reply, quote, photo,
         message: typed_text(&message, elapsed.saturating_sub(if photo { 23 } else { COMPOSE_OPEN }), if photo { 29 } else { 42 }),
-        sending: !interactive && elapsed >= SENDING,
-        submit_hint: !interactive && elapsed >= SUBMIT_CLICK,
-        photo_hint: !interactive && elapsed >= 18,
+        sending: elapsed >= SENDING,
+        submit_hint: elapsed >= SUBMIT_CLICK,
+        photo_hint: elapsed >= 18,
         photo_selected: elapsed >= 28,
     } }
 }

@@ -58,7 +58,7 @@ pub struct Beat {
 pub const BASICS: [Beat; 5] = [
     Beat {
         title: "평범한\nSNS 같죠.",
-        line: "글을 쓰고, 팔로우하고, 답장하는 곳.",
+        line: "글을 쓰고 팔로우하고 답장하는 곳이에요.",
         action: "화면 바깥으로",
     },
     Beat {
@@ -68,7 +68,7 @@ pub const BASICS: [Beat; 5] = [
     },
     Beat {
         title: "이름 뒤에,\n사는 곳이 붙어요.",
-        line: "이메일처럼. 다른 사이트 사람도 주소로 찾아요.",
+        line: "이메일처럼 다른 사이트 사람도 주소로 찾아요.",
         action: "작은 집도 만나보기",
     },
     Beat {
@@ -78,7 +78,7 @@ pub const BASICS: [Beat; 5] = [
     },
     Beat {
         title: "사이트는 각자의 것.\n대화는 함께.",
-        line: "이렇게 이어지는 공간들, 연합우주.",
+        line: "이렇게 이어진 공간을 연합우주라고 불러요.",
         action: "다른 상황 살펴보기",
     },
 ];
@@ -126,7 +126,7 @@ pub fn beats(chapter: Chapter) -> &'static [Beat] {
         Chapter::Find => &[
             Beat {
                 title: "친구는 다른 곳에.\n검색은 내 사이트에서.",
-                line: "이름만 말고, @patricia@cat.tower 전체 주소를.",
+                line: "이름만 말고 @patricia@cat.tower 전체 주소로 검색해요.",
                 action: "검색 결과 보기",
             },
             Beat {
@@ -148,7 +148,7 @@ pub fn beats(chapter: Chapter) -> &'static [Beat] {
             },
             Beat {
                 title: "두 계정이 모두\n내 것인지 확인하고.",
-                line: "새 계정에 옛 주소를 등록한 뒤, 옛 계정에서 이사해요.",
+                line: "새 계정에 옛 주소를 등록한 뒤 옛 계정에서 이사해요.",
                 action: "이사 뒤의 모습 보기",
             },
             Beat {

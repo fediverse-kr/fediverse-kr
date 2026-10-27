@@ -16,7 +16,7 @@
 .social-nav > span { display: flex; justify-content: center; align-items: center; gap: 7px; flex: 1; font-size: 13px; }
 .social-nav .social-nav-active { color: #6253c6; border-bottom: 3px solid #6253c6; font-weight: 650; }
 .social-app-body { position: relative; display: flex; flex: 1; min-height: 0; isolation: isolate; }
-.social-feed { flex: 1; min-width: 0; min-height: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; scrollbar-width: thin; }
+.social-feed { flex: 1; min-width: 0; min-height: 0; overflow: hidden; }
 .social-post { padding: 18px 16px 12px; border-bottom: 1px solid #e6e5ed; background: white; }
 .social-avatar { width: 40px; height: 40px; flex-shrink: 0; border-radius: 6px; object-fit: cover; }
 .social-post-heading { display: flex; align-items: center; gap: 9px; }
@@ -33,9 +33,9 @@
 .social-post-content { font-size: 14px; line-height: 1.8; margin-block: 14px 8px; overflow-wrap: anywhere; }
 .social-mention { color: #6253c6; }
 .social-post-actions { display: flex; align-items: center; justify-content: space-between; color: #94919f; padding-top: 2px; }
-.social-post-actions > span, .social-post-actions > button { display: inline-flex; min-height: 30px; min-width: 32px; align-items: center; gap: 6px; padding: 0; }
+.social-post-actions > span { display: inline-flex; min-height: 30px; min-width: 32px; align-items: center; gap: 6px; padding: 0; }
 .social-post-actions small { font-size: 11px; }
-.social-post-actions button:hover, .social-post-actions button[aria-pressed=true] { color: #c25c7c; }
+
 .social-reply-context { display: flex; align-items: center; gap: 6px; margin-bottom: 9px; color: #908c9c; font-size: 11px; }
 .social-photo { width: 100%; height: auto; aspect-ratio: 1.6; object-fit: cover; border-radius: 7px; margin-block: 5px 8px; }
 .social-account { display: flex; align-items: center; gap: 9px; padding: 10px 16px; background: #faf9fc; border-top: 1px solid #e7e5ee; }
@@ -65,7 +65,7 @@
 .compose-attachment { height: 125px; position: relative; margin: 4px 15px 8px; }
 .compose-attachment img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
 .compose-attachment > span { position: absolute; bottom: 6px; left: 6px; padding: 2px 5px; border-radius: 3px; color: white; background: #27253699; font-size: 9px; }
-.typing-preview { white-space: pre-wrap; overflow-wrap: anywhere; overflow-y: auto; cursor: text; }
+.typing-preview { white-space: pre-wrap; overflow-wrap: anywhere; overflow: hidden; }
 .typing-tail { white-space: nowrap; }
 .typing-placeholder { color: #a49fab; }
 .social-caret { display: inline-block; width: 0; height: 1.1em; margin-left: 1px; border-right: 1.5px solid currentColor; vertical-align: -.15em; animation: social-blink .8s steps(1) infinite; }
@@ -77,7 +77,7 @@
 .social-compose-tools > small { margin-left: auto; color: #9b94a3; font-size: 10px; }
 .compose-cw { font-size: 10px; font-weight: 700; align-self: center; }
 .social-publish { display: flex; align-items: center; gap: 6px; padding: 6px 13px; border-radius: 5px; color: white; background: #6253c6; font-size: 12px; font-weight: 600; }
-.social-publish:disabled { opacity: 1; }
+
 .social-publish[data-empty=true] { opacity: .5; }
 .social-toast { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 3; padding: 9px 18px; border-radius: 7px; color: white; background: #35313f; font-size: 12px; white-space: nowrap; animation: caption-appear .15s ease-out; }
 .post-reply-action[data-selected=true] { color: #6253c6; background: #eeeafa; border-radius: 5px; box-shadow: 0 0 0 3px #eeeafa; }
@@ -154,7 +154,7 @@
 .social-window[data-software=bitdam] .social-post-heading > div > span { display: none; }
 .social-window[data-software=bitdam] .social-post[data-photo-native=true] { padding-top: 14px; border-bottom: 0; }
 .social-post[data-photo-native=true] .social-post-actions { justify-content: flex-start; gap: 14px; }
-.social-post[data-photo-native=true] .social-post-actions > button { order: -1; }
+.social-post[data-photo-native=true] .social-post-actions > .post-like-action { order: -1; }
 .social-post[data-photo-native=true] .social-post-actions > span:nth-child(2) { display: none; }
 .social-post[data-photo-native=true] .social-post-actions > span:last-child { margin-left: auto; }
 .photo-comment { display: flex; align-items: flex-start; gap: 9px; margin: 0 12px 12px; padding: 12px; border-radius: 5px; }
@@ -224,7 +224,7 @@
 .mastodon-compose-fab { position: absolute; z-index: 1; right: 16px; bottom: 16px; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; background: #6253c6; color: white; box-shadow: 0 4px 12px #4735983d; }
 .mastodon-compose-fab:hover { background: #5142b4; }
 .misskey-rail { flex: 0 0 54px; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 5px; border-left: 1px solid #dfe8e3; background: #eaf1ee; color: #789288; }
-.misskey-rail > span, .misskey-rail > button { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; position: relative; width: 42px; min-height: 48px; border-radius: 9px; }
+.misskey-rail > span { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; position: relative; width: 42px; min-height: 48px; border-radius: 9px; }
 .misskey-rail small { font-size: 9px; }
 .misskey-rail .rail-active { color: #377c65; background: #d8e8df; }
 .misskey-rail .rail-compose { color: white; background: #43866f; margin-top: 6px; }
@@ -237,7 +237,7 @@
 .social-window[data-software=sogon] .social-post-content, .social-window[data-software=sogon] .social-post-actions { margin-left: 0; }
 .social-window[data-software=sogon] .social-post[data-compact=true] .social-post-content { margin-left: 0; }
 .social-window[data-software=sogon] .social-post-heading > div > span { font-size: 10px; }
-.social-composer[data-interactive=false] { border-color: var(--arrival-border); }
+.social-composer { border-color: var(--arrival-border); }
 .compose-titlebar { gap: 10px; }
 .compose-titlebar strong { flex: 1; }
 .compose-titlebar .compose-close { display: grid; place-items: center; font-size: 22px; width: 22px; height: 24px; line-height: 1; color: #97909f; }
@@ -304,7 +304,7 @@
  .social-post-heading strong { font-size:12px; }
  .social-post-heading time { display:none; }
  .social-post-content { font-size:12px; }
- .social-post-actions > span,.social-post-actions > button { min-width:20px; }
+ .social-post-actions > span { min-width:20px; }
  .social-nav { height:37px; }
  .social-nav > span { gap:4px; font-size:11px; }
  .sogon-nav { gap:8px; padding:7px 9px; font-size:11px; }

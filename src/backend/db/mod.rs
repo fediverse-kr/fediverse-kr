@@ -33,7 +33,7 @@ use std::time::Duration;
 
 #[derive(Clone)]
 pub struct Database {
-    pool: Pool<AsyncPgConnection>,
+    pub(crate) pool: Pool<AsyncPgConnection>,
 }
 
 /// Never includes SQL, remote messages, credentials or query parameters.

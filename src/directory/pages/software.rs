@@ -6,7 +6,10 @@ pub(super) fn Overview(
     categories: Vec<Category>,
     #[props(default)] related: Vec<Software>,
 ) -> Element {
-    let source = brand::artwork_source(&item.name);
+    let source = item
+        .header
+        .as_ref()
+        .and_then(|media| media.metadata.source_url.clone());
     let features: Vec<_> = item
         .features
         .iter()
@@ -16,7 +19,7 @@ pub(super) fn Overview(
     let inactive = item.inactive();
     rsx! {
         document::Stylesheet { href:asset!("/assets/styling/software-catalog.css") }
-        div { class:if source.is_some() {"software-product-hero"} else {"software-product-hero software-unprofiled"},
+        div { class:"software-product-hero",
             header { class:"software-summary",
                 div { class:"software-heading", "data-inactive":inactive.to_string(),
                     brand::SoftwareMark { item:item.clone(), size:80 }
@@ -53,13 +56,16 @@ pub(super) fn Overview(
                 p { class:"software-join-note", "가입은 소프트웨어가 아닌, 이 도구로 운영하는 서버에서 해요." }
             }
             figure { class:"software-product-visual",
-                if let Some(image)=brand::artwork(&item.name) {
-                    a {class:"software-image-link",href:image,target:"_blank",rel:"noopener noreferrer",aria_label:format!("{} 소개 이미지 크게 보기",item.display_name),brand::SoftwareArtwork {item:item.clone()}}
+                if let Some(source)=source.clone() {
+                    a {class:"software-image-link",href:source,target:"_blank",rel:"noopener noreferrer",aria_label:format!("{} 소개 이미지 크게 보기",item.display_name),brand::SoftwareArtwork {item:item.clone()}}
                 } else {brand::SoftwareArtwork { item:item.clone() }}
-                if let Some(source)=source {
+                if let Some(media)=item.header.as_ref() {
                     figcaption {
-                        span { if item.name.eq_ignore_ascii_case("peertube") {"공식 프로젝트 일러스트"}else{"공식 소개 화면 · 서버와 앱에 따라 달라질 수 있어요."} }
-                        a { href:source, target:"_blank", rel:"noopener noreferrer", "원출처 ↗" }
+                        span { if media.metadata.caption.trim().is_empty() {"공식 소개 화면"} else {"{media.metadata.caption}"} }
+                        if let Some(source)=source { a { href:source, target:"_blank", rel:"noopener noreferrer", "원출처 ↗" } }
+                        if !media.metadata.attribution.trim().is_empty() || !media.metadata.license.trim().is_empty() {
+                            small { "{media.metadata.attribution}" if !media.metadata.license.trim().is_empty() { " · {media.metadata.license}" } }
+                        }
                     }
                 }
             }
@@ -152,6 +158,8 @@ mod tests {
             website_url: Some("https://project.example.org/".into()),
             tech_stack: Some("Rust".into()),
             logo_available: false,
+            logo: None,
+            header: None,
             family: None,
             development_status: None,
         }

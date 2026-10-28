@@ -76,15 +76,18 @@ commit `bf007c15d0cf4d04d3181cc46cf12325aa773955`다. Cargo 의존성 고지와 
 - 이력의 `assets/favicon.ico` 역시 같은 upstream test-harness 자산이다.
   현재 favicon은 위의 자체 제작 `fediverse-kr-mark.svg`를 사용한다.
 
-## 소프트웨어 공식 미디어
+## 소프트웨어 운영 미디어
 
-`assets/software-media/extra-provenance.json`과 `assets/software-logos/provenance.json`에
-원출처, 파일별 해시, 귀속, 확인한 이용 조건을 기록한다. 공식 로고와 화면은 제품
-식별·소개에 사용하며 사이트 자체 브랜드나 프로젝트의 보증을 뜻하지 않는다.
-일부 미디어는 별도 재배포 조건이 확인되지 않았으며, 소프트웨어 소스의 라이선스를
-이미지에 자동 적용하지 않는다. 배포용 고지에는
-[`software-project-media.txt`](assets/software-project-media.txt)의 출처·귀속과
-CC0/CC BY-SA 원문을 포함한다. 원본 자산 바이트는 변경하지 않았다.
+소프트웨어 로고와 헤더는 정적 배포 자산이 아니라 운영 카탈로그와 미디어 저장소의
+데이터다. 출처·저작자·확인한 이용 조건은 각 미디어 레코드와 소프트웨어 상세 화면에서
+확인한다. 프로젝트별 이미지나 출처 목록을 코드·정적 번들에 넣지 않는다.
+운영과 이관 원칙은 [소프트웨어 미디어 문서](../software-media-updates.md)에 있다.
+
+기존 배포에서 사용했던 이미지의 원본 및 고지는 운영 이관 보관본에 보존한다.
+[기존 이미지 고지](assets/software-project-media.txt)와
+[추가 이미지 라이선스 고지](assets/software-media-license-notices.txt)는
+과거 배포의 귀속과 라이선스 전문을 보존하기 위한 자료이며, 현재 운영 미디어의 목록이나
+모든 이미지에 공통으로 적용되는 허가를 뜻하지 않는다.
 
 ## 그 밖의 프로젝트 자산
 

@@ -3,7 +3,7 @@ use super::api::server::{error, unavailable, validate_write_limit};
 use dioxus::fullstack::{
     axum::{
         body::{to_bytes, Body},
-        extract::Request,
+        extract::{DefaultBodyLimit, Request},
         middleware::Next,
         response::{IntoResponse, Response},
     },
@@ -13,6 +13,7 @@ use std::time::Duration;
 use tokio::sync::Semaphore;
 
 static REQUESTS: Semaphore = Semaphore::const_new(64);
+static MEDIA_REQUESTS: Semaphore = Semaphore::const_new(2);
 const MAX_BODY: usize = 8192;
 
 fn no_store(mut response: Response) -> Response {
@@ -29,6 +30,7 @@ async fn prepare(request: Request, origin: &str) -> Result<Request, Response> {
     let limit = match request.uri().path() {
         "/api/member/sites/edit" => 32768,
         "/api/member/moderation/software/logo" => crate::moderation::catalog::LOGO_BODY_LIMIT,
+        "/api/member/moderation/software/media" => crate::moderation::catalog::HEADER_BODY_LIMIT,
         "/api/member/software/create"
         | "/api/member/software/save"
         | "/api/member/moderation/software/save" => 65536,
@@ -43,10 +45,12 @@ async fn prepare(request: Request, origin: &str) -> Result<Request, Response> {
         Err(_) => {
             return Err(
                 error(408, "요청을 받는 시간이 지났습니다. 다시 시도해 주세요.").into_response(),
-            )
+            );
         }
     };
-    Ok(Request::from_parts(parts, Body::from(bytes)))
+    let mut request = Request::from_parts(parts, Body::from(bytes));
+    DefaultBodyLimit::max(limit).apply(&mut request);
+    Ok(request)
 }
 
 fn clear_browser_binding(mut response: Response, secure: bool) -> Response {
@@ -84,6 +88,19 @@ pub async fn guard(request: Request, next: Next) -> Response {
         return no_store(
             error(429, "요청이 많습니다. 잠시 후 다시 시도해 주세요.").into_response(),
         );
+    };
+    // Bound large uploads before buffering or authorization/deserialization.
+    let _media_permit = if path == "/api/member/moderation/software/media" {
+        match MEDIA_REQUESTS.try_acquire() {
+            Ok(permit) => Some(permit),
+            Err(_) => {
+                return no_store(
+                    error(429, "요청이 많습니다. 잠시 후 다시 시도해 주세요.").into_response(),
+                );
+            }
+        }
+    } else {
+        None
     };
     let Ok(config) = crate::backend::settings::Config::from_env() else {
         return no_store(unavailable().into_response());
@@ -160,6 +177,10 @@ mod tests {
     #[tokio::test]
     async fn only_named_writes_get_their_larger_body_limit() {
         for (path, limit) in [
+            (
+                "/api/member/moderation/software/media",
+                crate::moderation::catalog::HEADER_BODY_LIMIT,
+            ),
             (
                 "/api/member/moderation/software/logo",
                 crate::moderation::catalog::LOGO_BODY_LIMIT,

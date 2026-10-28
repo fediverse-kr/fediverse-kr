@@ -66,6 +66,7 @@ pub(super) async fn retire_keys(
         AND NOT EXISTS(SELECT 1 FROM member_profile_media m WHERE m.avatar_key=f.object_key)
         AND NOT EXISTS(SELECT 1 FROM member_profile_media m CROSS JOIN LATERAL jsonb_each_text(m.emojis) e WHERE e.value=f.object_key)
         AND NOT EXISTS(SELECT 1 FROM catalog_software s WHERE s.logo_key=f.object_key)
+        AND NOT EXISTS(SELECT 1 FROM catalog_software_state t WHERE t.header_key=f.object_key)
         RETURNING sha256,byte_count)
         INSERT INTO media_deletions(sha256,byte_count) SELECT DISTINCT sha256,byte_count FROM retired
         ON CONFLICT(sha256) DO NOTHING")

@@ -23,4 +23,7 @@ pub mod settings;
 pub mod site_management;
 pub mod site_moderation;
 pub mod site_registration;
+#[cfg(feature = "server")]
+pub(crate) mod software_media_import;
 pub mod storage;
+pub(crate) mod storage_cutover;

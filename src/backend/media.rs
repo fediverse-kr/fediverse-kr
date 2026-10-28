@@ -11,6 +11,7 @@ pub(crate) mod validation;
 #[derive(Clone)]
 pub enum Target {
     Software(String),
+    SoftwareHeader(String),
     Site(String),
     OwnAvatar,
     OwnEmoji(String),
@@ -36,12 +37,22 @@ pub async fn read(
     read_with(db, target, token, |reference| async move {
         let store = store.ok_or(Error::Unavailable)?.clone();
         static SLOTS: OnceLock<Arc<Semaphore>> = OnceLock::new();
-        let permit = SLOTS
-            .get_or_init(|| Arc::new(Semaphore::new(4)))
-            .clone()
-            .try_acquire_owned()
-            .map_err(|_| Error::Busy)?;
-        // Cancellation of HTTP must not release the slot while Fs IO still runs.
+        static WAITERS: Semaphore = Semaphore::const_new(64);
+        // A page requests many images at once. Keep IO bounded without rejecting
+        // ordinary browser bursts while remote reads occupy the four slots.
+        let waiting = WAITERS.try_acquire().map_err(|_| Error::Busy)?;
+        let permit = tokio::time::timeout(
+            std::time::Duration::from_secs(10),
+            SLOTS
+                .get_or_init(|| Arc::new(Semaphore::new(4)))
+                .clone()
+                .acquire_owned(),
+        )
+        .await
+        .map_err(|_| Error::Busy)?
+        .map_err(|_| Error::Unavailable)?;
+        drop(waiting);
+        // Cancellation of HTTP must not release the slot while IO still runs.
         tokio::spawn(async move {
             let _permit = permit;
             store.read(&reference).await

@@ -163,6 +163,220 @@ license: The press-kit license file assigns mascot/illustrations to CC-BY and Pe
 usage_notes: Unmodified official press-kit promotional composition, dominated by mascot and brand artwork but containing mobile UI screenshots. Attribute David Revoy for the mascot/illustration and Framasoft/PeerTube for logos; link both applicable licenses. This is not a screenshot-only asset.
 sha256: 904d8319bc4a37516988bb922ffe4a4b463503ceae1bd0b36d06b56bae8dfae2
 
+akkoma-logo.png
+attribution: Akkoma project
+source_url: https://akkoma.social/_next/static/media/favicon.f65c3154.png
+source_page: https://akkoma.social/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 48d76931356c38cd5e11adbf017b2464770be4000e01752ddaec4726d8ea9f29
+
+
+akkoma-screenshot.png
+attribution: Akkoma project
+source_url: https://akkoma.social/_next/static/media/example-app.fcf23a7c.png
+source_page: https://akkoma.social/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 13783302688f8ad4f00e63e9b36f68b392818a6ea018c8822275202d27941033
+
+
+gotosocial-logo.png
+attribution: Anna Abramek / GoToSocial
+source_url: https://gotosocial.org/assets/logo.png
+source_page: https://gotosocial.org/
+license: CC BY-SA 4.0; official homepage separately credits the sloth logo and links https://creativecommons.org/licenses/by-sa/4.0/.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: d73dbda49a020abc53bc19d17a029371825ea4a635eed7f82cc8468deb58cf65
+
+
+hollo-logo.svg
+attribution: Hollo contributors
+source_url: https://docs.hollo.social/favicon.svg
+source_page: https://docs.hollo.social/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 7a101bc18c84713396d6af7cafa6096735e17adb2f6166bb228bca6e30b30041
+
+
+hollo-banner.png
+attribution: Hollo contributors
+source_url: https://repository-images.githubusercontent.com/806837622/f080ed05-ca1c-44a1-9ff0-af704c55c131
+source_page: https://github.com/fedify-dev/hollo
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: d66dbe4ea99445ad1928929d31077df69b6f541776861a62426e60a4ddd76274
+
+
+kosmo-logo.png
+attribution: Kosmo project
+source_url: https://kos.moe/apple-touch-icon.png
+source_page: https://kos.moe/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 16f727c9f3c029a99c2424dce5a6bdebbecdb6e244bd29cd6d874b68504c581b
+
+
+kosmo-banner.png
+attribution: Kosmo project
+source_url: https://kos.moe/og-default.png
+source_page: https://kos.moe/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 6262f257f1359631c56963374ab998879c4b8b80a68f458811d83cd6d31aea9f
+
+
+hackerspub-logo.svg
+attribution: Hackers’ Pub contributors
+source_url: https://hackers.pub/favicon.svg
+source_page: https://hackers.pub/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 4cafaaf6cee861e60dfc39cf989564ea0021bbf54e8ded62ec13ab20bb7b3f19
+
+
+hackerspub-banner.png
+attribution: Hackers’ Pub contributors
+source_url: https://hackers.pub/og.png
+source_page: https://hackers.pub/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 8d92dcf3312d892502cb44f74c1896086050cd12f66ddcb68560b5a08cc1e220
+
+
+writefreely-logo.svg
+attribution: WriteFreely contributors
+source_url: https://writefreely.org/img/icon.svg
+source_page: https://writefreely.org/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: d922e7ac3daad04171b8721b511fa72e4b8df7e9fb8ef9a149480794bb1b23fa
+
+
+writefreely-screenshot.png
+attribution: WriteFreely / Write.as
+source_url: https://i.snap.as/cQZxXoz.png
+source_page: https://writefreely.org/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 5cf0c0c18d6655acfdcb2ef9177b333d52bf1e6a15f300b8935830ededc5d71c
+
+
+wordpress-logo.png
+attribution: WordPress contributors
+source_url: https://s.w.org/images/wmark.png
+source_page: https://wordpress.org/about/logos/
+license: Official WordPress mark; the official logos page links the WordPress Foundation trademark policy. No general trademark or image copyright grant is inferred.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 06049b810ea5605edc375f6208fb788efaa5a95ee40d6ee0d84b9d2e2639ecb3
+
+
+wordpress-banner.png
+attribution: ActivityPub for WordPress contributors
+source_url: https://ps.w.org/activitypub/assets/banner-1544x500.png?rev=2977113
+source_page: https://wordpress.org/plugins/activitypub/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 650baae35f3d6c5435f6e6efd6a6b4619835f1cdfcbcc26544f73191cb3c2291
+
+
+glitch-soc-logo.png
+attribution: glitch-soc contributors
+source_url: https://glitch-soc.github.io/docs/icon/apple-touch-icon.png
+source_page: https://glitch-soc.github.io/docs/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 383a1dba3ba71c00c0cff134c6ccdfce03ac434fc633110ca6ae93820b927abf
+
+
+pleroma-screenshot.png
+attribution: Pleroma contributors
+source_url: https://pleroma.social/images/pleromafe_screenshot.png
+source_page: https://pleroma.social/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 6c2f39a824d951ff65185acf58c6b5d76eee239008388c732ea02c565f1564f1
+
+
+wildebeest-logo.svg
+attribution: Cloudflare
+source_url: https://raw.githubusercontent.com/cloudflare/wildebeest/b056670a7204bc4d852c8a0cda9a3c9e39f8a0e1/frontend/public/favicon.svg
+source_page: https://github.com/cloudflare/wildebeest
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: ad470b34cef4fc40d5ec5e4f73f2e540c7497342a8f30ec8c2e0d67d9f5f5549
+
+
+wildebeest-banner.png
+attribution: Cloudflare
+source_url: https://imagedelivery.net/NkfPDviynOyTAOI79ar_GQ/3654789b-089c-493a-85b4-be3f8f594c00/header
+source_page: https://github.com/cloudflare/wildebeest
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 47521fe313320b08361afe86b2c1f759664213157fdf93ea6fcc829567e19723
+
+
+bookwyrm-logo.png
+attribution: BookWyrm project
+source_url: https://joinbookwyrm.com/static/images/favicon.ico
+source_page: https://joinbookwyrm.com/
+license: No asset-specific reuse license found on the official source page.
+usage_notes: Byte-identical official favicon, already archived as bookwyrm-favicon.ico. Its actual format is PNG; named .png for correct media delivery. The 192x192 original replaces the 52x50 logo without upscaling or recoloring. No endorsement implied.
+sha256: ed90873c3c9a41028772a278341e0124f1be36d760464bccfe804cf074adf432
+
+firefish-logo.svg
+attribution: Copyright 2023 Firefish
+source_url: https://codeberg.org/firefish/firefish/raw/branch/develop/packages/backend/assets/favicon.svg
+source_page: https://codeberg.org/firefish/firefish
+license: Apache-2.0, explicitly stated in packages/backend/assets/LICENSE.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 4b1a80369cbfe2680ac70e2b5c2f7457914eb6a3824b5fc53b54dc065f7c512a
+
+
+iceshrimp-logo.svg
+attribution: © 2023 Laura Hausmann; design by Kilcat.
+source_url: https://iceshrimp.dev/iceshrimp/branding/media/branch/dev/prepared/svg-crop/logo-dark.svg
+source_page: https://iceshrimp.dev/iceshrimp/branding
+license: CC BY-SA 4.0, explicitly stated in the official branding repository LICENSE.md.
+usage_notes: Unmodified original downloaded from the official project reference for factual identification/introduction only. No endorsement is implied. Preserve attribution and source link.
+sha256: 11cef00fa55fdf1b7f1e347d58a462cbec54f165d2e2ebffd9011cdef3302c04
+
+
+firefish-screenshot.webp
+attribution: Copyright 2023 Firefish
+source_url: https://codeberg.org/firefish/firefish/raw/branch/develop/packages/backend/assets/screenshots/1.webp
+source_page: https://codeberg.org/firefish/firefish
+license: Apache-2.0, explicitly stated in packages/backend/assets/LICENSE.
+usage_notes: Unmodified original for factual project identification/introduction, without implied endorsement. Preserve attribution and license notices.
+sha256: 8af857921de029c1d185172f1f99b7d572b25cbf74819e1959928f6177f26dfb
+
+
+foundkey-logo.svg
+attribution: Blinry / FoundKey
+source_url: https://akkoma.dev/FoundKeyGang/FoundKey/raw/branch/main/logo.svg
+source_page: https://akkoma.dev/FoundKeyGang/FoundKey
+license: CC BY 4.0, explicitly assigned to logo.svg in the official COPYING file.
+usage_notes: Unmodified original for factual project identification/introduction, without implied endorsement. Preserve attribution and license notices.
+sha256: 9fe044859a1924d2d0ee43925ea1bc27f34f3ecc175d8581c02a4993ffbdae5d
+
+
+sharkey-logo.png
+attribution: Sharkey project
+source_url: https://joinsharkey.org/apple-touch-icon.png
+source_page: https://joinsharkey.org/
+license: No asset-specific reuse license confirmed on the linked official source page. Application source licensing is not assumed to cover this media.
+usage_notes: Unmodified original for factual project identification/introduction, without implied endorsement. Preserve attribution and license notices.
+sha256: f361a2644e8ee6da79387f375a839870767e8a374d280d8717c3181118dd9aef
+
+
+catodon-logo.png
+attribution: Catodon project
+source_url: https://codefloe.com/catodon/catodon/raw/branch/develop/packages/frontend/assets/favicon.png
+source_page: https://codefloe.com/catodon/catodon
+license: CC BY-SA 4.0; packages/frontend/assets/favicon.png is explicitly listed in BRANDING.md.
+usage_notes: Unmodified official square favicon, selected instead of shrinking the wide wordmark into an icon. Preserve attribution and license; no endorsement implied.
+sha256: 3015d787fa09c36093c9858c91d46f52a4e4551cbd0e6479d5133f140a0ea537
+
 Simple Icons 16.35.0
 Collection: https://github.com/simple-icons/simple-icons
 Unmodified originals; project trademark rights remain with their owners.

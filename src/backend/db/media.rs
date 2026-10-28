@@ -31,6 +31,7 @@ impl Database {
         let mut conn = self.pool.get().await.map_err(|_| Error::Unavailable)?;
         let row=match target {
    Target::Software(name)=>diesel::sql_query("SELECT f.sha256 AS hash,f.byte_count AS bytes FROM catalog_software s JOIN stored_files f ON f.object_key=s.logo_key WHERE s.name=$1 AND (s.logo_key LIKE 'software-logos/%' OR s.logo_key LIKE 'software/%')").bind::<Text,_>(name).get_result::<Row>(&mut conn).await.optional(),
+   Target::SoftwareHeader(name)=>diesel::sql_query("SELECT f.sha256 AS hash,f.byte_count AS bytes FROM catalog_software s JOIN catalog_software_state t ON t.software_id=s.id JOIN stored_files f ON f.object_key=t.header_key WHERE s.name=$1 AND t.header_key LIKE 'software-headers/%'").bind::<Text,_>(name).get_result::<Row>(&mut conn).await.optional(),
    Target::Site(domain)=>diesel::sql_query("SELECT f.sha256 AS hash,f.byte_count AS bytes FROM directory_sites s JOIN legacy_sites l ON l.id=s.id JOIN stored_files f ON f.object_key=l.favicon_key WHERE s.domain=$1 AND NOT s.is_hidden AND NOT s.is_force_hidden AND l.favicon_key LIKE 'favicons/%'").bind::<Text,_>(domain).get_result::<Row>(&mut conn).await.optional(),
    Target::OwnAvatar|Target::OwnEmoji(_)=>{
     let hash=token.and_then(auth::token_hash).ok_or(Error::Unauthorized)?;

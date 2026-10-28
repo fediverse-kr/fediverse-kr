@@ -44,7 +44,8 @@ rsa = { version = "0.9", optional = true }
 base64 = { version = "0.22", optional = true }
 html5ever = { version = "0.35", optional = true }
 hickory-resolver = { version = "=0.26.3", default-features = false, features = ["system-config", "tokio"], optional = true }
-opendal = { version = "=0.59.1", default-features = false, features = ["services-fs", "executors-tokio", "blocking"], optional = true }
+opendal = { version = "=0.59.1", default-features = false, features = ["services-fs", "services-s3", "executors-tokio", "blocking"], optional = true }
+opendal-http-transport-reqwest = { version = "=0.59.1", default-features = false, features = ["rustls-no-provider"], optional = true }
 image = { version = "=0.25.10", default-features = false, features = ["png", "jpeg", "webp", "gif"], optional = true }
 subtle = { version = "=2.6.1", default-features = false, optional = true }
 cookie = { version = "=0.18.2", default-features = false, optional = true }
@@ -70,4 +71,4 @@ desktop = ["dioxus/desktop", "dep:url", "dep:base64", "dep:sha2"]
 # The feature that are only required for the mobile = ["dioxus/mobile"] build target should be optional and only enabled in the mobile = ["dioxus/mobile"] feature
 mobile = ["dioxus/mobile", "dep:url", "dep:base64", "dep:sha2"]
 # The feature that are only required for the server = ["dioxus/server"] build target should be optional and only enabled in the server = ["dioxus/server"] feature
-server = ["dioxus/server", "dep:diesel", "dep:diesel-async", "dep:diesel_migrations", "dep:dioxus-cli-config", "dep:tokio-postgres", "dep:tokio-postgres-rustls", "dep:rustls", "dep:webpki-roots", "dep:argon2", "dep:rand", "dep:sha2", "dep:uuid", "dep:chrono", "dep:tokio", "dep:url", "dep:reqwest", "dep:rsa", "dep:base64", "dep:html5ever", "dep:hickory-resolver", "dep:opendal", "dep:image", "dep:subtle", "dep:cookie", "dep:percent-encoding", "dep:quick-xml", "dep:sanitize_html", "dep:comrak", "dep:html2text", "dep:fedkr-federation"]
+server = ["dioxus/server", "dep:diesel", "dep:diesel-async", "dep:diesel_migrations", "dep:dioxus-cli-config", "dep:tokio-postgres", "dep:tokio-postgres-rustls", "dep:rustls", "dep:webpki-roots", "dep:argon2", "dep:rand", "dep:sha2", "dep:uuid", "dep:chrono", "dep:tokio", "dep:url", "dep:reqwest", "dep:rsa", "dep:base64", "dep:html5ever", "dep:hickory-resolver", "dep:opendal", "dep:opendal-http-transport-reqwest", "dep:image", "dep:subtle", "dep:cookie", "dep:percent-encoding", "dep:quick-xml", "dep:sanitize_html", "dep:comrak", "dep:html2text", "dep:fedkr-federation"]

@@ -159,7 +159,7 @@ mod tests {
     }
 
     #[test]
-    fn cards_have_recognizable_marks_in_ssr_without_requiring_uploaded_logos() {
+    fn cards_use_generic_marks_when_runtime_media_is_absent() {
         let mut dom = VirtualDom::new(TestApp);
         dom.rebuild_in_place();
         let html = dioxus::ssr::render(&dom);
@@ -168,7 +168,7 @@ mod tests {
             28
         );
         assert_eq!(html.matches("software-emblem").count(), 28);
-        assert!(html.matches("<img").count() >= 5);
+        assert_eq!(html.matches("<img").count(), 0);
         assert_eq!(html.matches("software-artwork ").count(), 0);
         for name in [
             "mastodon",

@@ -47,6 +47,27 @@ pub fn software(mut v: Request) -> Result<Request, Error> {
     }
     Ok(v)
 }
+pub fn media(
+    mut v: crate::moderation::catalog::MediaRequest,
+) -> Result<crate::moderation::catalog::MediaRequest, Error> {
+    existing_name(&v.name)?;
+    let max = match v.role {
+        crate::moderation::catalog::MediaRole::Logo => crate::moderation::catalog::LOGO_MAX_BYTES,
+        crate::moderation::catalog::MediaRole::Header => {
+            crate::moderation::catalog::HEADER_MAX_BYTES
+        }
+    };
+    if v.revision < 0
+        || v.data
+            .as_ref()
+            .is_some_and(|s| s.is_empty() || s.len() > max.div_ceil(3) * 4)
+    {
+        return Err(Error::Invalid);
+    }
+    note(&mut v.note)?;
+    Ok(v)
+}
+
 pub fn logo(
     mut v: crate::moderation::catalog::LogoRequest,
 ) -> Result<crate::moderation::catalog::LogoRequest, Error> {

@@ -113,18 +113,9 @@ pub fn About() -> Element {
             Link { class:"text-link", to:Route::Start{}, "연합우주, 화면으로 이해하기" ArrowRight { size:16 } }
             section {id:"software-marks",
                 h2 {"소프트웨어 로고와 이미지 출처"}
-                p {"각 프로젝트의 공식 웹사이트·브랜드킷·보도자료에서 제공하는 로고와 소개 이미지를 사용합니다. 제품을 식별하고 소개하기 위한 자료이며, fediverse.kr과의 제휴나 보증을 뜻하지 않아요."}
-                ul {
-                    li {a {href:"https://joinmastodon.org/branding",target:"_blank",rel:"noopener noreferrer","Mastodon 브랜드킷"} " — Mastodon gGmbH. 공식 마크와 Android 앱 화면."}
-                    li {a {href:"https://misskey-hub.net/en/brand-assets/",target:"_blank",rel:"noopener noreferrer","Misskey 브랜드 자산"} " — syuilo / Misskey Project. 아이콘 CC BY-SA 4.0, 소개 화면은 " a {href:"https://misskey-hub.net/en/",target:"_blank",rel:"noopener noreferrer","Misskey Hub"} "."}
-                    li {a {href:"https://pixelfed.org/",target:"_blank",rel:"noopener noreferrer","Pixelfed"} " — Pixelfed Project. 공식 아이콘과 제품 소개 화면."}
-                    li {a {href:"https://joinpeertube.org/press-kit.zip",target:"_blank",rel:"noopener noreferrer","PeerTube 보도자료"} " — 로고: Framasoft, " a {href:"https://creativecommons.org/licenses/by-sa/4.0/",target:"_blank",rel:"noopener noreferrer","CC BY-SA 4.0"} ". 배너의 마스코트·삽화: David Revoy, CC BY (원본 키트에 버전 미기재)."}
-                    li {a {href:"https://joinbookwyrm.com/",target:"_blank",rel:"noopener noreferrer","BookWyrm"} " — BookWyrm Project. 공식 헤더 로고와 책 소개 화면."}
-                    li {a {href:"https://mobilizon.org/",target:"_blank",rel:"noopener noreferrer","Mobilizon"} " — Mobilizon / Kaihuri. 공식 아이콘과 제품 소개 화면."}
-                }
-                p {"원본 파일은 수정하지 않았으며, 화면에 맞춰 크기를 조절하거나 일부를 잘라 표시합니다. 별도 자유 이용 조건이 없는 자료의 권리는 원저작자에게 있습니다. 자산별 출처·조건·원본 해시는 저장소에 기록합니다."}
-                p {a {href:"https://creativecommons.org/licenses/by-sa/4.0/",target:"_blank",rel:"noopener noreferrer","CC BY-SA 4.0 이용 조건"} " · " a {href:"https://creativecommons.org/licenses/by/4.0/",target:"_blank",rel:"noopener noreferrer","CC BY 이용 조건 안내"}}
-                p {"등록된 로고가 있으면 우선 표시합니다. 확인된 공식 자산이 없는 경우 임의로 로고를 만들지 않고 이름 또는 이니셜을 표시해요."}
+                p {"프로젝트별 미디어의 출처·귀속·라이선스·캡션은 카탈로그 데이터로 관리하며, 해당 소프트웨어 소개 화면에서 자산별로 표시합니다. 미디어는 제품을 식별하고 소개하기 위한 자료이며, fediverse.kr과의 제휴나 보증을 뜻하지 않아요."}
+                p {"원본 파일은 수정하지 않으며, 화면에 맞춰 크기를 조절하거나 일부를 잘라 표시할 수 있습니다. 별도 자유 이용 조건이 없는 자료의 권리는 원저작자에게 있습니다."}
+                p {"등록된 미디어가 없는 경우 임의로 로고나 이미지를 만들지 않고 이름 또는 이니셜과 일반적인 시각적 대체 화면을 표시합니다."}
             }
         }
     } }

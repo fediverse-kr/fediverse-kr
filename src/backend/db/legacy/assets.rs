@@ -8,6 +8,7 @@ const REFERENCES: &str = "WITH asset_references AS (
  SELECT avatar_key::text AS object_key FROM public.legacy_members WHERE avatar_key IS NOT NULL
  UNION ALL SELECT favicon_key::text FROM public.legacy_sites WHERE favicon_key IS NOT NULL
  UNION ALL SELECT logo_key::text FROM public.catalog_software WHERE logo_key IS NOT NULL
+ UNION ALL SELECT header_key::text FROM public.catalog_software_state WHERE header_key IS NOT NULL
  UNION ALL SELECT e.value #>> '{}' FROM public.legacy_members m
  CROSS JOIN LATERAL jsonb_each(CASE WHEN jsonb_typeof(m.emojis)='object' THEN m.emojis ELSE '{}'::jsonb END) e
 )";

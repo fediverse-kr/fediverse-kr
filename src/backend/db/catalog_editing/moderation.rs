@@ -44,10 +44,29 @@ struct SoftwareRow {
     display_order: i32,
     #[diesel(sql_type=Bool)]
     logo_available: bool,
+    #[diesel(sql_type=Bool)]
+    header_available: bool,
+    #[diesel(sql_type=Nullable<Text>)]
+    logo_metadata: Option<String>,
+    #[diesel(sql_type=Nullable<Text>)]
+    header_metadata: Option<String>,
 }
-const SELECT:&str="SELECT s.name,left(s.display_name,200) AS display_name,coalesce(t.revision,0) AS revision,coalesce(t.locked,false) AS locked,left(s.brand_color,128) AS brand_color,coalesce(char_length(s.brand_color)>128,false) AS color_truncated,s.is_featured AS featured,s.display_order,s.logo_key IS NOT NULL AS logo_available FROM catalog_software s LEFT JOIN catalog_software_state t ON t.software_id=s.id";
+const SELECT:&str="SELECT s.name,left(s.display_name,200) AS display_name,coalesce(t.revision,0) AS revision,coalesce(t.locked,false) AS locked,left(s.brand_color,128) AS brand_color,coalesce(char_length(s.brand_color)>128,false) AS color_truncated,s.is_featured AS featured,s.display_order,EXISTS(SELECT 1 FROM stored_files f WHERE f.object_key=s.logo_key AND (s.logo_key LIKE 'software-logos/%' OR s.logo_key LIKE 'software/%')) AS logo_available,EXISTS(SELECT 1 FROM stored_files f WHERE f.object_key=t.header_key AND t.header_key LIKE 'software-headers/%') AS header_available,(SELECT left(logo_metadata::text,16384) FROM catalog_software_state WHERE software_id=s.id) AS logo_metadata,(SELECT left(header_metadata::text,16384) FROM catalog_software_state WHERE software_id=s.id) AS header_metadata FROM catalog_software s LEFT JOIN catalog_software_state t ON t.software_id=s.id";
 impl From<SoftwareRow> for dto::Software {
     fn from(r: SoftwareRow) -> Self {
+        let metadata = |value: Option<String>| {
+            value
+                .and_then(|value| serde_json::from_str(&value).ok())
+                .unwrap_or_default()
+        };
+        let logo = r.logo_available.then(|| crate::directory::SoftwareMedia {
+            url: format!("/api/public/software-logo/{}?v={}", r.name, r.revision),
+            metadata: metadata(r.logo_metadata),
+        });
+        let header = r.header_available.then(|| crate::directory::SoftwareMedia {
+            url: format!("/api/public/software-header/{}?v={}", r.name, r.revision),
+            metadata: metadata(r.header_metadata),
+        });
         Self {
             name: r.name,
             display_name: r.display_name,
@@ -58,6 +77,8 @@ impl From<SoftwareRow> for dto::Software {
             featured: r.featured,
             display_order: r.display_order,
             logo_available: r.logo_available,
+            logo,
+            header,
         }
     }
 }

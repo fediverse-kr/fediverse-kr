@@ -8,6 +8,210 @@ use crate::backend::{
 use base64::{engine::general_purpose::STANDARD, Engine};
 use diesel_async::SimpleAsyncConnection;
 
+#[tokio::test]
+#[ignore = "requires isolated FEDKR_TEST_DATABASE_URL"]
+async fn software_media_import_supports_header_metadata_and_revision_cas() {
+    let f = Fixture::new().await;
+    let files = Files::new();
+    let store = ObjectStore::open(&files.bundle).unwrap();
+    let logo = payload(&format!("{}-logo", f.name));
+    let header = payload(&format!("{}-header", f.name));
+    let initial = f.item().await;
+    let metadata = crate::directory::SoftwareMediaMetadata {
+        source_url: Some("https://example.test/source".into()),
+        attribution: "Example Project".into(),
+        license: "CC BY 4.0".into(),
+        license_url: Some("https://creativecommons.org/licenses/by/4.0/".into()),
+        caption: "공식 소개 화면".into(),
+        fit: crate::directory::MediaFit::Cover,
+        background: Some("#112233".into()),
+    };
+    let saved = catalog_logos::change_media(
+        &f.db,
+        Some(&store),
+        &f.admin,
+        dto::MediaRequest {
+            name: f.name.clone(),
+            revision: initial.revision,
+            role: dto::MediaRole::Header,
+            note: "헤더 등록".into(),
+            data: Some(STANDARD.encode(&header)),
+            metadata: Some(metadata.clone()),
+        },
+    )
+    .await
+    .unwrap();
+    assert_eq!(saved.revision, initial.revision + 1);
+    assert_eq!(
+        saved.header.as_ref().unwrap().metadata.caption,
+        "공식 소개 화면"
+    );
+    assert!(matches!(
+        catalog_logos::change_media(
+            &f.db,
+            Some(&store),
+            &f.admin,
+            dto::MediaRequest {
+                name: f.name.clone(),
+                revision: initial.revision,
+                role: dto::MediaRole::Logo,
+                note: "오래된 버전".into(),
+                data: Some(STANDARD.encode(&logo)),
+                metadata: Some(metadata.clone()),
+            },
+        )
+        .await,
+        Err(Error::Conflict)
+    ));
+    let saved = catalog_logos::change_media(
+        &f.db,
+        Some(&store),
+        &f.admin,
+        dto::MediaRequest {
+            name: f.name.clone(),
+            revision: saved.revision,
+            role: dto::MediaRole::Logo,
+            note: "로고 등록".into(),
+            data: Some(STANDARD.encode(&logo)),
+            metadata: None,
+        },
+    )
+    .await
+    .unwrap();
+    assert!(saved.logo_available);
+    assert_eq!(saved.revision, initial.revision + 2);
+    assert!(media::read(
+        &f.db,
+        Some(&store),
+        &media::Target::SoftwareHeader(f.name.clone()),
+        None
+    )
+    .await
+    .unwrap()
+    .is_some());
+    let header_replacement = payload(&format!("{}-header-replacement", f.name));
+    let replaced = catalog_logos::change_media(
+        &f.db,
+        Some(&store),
+        &f.admin,
+        dto::MediaRequest {
+            name: f.name.clone(),
+            revision: saved.revision,
+            role: dto::MediaRole::Header,
+            note: "헤더 교체".into(),
+            data: Some(STANDARD.encode(&header_replacement)),
+            metadata: Some(crate::directory::SoftwareMediaMetadata {
+                caption: "교체된 화면".into(),
+                ..metadata
+            }),
+        },
+    )
+    .await
+    .unwrap();
+    assert_eq!(replaced.revision, saved.revision + 1);
+    assert_eq!(
+        media::read(
+            &f.db,
+            Some(&store),
+            &media::Target::SoftwareHeader(f.name.clone()),
+            None
+        )
+        .await
+        .unwrap()
+        .unwrap()
+        .bytes,
+        header_replacement
+    );
+    let metadata_update = crate::directory::SoftwareMediaMetadata {
+        caption: "재업로드 없이 표시 변경".into(),
+        fit: crate::directory::MediaFit::Contain,
+        ..replaced.header.as_ref().unwrap().metadata.clone()
+    };
+    let updated = catalog_logos::change_media(
+        &f.db,
+        Some(&store),
+        &f.admin,
+        dto::MediaRequest {
+            name: f.name.clone(),
+            revision: replaced.revision,
+            role: dto::MediaRole::Header,
+            note: "표시 변경".into(),
+            data: None,
+            metadata: Some(metadata_update.clone()),
+        },
+    )
+    .await
+    .unwrap();
+    assert_eq!(updated.revision, replaced.revision + 1);
+    assert_eq!(updated.header.as_ref().unwrap().metadata, metadata_update);
+    assert_eq!(
+        media::read(
+            &f.db,
+            Some(&store),
+            &media::Target::SoftwareHeader(f.name.clone()),
+            None
+        )
+        .await
+        .unwrap()
+        .unwrap()
+        .bytes,
+        header_replacement
+    );
+    let replaced = updated;
+    let removed = catalog_logos::change_media(
+        &f.db,
+        Some(&store),
+        &f.admin,
+        dto::MediaRequest {
+            name: f.name.clone(),
+            revision: replaced.revision,
+            role: dto::MediaRole::Header,
+            note: "헤더 제거".into(),
+            data: None,
+            metadata: None,
+        },
+    )
+    .await
+    .unwrap();
+    assert_eq!(removed.revision, replaced.revision + 1);
+    assert!(media::read(
+        &f.db,
+        Some(&store),
+        &media::Target::SoftwareHeader(f.name.clone()),
+        None
+    )
+    .await
+    .unwrap()
+    .is_none());
+    while f.db.collect_retired_media(&store).await.unwrap() {}
+    assert!(store
+        .read(&ObjectRef::from_bytes(&header).unwrap())
+        .await
+        .is_err());
+    assert!(store
+        .read(&ObjectRef::from_bytes(&header_replacement).unwrap())
+        .await
+        .is_err());
+    assert!(media::read(
+        &f.db,
+        Some(&store),
+        &media::Target::Software(f.name.clone()),
+        None
+    )
+    .await
+    .unwrap()
+    .is_some());
+    clean(
+        f,
+        &[
+            ObjectRef::from_bytes(&logo).unwrap(),
+            ObjectRef::from_bytes(&header).unwrap(),
+            ObjectRef::from_bytes(&header_replacement).unwrap(),
+        ],
+    )
+    .await;
+}
+
 fn payload(id: &str) -> Vec<u8> {
     format!("<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><title>{id}</title><path d='M0 0h32v32z'/></svg>").into_bytes()
 }
@@ -17,6 +221,7 @@ fn request(f: &Fixture, revision: i64, bytes: Option<&[u8]>) -> dto::LogoRequest
         revision,
         note: "비공개 로고 교체 사유".into(),
         data: bytes.map(|b| STANDARD.encode(b)),
+        metadata: None,
     }
 }
 async fn clean(f: Fixture, objects: &[ObjectRef]) {
@@ -74,6 +279,15 @@ async fn upload_replace_same_bytes_remove_and_shared_hash_survive() {
     .await
     .unwrap();
     assert_eq!(same.revision, saved.revision);
+    let no_retirement = diesel::sql_query(
+        "SELECT NOT EXISTS(SELECT 1 FROM media_deletions WHERE sha256=$1) AS value",
+    )
+    .bind::<Text, _>(&a.hash)
+    .get_result::<Flag>(&mut f.db.pool.get().await.unwrap())
+    .await
+    .unwrap()
+    .value;
+    assert!(no_retirement);
     let alias = format!("software-logos/{}-shared", f.name);
     diesel::sql_query("INSERT INTO stored_files VALUES($1,$2,$3)")
         .bind::<Text, _>(&alias)

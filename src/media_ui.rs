@@ -8,6 +8,9 @@ pub fn ImageMark(
     class: String,
     #[props(default = 40)] size: u32,
     #[props(default = true)] decorative: bool,
+    #[props(default)] public: bool,
+    #[props(default)] style: String,
+    #[props(default)] image_fit: Option<String>,
 ) -> Element {
     let ready = use_context::<Signal<bool>>()();
     let mut failed = use_signal(|| false);
@@ -16,7 +19,7 @@ pub fn ImageMark(
         failed.set(false);
         placeholder_failed.set(false);
     }));
-    let primary = ready && !failed() && source.is_some();
+    let primary = (ready || public) && !failed() && source.is_some();
     let image = if primary {
         source
     } else if !placeholder_failed() {
@@ -24,16 +27,10 @@ pub fn ImageMark(
     } else {
         None
     };
-    rsx! {span{class:"media-mark {class}",aria_hidden:if decorative{Some("true")}else{None},
-     if let Some(src)=image {img{src,alt:if decorative{String::new()}else{fallback.clone()},width:size,height:size,loading:"lazy",referrerpolicy:"no-referrer",onerror:move |_|{if primary {failed.set(true)} else {placeholder_failed.set(true)}}}}else{"{fallback}"}
+    rsx! {span{class:"media-mark {class}",style,aria_hidden:if decorative{Some("true")}else{None},
+     if let Some(src)=image {img{src,object_fit:image_fit,alt:if decorative{String::new()}else{fallback.clone()},width:size,height:size,loading:"lazy",referrerpolicy:"no-referrer",onerror:move |_|{if primary {failed.set(true)} else {placeholder_failed.set(true)}}}}else{"{fallback}"}
     }}
 }
-pub fn software_source(name: &str) -> Option<String> {
-    let mut url = url::Url::parse("https://fediverse.kr/api/public/software-logo/").ok()?;
-    url.path_segments_mut().ok()?.pop_if_empty().push(name);
-    Some(url.path().to_owned())
-}
-
 /// The logical shortcode is preserved in the member's private media mapping.
 /// Keep it in a query instead of a path segment so `.`/`..` cannot normalize.
 pub fn emoji_source(name: &str, revision: i64) -> Option<String> {

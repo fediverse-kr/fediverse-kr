@@ -9,7 +9,12 @@ use super::{
     media,
     storage::{ObjectRef, ObjectStore},
 };
-use crate::moderation::catalog::{LogoRequest, Software, LOGO_MAX_BYTES};
+use crate::{
+    directory::SoftwareMediaMetadata,
+    moderation::catalog::{
+        LogoRequest, MediaRequest, MediaRole, Software, HEADER_MAX_BYTES, LOGO_MAX_BYTES,
+    },
+};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use std::sync::{Arc, OnceLock};
 use tokio::sync::Semaphore;
@@ -19,20 +24,80 @@ pub(crate) struct Logo {
     pub mime: &'static str,
     pub bytes: Vec<u8>,
 }
+
 fn validate(encoded: String) -> Result<Logo, Error> {
-    if encoded.len() > LOGO_MAX_BYTES.div_ceil(3) * 4 {
+    validate_role(encoded, false)
+}
+
+pub(crate) fn validate_role(encoded: String, header: bool) -> Result<Logo, Error> {
+    let max = if header {
+        HEADER_MAX_BYTES
+    } else {
+        LOGO_MAX_BYTES
+    };
+    if encoded.len() > max.div_ceil(3) * 4 {
         return Err(Error::Invalid);
     }
     let bytes = STANDARD.decode(encoded).map_err(|_| Error::Invalid)?;
-    if bytes.is_empty() || bytes.len() > LOGO_MAX_BYTES {
+    if bytes.is_empty() || bytes.len() > max {
         return Err(Error::Invalid);
     }
-    let mime = media::validation::validate(&bytes, false).ok_or(Error::Invalid)?;
+    let mime = media::validation::validate_catalog(&bytes, header).ok_or(Error::Invalid)?;
     Ok(Logo {
         object: ObjectRef::from_bytes(&bytes).map_err(|_| Error::Invalid)?,
         mime,
         bytes,
     })
+}
+
+fn bounded_text(value: &str, max: usize) -> bool {
+    value.chars().count() <= max && !value.chars().any(|c| c.is_control())
+}
+
+pub(crate) fn validate_metadata(
+    metadata: Option<SoftwareMediaMetadata>,
+    required: bool,
+) -> Result<Option<SoftwareMediaMetadata>, Error> {
+    let Some(mut metadata) = metadata else {
+        return if required {
+            Err(Error::Invalid)
+        } else {
+            Ok(None)
+        };
+    };
+    metadata.source_url = metadata
+        .source_url
+        .map(|value| crate::directory::web_link(value.trim()).ok_or(Error::Invalid))
+        .transpose()?;
+    metadata.license_url = metadata
+        .license_url
+        .map(|value| crate::directory::web_link(value.trim()).ok_or(Error::Invalid))
+        .transpose()?;
+    metadata.attribution = metadata.attribution.trim().to_owned();
+    metadata.license = metadata.license.trim().to_owned();
+    metadata.caption = metadata.caption.trim().to_owned();
+    if !bounded_text(&metadata.attribution, 500)
+        || !bounded_text(&metadata.license, 2000)
+        || !bounded_text(&metadata.caption, 1000)
+        || metadata.attribution.is_empty()
+        || metadata.license.is_empty()
+        || metadata
+            .license_url
+            .as_deref()
+            .is_some_and(|v| !bounded_text(v, 2048))
+        || metadata
+            .source_url
+            .as_deref()
+            .is_some_and(|v| !bounded_text(v, 2048))
+        || metadata.background.as_deref().is_some_and(|value| {
+            value.len() != 7
+                || !value.starts_with('#')
+                || !value.as_bytes()[1..].iter().all(u8::is_ascii_hexdigit)
+        })
+    {
+        return Err(Error::Invalid);
+    }
+    Ok(Some(metadata))
 }
 
 pub async fn change(
@@ -42,12 +107,31 @@ pub async fn change(
     request: LogoRequest,
 ) -> Result<Software, Error> {
     let request = catalog_moderation::logo(request)?;
-    // Reject non-admin requests before using a decoder. Final auth/CAS happens
-    // inside both publication transactions, including after image decoding.
-    let before = db.moderation_software(session, &request.name).await?;
-    if before.revision != request.revision {
-        return Err(Error::Conflict);
-    }
+    change_media(
+        db,
+        store,
+        session,
+        MediaRequest {
+            name: request.name,
+            revision: request.revision,
+            role: MediaRole::Logo,
+            note: request.note,
+            data: request.data,
+            metadata: request.metadata,
+        },
+    )
+    .await
+}
+
+pub async fn change_media(
+    db: &Database,
+    store: Option<&ObjectStore>,
+    session: &AuthenticatedSession,
+    request: MediaRequest,
+) -> Result<Software, Error> {
+    let mut request = catalog_moderation::media(request)?;
+    let header = request.role == MediaRole::Header;
+    request.metadata = validate_metadata(request.metadata, false)?;
     let store = store.ok_or(Error::Unavailable)?.clone();
     static SLOTS: OnceLock<Arc<Semaphore>> = OnceLock::new();
     let permit = SLOTS
@@ -57,20 +141,17 @@ pub async fn change(
         .map_err(|_| Error::RateLimited)?;
     let db = db.clone();
     let session = session.clone();
-    // Connection cancellation must not release capacity while decoding or file
-    // publication continues. No detached timeout can acknowledge success.
     tokio::spawn(async move {
         let _permit = permit;
-        let mut request = request;
-        let logo = match request.data.take() {
+        let media = match request.data.take() {
             Some(encoded) => Some(
-                tokio::task::spawn_blocking(move || validate(encoded))
+                tokio::task::spawn_blocking(move || validate_role(encoded, header))
                     .await
                     .map_err(|_| Error::Unavailable)??,
             ),
             None => None,
         };
-        db.moderate_software_logo(&session, &store, request, logo)
+        db.moderate_software_media(&session, &store, request, media)
             .await
     })
     .await
@@ -117,5 +198,14 @@ mod tests {
         assert!(validate(STANDARD.encode(bytes.into_inner())).is_err());
         let svg = b"<svg xmlns='http://www.w3.org/2000/svg'><path d='M0 0'/></svg>";
         assert_eq!(validate(STANDARD.encode(svg)).unwrap().bytes, svg);
+    }
+    #[test]
+    fn header_validation_allows_the_existing_large_screenshot_limit() {
+        let image = image::DynamicImage::ImageRgb8(image::RgbImage::new(5760, 3240));
+        let mut bytes = Cursor::new(Vec::new());
+        image
+            .write_to(&mut bytes, image::ImageFormat::Jpeg)
+            .unwrap();
+        assert!(validate_role(STANDARD.encode(bytes.into_inner()), true).is_ok());
     }
 }

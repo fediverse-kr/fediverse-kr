@@ -1,7 +1,7 @@
 //! OS ownership outlives a dropped HTTP future or PostgreSQL connection.
 //! All runtime mutations acquire this before any database locks. Never unlink
 //! the lock file: replacements would let two processes lock different inodes.
-use super::{files, publication, Error, ObjectRef, ObjectStore};
+use super::{files, map_opendal_error, publication, Backend, Error, ObjectRef, ObjectStore};
 use std::{
     fs::{File, OpenOptions, TryLockError},
     sync::Arc,
@@ -62,8 +62,10 @@ impl Mutation {
     /// Keep this Mutation alive until the DB mapping transaction finishes.
     /// Reserve durable orphan cleanup in PG *before* publishing any bytes.
     pub(crate) async fn publish(&self, object: ObjectRef, bytes: Vec<u8>) -> Result<bool, Error> {
-        self.run(move |store, op| publication::publish(&store.root, op, &object, bytes))
-            .await
+        self.run(move |store, op| {
+            publication::publish_backend(store.backend, &store.root, op, &object, bytes)
+        })
+        .await
     }
 
     /// Caller must exclude live mappings under the shared stored_files PG lock.
@@ -72,25 +74,39 @@ impl Mutation {
             if !object.valid() {
                 return Err(Error::UnsafePath);
             }
-            if files::directory(&store.root)? != store.root
-                || !files::metadata(&store.root.join("objects"))?.is_dir()
-            {
-                return Err(Error::UnsafePath);
-            }
-            match publication::verify(&store.root, op, &object) {
-                Ok(()) => {}
-                Err(Error::Missing)
-                    if matches!(
-                        files::metadata(&store.root.join("objects").join(&object.hash)),
+            match store.backend {
+                Backend::Fs => {
+                    if files::directory(&store.root)? != store.root
+                        || !files::metadata(&store.root.join("objects"))?.is_dir()
+                    {
+                        return Err(Error::UnsafePath);
+                    }
+                    match publication::verify(Backend::Fs, &store.root, op, &object) {
+                        Ok(()) => {}
                         Err(Error::Missing)
-                    ) =>
-                {
-                    return Ok(())
+                            if matches!(
+                                files::metadata(&store.root.join("objects").join(&object.hash)),
+                                Err(Error::Missing)
+                            ) =>
+                        {
+                            return Ok(())
+                        }
+                        Err(e) => return Err(e),
+                    }
                 }
-                Err(e) => return Err(e),
+                Backend::S3 => match publication::verify(Backend::S3, &store.root, op, &object) {
+                    Ok(()) => {}
+                    // Object deletion is idempotent; a missing object needs no
+                    // bucket scan and is already safe to acknowledge.
+                    Err(Error::Missing) => return Ok(()),
+                    Err(e) => return Err(e),
+                },
             }
-            op.delete(&format!("objects/{}", object.hash))
-                .map_err(|_| Error::Io)
+            match op.delete(&publication::object_key(&object)) {
+                Ok(()) => Ok(()),
+                Err(error) if error.kind() == opendal::ErrorKind::NotFound => Ok(()),
+                Err(error) => Err(map_opendal_error(error)),
+            }
         })
         .await
     }

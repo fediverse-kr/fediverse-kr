@@ -2,6 +2,23 @@
   "version": 1,
   "entries": [
     {
+      "name": "asyncband",
+      "version": "0.7.4",
+      "license": "Apache-2.0",
+      "files": [
+        {
+          "path": "docs/licenses/upstream/asyncband-0.7.4-LICENSE.txt",
+          "sha256": "06b4f21dfe949f9a43bab81f11aa3e7e3199ddd6d852d9cba02af5034784586c",
+          "source": "https://raw.githubusercontent.com/apache/asyncband/3f521b528bcbe27cf632f1d35ff30dff9780ec3b/LICENSE"
+        },
+        {
+          "path": "docs/licenses/upstream/asyncband-0.7.4-NOTICE.txt",
+          "sha256": "cf9d7e4f47322fa41b6ba9c6b9a72053526dda2a67b211c4d651357198bd5cca",
+          "source": "https://raw.githubusercontent.com/apache/asyncband/3f521b528bcbe27cf632f1d35ff30dff9780ec3b/NOTICE"
+        }
+      ]
+    },
+    {
       "name": "async-stream-impl",
       "version": "0.3.6",
       "license": "MIT",

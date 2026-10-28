@@ -18,7 +18,10 @@ fn directory_lists_name_page_results_and_details_separate_actions() {
     );
     assert!(sites.contains("위험 구역"));
     assert!(catalog.contains("h2{\"관리 설정 변경\"}"));
-    assert!(catalog.contains("logo::LogoEditor{current,pending,generation}"));
+    assert!(catalog.contains("logo::MediaEditor{current,pending,generation,role: MediaRole::Logo}"));
+    assert!(
+        catalog.contains("logo::MediaEditor{current,pending,generation,role: MediaRole::Header}")
+    );
     assert!(catalog.contains("AdminHistory{name:data.name"));
 }
 

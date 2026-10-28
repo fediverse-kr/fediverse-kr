@@ -13,9 +13,33 @@ pub struct Software {
     pub featured: bool,
     pub display_order: i32,
     pub logo_available: bool,
+    #[serde(default)]
+    pub logo: Option<crate::directory::SoftwareMedia>,
+    #[serde(default)]
+    pub header: Option<crate::directory::SoftwareMedia>,
 }
 pub const LOGO_MAX_BYTES: usize = 512_000;
+pub const HEADER_MAX_BYTES: usize = 8 * 1024 * 1024;
 pub const LOGO_BODY_LIMIT: usize = 700_000;
+pub const HEADER_BODY_LIMIT: usize = 12_000_000;
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MediaRole {
+    Logo,
+    Header,
+}
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
+pub struct MediaRequest {
+    pub name: String,
+    pub revision: i64,
+    pub role: MediaRole,
+    pub note: String,
+    /// Standard base64. None with metadata updates presentation only;
+    /// None without metadata explicitly removes the selected role.
+    pub data: Option<String>,
+    #[serde(default)]
+    pub metadata: Option<crate::directory::SoftwareMediaMetadata>,
+}
 #[derive(Clone, PartialEq, Serialize, Deserialize)]
 pub struct LogoRequest {
     pub name: String,
@@ -23,6 +47,8 @@ pub struct LogoRequest {
     pub note: String,
     /// Standard base64; None explicitly removes the logo. Never a URL or path.
     pub data: Option<String>,
+    #[serde(default)]
+    pub metadata: Option<crate::directory::SoftwareMediaMetadata>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SoftwarePage {

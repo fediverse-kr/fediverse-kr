@@ -16,6 +16,39 @@ use serde::{Deserialize, Serialize};
 
 pub const PAGE_SIZE: usize = 24;
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum MediaFit {
+    #[default]
+    Contain,
+    Cover,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+pub struct SoftwareMediaMetadata {
+    #[serde(default)]
+    pub source_url: Option<String>,
+    #[serde(default)]
+    pub attribution: String,
+    #[serde(default)]
+    pub license: String,
+    #[serde(default)]
+    pub license_url: Option<String>,
+    #[serde(default)]
+    pub caption: String,
+    #[serde(default)]
+    pub fit: MediaFit,
+    #[serde(default)]
+    pub background: Option<String>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct SoftwareMedia {
+    pub url: String,
+    #[serde(flatten)]
+    pub metadata: SoftwareMediaMetadata,
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Category {
     pub name: String,
@@ -25,6 +58,10 @@ pub struct Category {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Software {
     pub logo_available: bool,
+    #[serde(default)]
+    pub logo: Option<SoftwareMedia>,
+    #[serde(default)]
+    pub header: Option<SoftwareMedia>,
     pub name: String,
     pub display_name: String,
     #[serde(default)]

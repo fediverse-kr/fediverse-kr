@@ -7,8 +7,32 @@
 ## 저장과 접근 경계
 
 - `backend/storage`가 파일 경로·링크/정션·16 MiB 상한·길이·SHA-256을 검사한다.
-  실제 읽기와 오프라인 보존의 바이트 쓰기는 OpenDAL Fs다. 새 컨테이너는 없다.
-  로컬 경로 정책과 덮어쓰기 없는 등록은 별도로 유지한다. [라이브러리 경계](library-boundaries.md).
+  실제 읽기와 오프라인 보존의 바이트 쓰기는 OpenDAL Fs이고, 운영 S3/R2는 OpenDAL S3다.
+  저장소 어댑터 밖에서 S3 SDK나 직접 HTTP를 사용하지 않는다.
+- 기본 구성은 기존 `FEDKR_MEDIA_DIR`의 Fs 저장소다. S3를 명시하려면 아래 변수를 모두
+  설정한다. S3 구성이 하나라도 보이면 `FEDKR_MEDIA_BACKEND=s3`가 없을 때 Fs로
+  대체하지 않고 시작을 거부한다.
+
+```text
+FEDKR_MEDIA_BACKEND=s3
+FEDKR_MEDIA_DIR=/var/lib/fedkr2/media-lock
+FEDKR_S3_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+FEDKR_S3_BUCKET=<private-bucket>
+FEDKR_S3_REGION=auto
+FEDKR_S3_ACCESS_KEY_ID=<access-key>
+FEDKR_S3_SECRET_ACCESS_KEY=<secret-key>
+FEDKR_S3_ROOT=fedkr2/
+```
+
+- S3에서 `FEDKR_S3_ROOT`는 `objects/<sha256>` 앞에 붙는 상대 키 prefix이며,
+  `FEDKR_MEDIA_DIR`는 canonical media source가 아니다. S3 모드에서는 이 절대 경로가
+  웹 프로세스와 operator 프로세스가 공유하는 `.runtime.lock` 디렉터리로만 사용된다.
+  단일 replica의 모든 mutation은 이 OS 잠금을 먼저 얻고 OpenDAL blocking IO가 끝날 때까지
+  핸들을 유지한다. DB의 `stored_files` 잠금 순서는 그대로 유지한다.
+- S3 읽기는 DB의 예상 길이와 16 MiB 상한으로 제한한 뒤 실제 SHA-256과 길이를 다시 확인한다.
+  등록은 OpenDAL의 create-if-absent 조건으로 수행하고, 이미 있는 객체도 같은 바이트인지
+  읽어 확인한다. GC는 매핑을 확인한 객체 하나만 검증 후 삭제하며 bucket listing이나 prefix
+  전체 삭제를 수행하지 않는다. 버킷 비공개 정책과 암호화 설정은 별도 운영 설정이다.
 - `FEDKR_MEDIA_DIR`는 `objects/<sha256>`를 포함하는 기존 절대 비공개 디렉터리다.
   웹 정적 자산 아래에 두지 않는다. 환경변수의 디렉터리 이름만으로 비공개 OS 권한이
   설정되는 것은 아니다. 운영에서는 서비스 계정의 읽기/파일 정리 권한을 허용하고,
@@ -87,7 +111,7 @@ AVIF/TIFF는 고정 시그니처 검사, BMP는 실제 이관·서빙·브라우
 - 실제 DB·파일 export의 동일 시점/완전성 검증과 정식 운영 활성화.
 - [로고 관리](catalog-logos.md)와 [AP 아바타·이모지 재수집/새 회원 이미지 저장](profile-media-refresh.md)은 후속 연결했다.
 - 탈퇴 시 파일 제거·공유 이모지 보존은 [후속 정리 워커](media-cleanup.md)로 연결했다. 전체 저장소의 무차별 orphan 스캔이나 백업 소거는 하지 않는다.
-- 공개 프로필의 명시적 이미지 공개 모델, S3 런타임 어댑터, Linux 배포 권한 검증.
+- 공개 프로필의 명시적 이미지 공개 모델, Linux 배포 권한 검증, 실제 R2 transfer/import.
 
 이관 파일을 현재 로컬 reader가 읽는 데 S3 런타임 연결은 필요하지 않지만,
 원본 S3 export와 사본을 포함한 백업 운영은 여전히 별도 준비 대상이다.

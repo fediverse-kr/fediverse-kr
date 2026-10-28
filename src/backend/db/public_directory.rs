@@ -4,7 +4,7 @@ use super::{Database, StoreError};
 use crate::directory::search::ServerQuery;
 use crate::directory::{
     rich_text::render_description, web_link, Catalog, Category, PublicSite, SitePage, Software,
-    SoftwareInfo, Statistics, PAGE_SIZE,
+    SoftwareInfo, SoftwareMedia, Statistics, PAGE_SIZE,
 };
 use chrono::{DateTime, Utc};
 use diesel::{
@@ -30,6 +30,14 @@ struct CategoryRow {
 struct SoftwareRow {
     #[diesel(sql_type=Bool)]
     logo_available: bool,
+    #[diesel(sql_type=Bool)]
+    header_available: bool,
+    #[diesel(sql_type=BigInt)]
+    revision: i64,
+    #[diesel(sql_type=Nullable<Text>)]
+    logo_metadata: Option<String>,
+    #[diesel(sql_type=Nullable<Text>)]
+    header_metadata: Option<String>,
     #[diesel(sql_type=Text)]
     name: String,
     #[diesel(sql_type=Text)]
@@ -142,8 +150,23 @@ fn legacy_public_servers_query(query: &str, software: &str, page: u32) -> Server
 impl From<SoftwareRow> for Software {
     fn from(r: SoftwareRow) -> Self {
         let description = render_description(&r.description);
+        let metadata = |value: Option<String>| {
+            value
+                .and_then(|value| serde_json::from_str(&value).ok())
+                .unwrap_or_default()
+        };
+        let logo = r.logo_available.then(|| SoftwareMedia {
+            url: format!("/api/public/software-logo/{}?v={}", r.name, r.revision),
+            metadata: metadata(r.logo_metadata),
+        });
+        let header = r.header_available.then(|| SoftwareMedia {
+            url: format!("/api/public/software-header/{}?v={}", r.name, r.revision),
+            metadata: metadata(r.header_metadata),
+        });
         Self {
             logo_available: r.logo_available,
+            logo,
+            header,
             name: r.name,
             display_name: r.display_name,
             family: r.family,
@@ -159,7 +182,12 @@ impl From<SoftwareRow> for Software {
         }
     }
 }
-const SOFTWARE_SELECT: &str = "SELECT EXISTS(SELECT 1 FROM stored_files f WHERE f.object_key=catalog_software.logo_key AND (catalog_software.logo_key LIKE 'software-logos/%' OR catalog_software.logo_key LIKE 'software/%')) AS logo_available,name,left(display_name,200) AS display_name,left(coalesce(description,''),4000) AS description,
+const SOFTWARE_SELECT: &str = "SELECT EXISTS(SELECT 1 FROM stored_files f WHERE f.object_key=catalog_software.logo_key AND (catalog_software.logo_key LIKE 'software-logos/%' OR catalog_software.logo_key LIKE 'software/%')) AS logo_available,
+            EXISTS(SELECT 1 FROM catalog_software_state t JOIN stored_files f ON f.object_key=t.header_key WHERE t.software_id=catalog_software.id AND t.header_key LIKE 'software-headers/%') AS header_available,
+            coalesce((SELECT revision FROM catalog_software_state t WHERE t.software_id=catalog_software.id),0) AS revision,
+            (SELECT left(logo_metadata::text,16384) FROM catalog_software_state t WHERE t.software_id=catalog_software.id) AS logo_metadata,
+            (SELECT left(header_metadata::text,16384) FROM catalog_software_state t WHERE t.software_id=catalog_software.id) AS header_metadata,
+            name,left(display_name,200) AS display_name,left(coalesce(description,''),4000) AS description,
             NULLIF(left(family,128),'') AS family,
             (SELECT development_status FROM catalog_software_state t WHERE t.software_id=catalog_software.id) AS development_status,
             ARRAY(SELECT left(v,128) FROM unnest(CASE WHEN cardinality(categories)>0 THEN categories ELSE ARRAY[category_tag] END) v WHERE v IS NOT NULL LIMIT 32) AS categories,
@@ -291,6 +319,10 @@ mod tests {
     fn software_public_projection_keeps_markup_out_of_summary_and_exposes_safe_html() {
         let software = Software::from(SoftwareRow {
             logo_available: false,
+            header_available: false,
+            revision: 0,
+            logo_metadata: None,
+            header_metadata: None,
             name: "test".into(),
             display_name: "Test".into(),
             family: None,

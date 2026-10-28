@@ -130,7 +130,7 @@ fn Settings(initial: Software) -> Element {
         if let Some(latest)=remote(){div{class:"moderation-confirm",p{"최신 버전 {latest.revision} · 편집 잠금 " if latest.locked{"켜짐"}else{"꺼짐"}}p{"색상 " {latest.brand_color.as_deref().unwrap_or("미설정")} " · 순서 {latest.display_order} · 대표 표식 " if latest.featured{"켜짐"}else{"꺼짐"}}
             button{class:"secondary-button",disabled:pending()||!ready,onclick:move|_|{current.set(latest.clone());remote.set(None);generation+=1;notice.set("최신 설정을 기준으로 다시 확인해 주세요. 작성한 사유는 유지했습니다.".into());},"최신 설정을 확인하고 계속"}
         }}
-    }logo::LogoEditor{current,pending,generation}AdminHistory{name:data.name,category:false,generation:generation()}}
+    }logo::MediaEditor{current,pending,generation,role: MediaRole::Logo}logo::MediaEditor{current,pending,generation,role: MediaRole::Header}AdminHistory{name:data.name,category:false,generation:generation()}}
 }
 #[component]
 pub fn ModerationCategories() -> Element {

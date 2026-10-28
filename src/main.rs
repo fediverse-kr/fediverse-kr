@@ -188,6 +188,36 @@ async fn main() {
 #[cfg(feature = "server")]
 async fn migration_argument() -> Result<bool, &'static str> {
     let args: Vec<String> = std::env::args().skip(1).collect();
+    let args = if args.first().is_some_and(|arg| arg == "server") {
+        &args[1..]
+    } else {
+        &args[..]
+    };
+    if args == ["--media-store-cutover"] || args == ["--media-store-cutover", "--dry-run"] {
+        let report = backend::storage_cutover::run(args.len() == 2).await?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(|_| "Media cutover report failed")?
+        );
+        return Ok(true);
+    }
+    if (args.len() == 2 || args.len() == 3)
+        && args[0] == "--software-media-import"
+        && (args.len() == 2 || args[2] == "--dry-run")
+    {
+        let path = std::path::Path::new(&args[1]);
+        let report = backend::software_media_import::run(path, args.len() == 3)
+            .await
+            .map_err(|message| {
+                eprintln!("{message}");
+                "Software media import did not complete"
+            })?;
+        println!(
+            "{}",
+            serde_json::to_string_pretty(&report).map_err(|_| "Software media report failed")?
+        );
+        return Ok(true);
+    }
     if args == ["--legacy-activate"] || args == ["--legacy-activate", "--apply"] {
         match backend::activation::run_from_env(args.len() == 2).await {
             Ok(report) => println!(
@@ -260,7 +290,7 @@ async fn migration_argument() -> Result<bool, &'static str> {
         return Ok(true);
     }
     if !args.is_empty() {
-        return Err("Usage: fediversekr2 [--migrate | --legacy-import [--apply] | --legacy-assets [--apply] | --legacy-activate [--apply] | --admin grant|revoke <member-uuid>]");
+        return Err("Usage: fediversekr2 server --software-media-import /absolute/manifest.json [--dry-run] | fediversekr2 [--migrate | --legacy-import [--apply] | --legacy-assets [--apply] | --legacy-activate [--apply] | --admin grant|revoke <member-uuid>]");
     }
     Ok(false)
 }

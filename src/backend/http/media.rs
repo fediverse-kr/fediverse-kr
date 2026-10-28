@@ -11,6 +11,8 @@ pub(super) async fn response(
 ) -> Option<Response> {
     let target = if let Some(name) = path.strip_prefix("/api/public/software-logo/") {
         media::path_component(name).map(Target::Software)
+    } else if let Some(name) = path.strip_prefix("/api/public/software-header/") {
+        media::path_component(name).map(Target::SoftwareHeader)
     } else if path == "/api/member/avatar" {
         Some(Target::OwnAvatar)
     } else if path == "/api/member/emoji" {

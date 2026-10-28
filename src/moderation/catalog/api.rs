@@ -78,6 +78,18 @@ pub async fn logo(request: LogoRequest) -> Result<Software, ServerFnError> {
         .await
         .map_err(failure)
 }
+#[post("/api/member/moderation/software/media",headers:HeaderMap)]
+pub async fn media(request: MediaRequest) -> Result<Software, ServerFnError> {
+    let limit = match request.role {
+        MediaRole::Logo => LOGO_BODY_LIMIT,
+        MediaRole::Header => HEADER_BODY_LIMIT,
+    };
+    let state = write_state_limit(&headers, limit as u64).await?;
+    let s = session(state, &headers).await?;
+    crate::backend::catalog_logos::change_media(&state.db, state.media.as_ref(), &s, request)
+        .await
+        .map_err(failure)
+}
 #[get("/api/member/moderation/categories?query&page",headers:HeaderMap)]
 pub async fn categories(query: String, page: u32) -> Result<CategoryPage, ServerFnError> {
     private_response();
